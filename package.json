@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@preact/signals": "^2.2.1",
-    "preact": "^10.26.9"
+    "@tailwindcss/vite": "^4.1.11",
+    "preact": "^10.26.9",
+    "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
