@@ -5,5 +5,5 @@ export function App() {
         <>
 
         </>
-    )
+    );
 }
