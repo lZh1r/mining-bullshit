@@ -1,7 +1,6 @@
 import type {IProdCapability} from "./capabilities/IProdCapability";
 import {GigaNum} from "../GigaNum";
 import {Resource} from "../resources/Resource";
-import {ResourceManager} from "../resources/ResourceManager";
 
 export type ProducerType = "crafting" | "energy" | "money" | "resource";
 
@@ -82,26 +81,30 @@ export class Producer<T extends ProducerType> {
         return [resultNum, resultRes];
     }
 
-    purchase(amount: number = 1): boolean {
-        const required = this.getCost(amount);
-        const currentMoney = window.gameState.money;
-        if (currentMoney >= required[0] && window.gameState.resourceManager.hasEnoughOf(required[1])) {
-            window.gameState.money = currentMoney.subtract(required[0]);
-            for (const resourceNumberPair of required[1]) {
-                window.gameState.resourceManager.withdrawResource(resourceNumberPair[0], resourceNumberPair[1]);
-            }
-            return true;
-        }
-        return false;
-    }
+    // purchase(amount: number = 1): boolean {
+    //     const required = this.getCost(amount);
+    //     const currentMoney = window.gameState.money;
+    //     if (currentMoney >= required[0] && window.gameState.resourceManager.hasEnoughOf(required[1])) {
+    //         window.gameState.money = currentMoney.subtract(required[0]);
+    //         for (const resourceNumberPair of required[1]) {
+    //             window.gameState.resourceManager.withdrawResource(resourceNumberPair[0], resourceNumberPair[1]);
+    //         }
+    //         return true;
+    //     }
+    //     return false;
+    // }
+    //
+    // sell(amount: number = 1): boolean {
+    //     if (this.quantity >= amount) {
+    //         this.quantity -= amount;
+    //         window.gameState.money = window.gameState.money.add(this.getCost(amount)[0].divide(2));
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
-    sell(amount: number = 1): boolean {
-        if (this.quantity >= amount) {
-            this.quantity -= amount;
-            window.gameState.money = window.gameState.money.add(this.getCost(amount)[0].divide(2));
-            return true;
-        }
-        return false;
+    getCapabilities() {
+        return this.capabilities;
     }
 
 }

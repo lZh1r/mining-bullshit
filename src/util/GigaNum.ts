@@ -32,6 +32,7 @@ export class GigaNum {
 
     subtract(anotherNum: GigaNum): GigaNum;
     subtract(anotherNum: number): GigaNum;
+    subtract(anotherNum: GigaNum | number): GigaNum;
     subtract(anotherNum: GigaNum | number): GigaNum {
         if (typeof anotherNum === "number") {
             anotherNum = new GigaNum(anotherNum);
@@ -57,6 +58,7 @@ export class GigaNum {
 
     add(anotherNum: GigaNum): GigaNum;
     add(anotherNum: number): GigaNum;
+    add(anotherNum: GigaNum | number): GigaNum;
     add(anotherNum: GigaNum | number): GigaNum {
         if (typeof anotherNum === "number") {
             anotherNum = new GigaNum(anotherNum);
