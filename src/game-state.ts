@@ -1,10 +1,12 @@
 import {computed, signal} from "@preact/signals";
 import {GigaNum} from "./util/GigaNum.ts";
 import {Resource} from "./util/resources/Resource.ts";
+import type {Producer, ProducerType} from "./util/producers/Producer.ts";
 
 export const money = signal(new GigaNum(100));
 export const power = signal(new GigaNum(0));
 export const resources = signal(new Map<string, [Resource, number]>());
+export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
 export const totalValue = computed(() => {
     let result = new GigaNum(0);
     resources.value.forEach((resourceNumberPair) => {
@@ -77,6 +79,50 @@ export const gameActions = {
         if (this.hasEnoughOf(resource, amount)) {
             this.withdrawResource(resource, amount);
             this.addMoney(resource.valuePer * amount);
+        }
+    },
+    addProducer(producer: Producer<ProducerType>, amount: number = 0) {
+        producers.value = producers.value.set(producer.id, [producer, amount]);
+    },
+    removeProducer(producer: Producer<ProducerType>, amount: number = 1) {
+        if (!producers.value.get(producer.id)) {
+            return;
+        }
+        const prevCount = producers.value.get(producer.id)![1];
+        producers.value = producers.value.set(producer.id, [producer, prevCount - amount]);
+    },
+    deleteProducer(producer: Producer<ProducerType>) {
+        producers.value.delete(producer.id);
+    },
+    getProducerCost(producer: Producer<ProducerType>, amount: number = 1): [GigaNum, [Resource, number][]] {
+        let resultNum = new GigaNum(0);
+        for (let i = 0; i < amount; i++) {
+            resultNum = resultNum.add(producer.baseCost.multiply(producer.costScale.pow(producer.quantity + i)).multiply(producer.costMultiplier));
+        }
+        const resultRes: [Resource, number][] = [];
+        for (const resource of producer.resourcesNeeded) {
+            resultRes.push([resource[0], resource[1] * amount]);
+        }
+        return [resultNum, resultRes];
+    },
+    purchaseProducer(producer: Producer<ProducerType>, amount: number = 1) {
+        const cost = this.getProducerCost(producer, amount);
+        if (cost[0] <= money.value) {
+            for (const resourceNumPair of cost[1]) {
+                if (!this.hasEnoughOf(resourceNumPair[0], resourceNumPair[1])) {
+                    return;
+                }
+            }
+            this.removeMoney(cost[0]);
+            for (const resourceNumPair of cost[1]) {
+                this.withdrawResource(resourceNumPair[0], resourceNumPair[1]);
+            }
+            this.addProducer(producer, amount);
+        }
+    },
+    sellProducer(producer: Producer<ProducerType>, amount: number) {
+        if (producers.value.get(producer.id) && producers.value.get(producer.id)![1] >= amount) {
+            this.removeProducer(producer, amount);
         }
     }
 };
