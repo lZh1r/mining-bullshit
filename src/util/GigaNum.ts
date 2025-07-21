@@ -191,6 +191,11 @@ export class GigaNum {
         return new GigaNum(GigaNum.formatMainPart(resultMain), resultExp);
     }
 
+    /**
+     * Note to self:
+     * Compares THIS to ANOTHER GigaNum and returns "more" if THIS is greater than ANOTHER ONE.
+     * Not the other way around!
+     */
     compareTo(anotherNum: GigaNum) {
         const thisExp = this.exponentialFactor;
         const thisMain = this.mainPart;
