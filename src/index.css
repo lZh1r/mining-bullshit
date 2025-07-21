@@ -14,7 +14,9 @@
     --color-muted-foreground: var(--muted-foreground);
     --color-navbar-background: var(--navbar-background);
     --color-card-background: var(--card-background);
+    --color-hover-card-background: var(--hover-card-background);
     --font-main: var(--main);
+    --shadow-button: 0px 5px 0px 5px rgba(0, 0, 0, 0.4);
 }
 
 :root {
@@ -23,6 +25,7 @@
     --muted-foreground: hsl(0, 0%, 50%);
     --navbar-background: hsl(0, 0%, 15%);
     --card-background: hsl(0, 0%, 20%);
+    --hover-card-background: hsl(0, 0%, 15%);
     --main: "NFPixels", "serif";
 }
 

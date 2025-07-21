@@ -1,4 +1,4 @@
-import {NavBar} from "./components/NavBar.tsx";
+import {NavBar} from "./components/header/NavBar.tsx";
 import {currentTab} from "./game-state.ts";
 
 export function App() {
