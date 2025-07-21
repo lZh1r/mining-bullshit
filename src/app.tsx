@@ -23,7 +23,13 @@ const testLootTable = new LootTable(
     ]
 );
 
-console.log(testLootTable.roll(10));
+const randomResources = testLootTable.roll(10);
+for (const randomResource of randomResources) {
+    gameActions.depositResource(randomResource);
+}
+for (const randomResource of randomResources) {
+    gameActions.sellResource(randomResource, 1);
+}
 
 export function App() {
 

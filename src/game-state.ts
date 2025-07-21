@@ -58,8 +58,9 @@ export const gameActions = {
         const currentResources = resources.value;
         return currentResources.has(resource.getId()) && currentResources.get(resource.getId())![1] >= amount!;
     },
-    depositResource(resource: Resource, amount: number) {
-        const prevCount = resources.value.get(resource.getId())![1];
+    depositResource(resource: Resource, amount: number = 1) {
+        const resPair = resources.value.get(resource.getId());
+        const prevCount = typeof resPair === "undefined" ? 0 : resPair[1];
         resources.value = resources.value.set(resource.getId(), [resource, prevCount + amount]);
     },
     withdrawResource(resource: Resource, amount: number) {
