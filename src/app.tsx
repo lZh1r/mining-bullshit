@@ -1,27 +1,29 @@
+import {gameActions, money, power} from "./game-state.ts";
+import {Producer} from "./util/producers/Producer.ts";
+import {EnergyGenCap} from "./util/producers/capabilities/EnergyGenCap.ts";
 import {GigaNum} from "./util/GigaNum.ts";
+
+const generator = Producer.energy("id", "Generator", new GigaNum(10), new GigaNum(2));
+const generatorCap = new EnergyGenCap(new GigaNum(10));
+generator.addCapability(generatorCap);
+gameActions.addProducer(generator);
 
 export function App() {
 
-    let d = new GigaNum(3.32, 12000);
-    console.log(d.toString());
-    d = d.divide(new GigaNum(1.66, 2000));
-    console.log(d.toString());
-    d = d.multiply(1000);
-    console.log(d.toString());
-    d = d.multiply(new GigaNum(8, 10000));
-    console.log(d.toString());
-    d = d.divide(2);
-    console.log(d.toString());
-    d = d.multiply(0);
-    console.log(d.toString());
-    d = new GigaNum(2, 100);
-    d = d.pow(0.5);
-    console.log(d.toString());
-    console.log(new GigaNum(199909320913).toString());
-
     return (
-        <>
-
-        </>
+        <div class="flex flex-col text-2xl text-center space-y-4 p-4">
+            <p>{power.value.toString()} Energy</p>
+            <p>{money.value.toString()} Money</p>
+            <button onClick={() => {
+                gameActions.purchaseProducer(generator, 1);
+            }}>
+                Add a generator {gameActions.getProducerCost(generator).toString()}
+            </button>
+            <button onClick={() => {
+                gameActions.sellProducer(generator, 1);
+            }}>
+                Sell a generator
+            </button>
+        </div>
     );
 }

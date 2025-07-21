@@ -2,12 +2,15 @@
 
 @theme inline {
     --color-background: var(--background);
+    --color-foreground: var(--foreground);
 }
 
 :root {
-    --background: hsl(100, 50%, 10%);
+    --background: hsl(0, 0%, 10%);
+    --foreground: hsl(0, 0%, 80%);
 }
 
 body {
     background-color: var(--background);
+    color: var(--foreground);
 }
