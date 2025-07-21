@@ -4,7 +4,7 @@ import {Resource} from "./util/resources/Resource.ts";
 import type {Producer, ProducerType} from "./util/producers/Producer.ts";
 import type {EnergyGenCap} from "./util/producers/capabilities/EnergyGenCap.ts";
 import type {EnergyConsumptionCap} from "./util/producers/capabilities/EnergyConsumptionCap.ts";
-import {ProducersTab} from "./components/tabs/ProducersTab.tsx";
+import {ProducersTab} from "./components/tabs/producer/ProducersTab.tsx";
 import type {JSX} from "react";
 
 export const currentTab = signal(ProducersTab);
@@ -178,5 +178,14 @@ export const gameActions = {
             const moneyBack = this.getProducerCost(producer, amount);
             this.addMoney(moneyBack[0].divide(2));
         }
-    }
+    },
+    getAllProducersOfType(type: ProducerType) {
+        const newMap = new Array<[Producer<ProducerType>, number]>;
+        producers.value.forEach((producer) => {
+            if (producer[0].type === type) {
+                newMap.push(producer);
+            }
+        });
+        return newMap;
+    },
 };
