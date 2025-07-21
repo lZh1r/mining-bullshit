@@ -29,7 +29,7 @@ export class GigaNum {
     }
 
     toString() {
-        return this.mainPart <= GigaNum.startingExp ? this.toNumber().toString() : `${GigaNum.formatMainPart(this.mainPart, GigaNum.toStringPrecision)}e${this.exponentialFactor}`;
+        return this.exponentialFactor <= GigaNum.startingExp ? this.toNumber().toString() : `${GigaNum.formatMainPart(this.mainPart, GigaNum.toStringPrecision)}e${this.exponentialFactor}`;
     }
 
     toNumber() {
