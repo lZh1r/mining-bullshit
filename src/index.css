@@ -8,16 +8,22 @@
         url("../public/NFPixels-Regular.otf");
 }
 
-@theme inline {
+@theme {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-navbar-background: var(--navbar-background);
+    --color-card-background: var(--card-background);
     --font-main: var(--main);
 }
 
 :root {
     --background: hsl(0, 0%, 10%);
     --foreground: hsl(0, 0%, 80%);
-    --main: "NFPixels", "serif"
+    --muted-foreground: hsl(0, 0%, 50%);
+    --navbar-background: hsl(0, 0%, 15%);
+    --card-background: hsl(0, 0%, 20%);
+    --main: "NFPixels", "serif";
 }
 
 body {

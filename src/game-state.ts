@@ -4,7 +4,10 @@ import {Resource} from "./util/resources/Resource.ts";
 import type {Producer, ProducerType} from "./util/producers/Producer.ts";
 import type {EnergyGenCap} from "./util/producers/capabilities/EnergyGenCap.ts";
 import type {EnergyConsumptionCap} from "./util/producers/capabilities/EnergyConsumptionCap.ts";
+import {ProducersTab} from "./components/tabs/ProducersTab.tsx";
+import type {JSX} from "react";
 
+export const currentTab = signal(ProducersTab);
 export const money = signal(new GigaNum(100));
 export const resources = signal(new Map<string, [Resource, number]>());
 export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
@@ -45,6 +48,9 @@ export const powerConsumption = computed(() => {
 });
 
 export const gameActions = {
+    openTab(tabToOpen: () => JSX.Element) {
+        currentTab.value = tabToOpen;
+    },
     addMoney(amount: GigaNum | number) {
         money.value = money.value.add(amount);
     },
@@ -147,6 +153,12 @@ export const gameActions = {
                     return;
                 }
             }
+            if (producer.type !== "energy" && producer.getCapabilities().has("energy_consumption")) {
+                const cap = producer.getCapabilities().get("energy_consumption")! as EnergyConsumptionCap;
+                if (power.value.compareTo(powerConsumption.value.add(cap.consumption)) === "less") {
+                    return;
+                }
+            }
             this.removeMoney(cost[0]);
             for (const resourceNumPair of cost[1]) {
                 this.withdrawResource(resourceNumPair[0], resourceNumPair[1]);
@@ -156,6 +168,12 @@ export const gameActions = {
     },
     sellProducer(producer: Producer<ProducerType>, amount: number) {
         if (producers.value.get(producer.id) && producers.value.get(producer.id)![1] >= amount) {
+            if (producer.type === "energy" && producer.getCapabilities().has("energy")) {
+                const cap = producer.getCapabilities().get("energy")! as EnergyGenCap;
+                if (power.value.subtract(cap.generation).compareTo(powerConsumption.value) === "less") {
+                    return;
+                }
+            }
             this.removeProducer(producer, amount);
             const moneyBack = this.getProducerCost(producer, amount);
             this.addMoney(moneyBack[0].divide(2));
