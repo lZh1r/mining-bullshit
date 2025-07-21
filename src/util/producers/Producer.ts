@@ -13,7 +13,6 @@ export class Producer<T extends ProducerType> {
         public costScale: GigaNum,
         public resourcesNeeded: [Resource, number][] = [],
         public costMultiplier: number = 1,
-        public quantity: number = 0,
         private readonly capabilities: Map<string, IProdCapability> = new Map(),
     ) {}
 
@@ -24,10 +23,9 @@ export class Producer<T extends ProducerType> {
         costScale: GigaNum,
         resourcesNeeded: [Resource, number][] = [],
         costMultiplier: number = 1,
-        quantity: number = 0,
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"crafting"> {
-        return new Producer("crafting", id, name, baseCost, costScale, resourcesNeeded, costMultiplier, quantity, capabilities);
+        return new Producer("crafting", id, name, baseCost, costScale, resourcesNeeded, costMultiplier, capabilities);
     }
 
     static resource(
@@ -37,10 +35,9 @@ export class Producer<T extends ProducerType> {
         costScale: GigaNum,
         resourcesNeeded: [Resource, number][] = [],
         costMultiplier: number = 1,
-        quantity: number = 0,
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"resource"> {
-        return new Producer("resource", id, name, baseCost, costScale, resourcesNeeded, costMultiplier, quantity, capabilities);
+        return new Producer("resource", id, name, baseCost, costScale, resourcesNeeded, costMultiplier, capabilities);
     }
 
     static energy(
@@ -50,10 +47,9 @@ export class Producer<T extends ProducerType> {
         costScale: GigaNum,
         resourcesNeeded: [Resource, number][] = [],
         costMultiplier: number = 1,
-        quantity: number = 0,
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"energy"> {
-        return new Producer("energy", id, name, baseCost, costScale, resourcesNeeded, costMultiplier, quantity, capabilities);
+        return new Producer("energy", id, name, baseCost, costScale, resourcesNeeded, costMultiplier, capabilities);
     }
 
     static money(
@@ -63,23 +59,22 @@ export class Producer<T extends ProducerType> {
         costScale: GigaNum,
         resourcesNeeded: [Resource, number][] = [],
         costMultiplier: number = 1,
-        quantity: number = 0,
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"money"> {
-        return new Producer("money", id, name, baseCost, costScale, resourcesNeeded, costMultiplier, quantity, capabilities);
+        return new Producer("money", id, name, baseCost, costScale, resourcesNeeded, costMultiplier, capabilities);
     }
 
-    getCost(amount: number = 1): [GigaNum, [Resource, number][]] {
-        let resultNum = new GigaNum(0);
-        for (let i = 0; i < amount; i++) {
-            resultNum = resultNum.add(this.baseCost.multiply(this.costScale.pow(this.quantity + i)).multiply(this.costMultiplier));
-        }
-        const resultRes: Array<[Resource, number]> = [];
-        for (const resource of this.resourcesNeeded) {
-            resultRes.push([resource[0], resource[1] * amount]);
-        }
-        return [resultNum, resultRes];
-    }
+    // getCost(amount: number = 1): [GigaNum, [Resource, number][]] {
+    //     let resultNum = new GigaNum(0);
+    //     for (let i = 0; i < amount; i++) {
+    //         resultNum = resultNum.add(this.baseCost.multiply(this.costScale.pow(this.quantity + i)).multiply(this.costMultiplier));
+    //     }
+    //     const resultRes: Array<[Resource, number]> = [];
+    //     for (const resource of this.resourcesNeeded) {
+    //         resultRes.push([resource[0], resource[1] * amount]);
+    //     }
+    //     return [resultNum, resultRes];
+    // }
 
     // purchase(amount: number = 1): boolean {
     //     const required = this.getCost(amount);
@@ -105,6 +100,12 @@ export class Producer<T extends ProducerType> {
 
     getCapabilities() {
         return this.capabilities;
+    }
+
+    addCapability(capability: IProdCapability) {
+        if ([capability.applicableToProducerOfType].includes(this.type)) {
+            this.capabilities.set(capability.id, capability);
+        }
     }
 
 }
