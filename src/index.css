@@ -1,16 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@100..900&display=swap');
 @import "tailwindcss";
+
+@font-face {
+    font-family: "NFPixels";
+    src:
+        local("NFPixels-Regular"),
+        url("../public/NFPixels-Regular.otf");
+}
 
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
+    --font-main: var(--main);
 }
 
 :root {
     --background: hsl(0, 0%, 10%);
     --foreground: hsl(0, 0%, 80%);
+    --main: "NFPixels", "serif"
 }
 
 body {
     background-color: var(--background);
     color: var(--foreground);
+    font-family: var(--main), serif;
 }
