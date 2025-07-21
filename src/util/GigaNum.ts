@@ -12,8 +12,13 @@ export class GigaNum {
             this.mainPart = mainPart;
             this.exponentialFactor = exponentialFactor;
         } else {
-            this.exponentialFactor = Math.floor(Math.log10(mainPart));
-            this.mainPart = GigaNum.formatMainPart(mainPart / Math.pow(10, this.exponentialFactor));
+            if (mainPart === 0) {
+                this.exponentialFactor = 0;
+                this.mainPart = 0;
+            } else {
+                this.exponentialFactor = Math.floor(Math.log10(mainPart));
+                this.mainPart = GigaNum.formatMainPart(mainPart / Math.pow(10, this.exponentialFactor));
+            }
         }
     }
 
