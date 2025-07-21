@@ -16,7 +16,7 @@ export function NavBarButton({title, correspondingTab}: {title: string, correspo
 
     return (
         <button
-            className={`bg-card-background p-2 text-center border-2 cursor-pointer px-5 max-sm:w-full 
+            class={`bg-card-background p-2 text-center border-2 cursor-pointer px-5 max-sm:w-full 
                 w-[6em] max-sm:place-self-center hover:bg-hover-card-background hover:border-foreground
                 ${isActive ? "border-foreground shadow-none bg-hover-card-background" : "border-muted-foreground shadow-button"}`}
             onClick={() => {
