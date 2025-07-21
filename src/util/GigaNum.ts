@@ -2,6 +2,7 @@ export class GigaNum {
     static readonly precision = 8;
     static readonly toStringPrecision = 3;
     static readonly powerRecursiveFactor = 100;
+    static readonly startingExp = 6;
     mainPart: number;
     exponentialFactor: number;
 
@@ -28,7 +29,7 @@ export class GigaNum {
     }
 
     toString() {
-        return `${GigaNum.formatMainPart(this.mainPart, GigaNum.toStringPrecision)}e${this.exponentialFactor}`;
+        return this.mainPart <= GigaNum.startingExp ? this.toNumber().toString() : `${GigaNum.formatMainPart(this.mainPart, GigaNum.toStringPrecision)}e${this.exponentialFactor}`;
     }
 
     toNumber() {
