@@ -3,6 +3,7 @@ import {GigaNum} from "./util/GigaNum.ts";
 import {Resource} from "./util/resources/Resource.ts";
 import type {Producer, ProducerType} from "./util/producers/Producer.ts";
 import type {EnergyGenCap} from "./util/producers/capabilities/EnergyGenCap.ts";
+import type {EnergyConsumptionCap} from "./util/producers/capabilities/EnergyConsumptionCap.ts";
 
 export const money = signal(new GigaNum(100));
 export const resources = signal(new Map<string, [Resource, number]>());
@@ -24,6 +25,19 @@ export const power = computed(() => {
             if (prod.getCapabilities().has("energy")) {
                 const cap = prod.getCapabilities().get("energy") as EnergyGenCap;
                 result = result.add(cap.baseEnergyGeneration.multiply(cap.energyGenerationMultiplier)).multiply(producerNumPair[1]);
+            }
+        }
+    });
+    return result;
+});
+export const powerConsumption = computed(() => {
+    let result = new GigaNum(0);
+    producers.value.forEach((producerNumPair) => {
+        const prod = producerNumPair[0];
+        if (prod.type !== "energy") {
+            if (prod.getCapabilities().has("energy_consumption")) {
+                const cap = prod.getCapabilities().get("energy_consumption") as EnergyConsumptionCap;
+                result = result.add(cap.consumption.multiply(producerNumPair[1]));
             }
         }
     });

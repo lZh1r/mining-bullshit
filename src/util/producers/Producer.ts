@@ -103,7 +103,7 @@ export class Producer<T extends ProducerType> {
     }
 
     addCapability(capability: IProdCapability) {
-        if ([capability.applicableToProducerOfType].includes(this.type)) {
+        if (capability.applicableToProducerOfType.includes(this.type)) {
             this.capabilities.set(capability.id, capability);
         }
     }
