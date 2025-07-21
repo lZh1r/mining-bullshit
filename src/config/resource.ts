@@ -10,6 +10,9 @@ export const resourceValueConfig = {
     coal: {
         ore: 2,
         processed: 4
+    },
+    rock: {
+        raw: 1
     }
 };
 
