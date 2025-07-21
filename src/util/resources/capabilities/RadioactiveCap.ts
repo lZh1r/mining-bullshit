@@ -1,4 +1,4 @@
-import {ICapability, ResourceCapabilityType} from "./ICapability.js";
+import type {ICapability, ResourceCapabilityType} from "./ICapability.js";
 
 export class RadioactiveCap implements ICapability{
     public readonly id: ResourceCapabilityType;

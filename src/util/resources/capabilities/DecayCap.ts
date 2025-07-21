@@ -1,5 +1,5 @@
 import {Resource} from "../Resource.js";
-import {ICapability, ResourceCapabilityType} from "./ICapability.js";
+import type {ICapability, ResourceCapabilityType} from "./ICapability.js";
 
 export class DecayCap implements ICapability{
     public readonly id: ResourceCapabilityType;

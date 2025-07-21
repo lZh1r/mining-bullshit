@@ -1,4 +1,4 @@
-import {ResourceCapabilityType} from "./ICapability.js";
+import type {ResourceCapabilityType} from "./ICapability.js";
 import {RadioactiveCap} from "./RadioactiveCap.js";
 
 export class ReactorFuelCap extends RadioactiveCap{
