@@ -88,7 +88,7 @@ export const gameActions = {
         if (resource instanceof Resource) {
             resource = resource.getId();
         }
-        const currentResources = resources.value;
+        const currentResources = new Map(resources.value);
         const resourceToUpdate = currentResources.get(resource);
         if (resourceToUpdate === undefined) {
             return false;
@@ -215,13 +215,23 @@ export const gameActions = {
         }
         return 0;
     },
-    getResourceProducersYield(): [[Resource, number][], GigaNum] {
+    tickProducer(producer: Producer<ProducerType>): boolean {
+        if (producer.type === "energy") {
+            return false;
+        }
+        const newMap = new Map(producers.value);
+        const ready = newMap.get(producer.id)![0].tick();
+        producers.value = newMap;
+        return ready;
+    },
+    //in gameTick ONLY!
+    getProducersYield(): [[Resource, number][], GigaNum] {
         let resultNum = new GigaNum(0);
         const resultRes = new Array<[Resource, number]>;
         producers.value.forEach((entry) => {
             const producer = entry[0];
             const quantity = entry[1];
-            if (producer.type === "resource" && producer.getCapabilities().has("mining")) {
+            if (producer.type === "resource" && this.tickProducer(producer) && producer.getCapabilities().has("mining")) {
                 const cap = producer.getCapabilities().get("mining")! as MiningCap;
                 const output = cap.lootTable.roll(quantity);
                 if (cap.autoSell) {
@@ -233,7 +243,7 @@ export const gameActions = {
                         resultRes.push([resource, cap.yieldMultiplier]);
                     }
                 }
-            } else if (producer.type === "money" && producer.getCapabilities().has("money")) {
+            } else if (producer.type === "money" && this.tickProducer(producer) && producer.getCapabilities().has("money")) {
                 const cap = producer.getCapabilities().get("money")! as MoneyProdCap;
                 resultNum = resultNum.add(cap.production.multiply(quantity));
             }
