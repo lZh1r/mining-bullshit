@@ -2,6 +2,7 @@ import {ProducersTabSidebarHeaderButton} from "./ProducersTabSidebarHeaderButton
 import {useState} from "react";
 import {Producer, type ProducerType} from "../../../util/producers/Producer.ts";
 import {gameActions} from "../../../game-state.ts";
+import {displayResourceRequirement} from "../../../util/utils.ts";
 
 export function ProducersTab() {
 
@@ -45,7 +46,9 @@ export function ProducersTab() {
                                 gameActions.purchaseProducer(entry[0], buyAmount);
                             }}>
                             <span>{entry[0].name} ({gameActions.getProducerAmount(entry[0])})</span>
-                            <span>{gameActions.getProducerCost(entry[0], buyAmount)[0].toString()}</span>
+                            <span>{gameActions.getProducerCost(entry[0], buyAmount)[0].toString()}$
+                                {gameActions.getProducerCost(entry[0], buyAmount)[1].length > 0 ? `,  
+                                ${displayResourceRequirement(gameActions.getProducerCost(entry[0], buyAmount)[1])}` : ""}</span>
                         </button>
                     )
                 }
