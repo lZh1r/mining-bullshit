@@ -3,6 +3,7 @@ import {useState} from "react";
 import {Producer, type ProducerType} from "../../../util/producers/Producer.ts";
 import {gameActions} from "../../../game-state.ts";
 import {displayResourceRequirement} from "../../../util/utils.ts";
+import {BuyAmountButton} from "./BuyAmountButton.tsx";
 
 export function ProducersTab() {
 
@@ -29,7 +30,12 @@ export function ProducersTab() {
                                                      callback={() => setActiveProducerList("crafting")}/>
                 </div>
                 <div class="flex justify-evenly">
-                {/* Buttons to select how much to buy */}
+                    <BuyAmountButton amount={1}
+                                     callback={() => {setBuyAmount(1);}} currentAmount={buyAmount}/>
+                    <BuyAmountButton amount={10}
+                                     callback={() => {setBuyAmount(10);}} currentAmount={buyAmount}/>
+                    <BuyAmountButton amount={100}
+                                     callback={() => {setBuyAmount(100);}} currentAmount={buyAmount}/>
                 </div>
                 {
                     producerMap.get(activeProducerList)!.map(
