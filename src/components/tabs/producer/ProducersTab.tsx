@@ -34,6 +34,7 @@ export function ProducersTab() {
                 {
                     producerMap.get(activeProducerList)!.map(
                         (entry) => <button
+                            key={entry[0].id}
                             class={`flex justify-between py-4 px-2 text-2xl border-2
                             ${gameActions.canPurchaseProducer(entry[0], buyAmount) ?
                                 "border-muted-foreground hover:bg-hover-card-background cursor-pointer hover:border-foreground" :

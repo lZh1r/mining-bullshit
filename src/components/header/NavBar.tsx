@@ -1,4 +1,4 @@
-import {ResourceTab} from "../tabs/ResourceTab.tsx";
+import {ResourceTab} from "../tabs/resource/ResourceTab.tsx";
 import {ProducersTab} from "../tabs/producer/ProducersTab.tsx";
 import {NavBarButton} from "./NavBarButton.tsx";
 import {money, power, powerConsumption} from "../../game-state.ts";
