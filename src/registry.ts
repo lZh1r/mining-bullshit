@@ -2,9 +2,12 @@ import {Resource} from "./util/resources/Resource";
 import {resourceFuelConfig, resourceValueConfig} from "./config/resource";
 import {BurnableCap} from "./util/resources/capabilities/BurnableCap";
 import {Producer} from "./util/producers/Producer.ts";
-import {GigaNum} from "./util/GigaNum.ts";
 import {EnergyGenCap} from "./util/producers/capabilities/EnergyGenCap.ts";
 import {producerConfig} from "./config/producer.ts";
+import {EnergyConsumptionCap} from "./util/producers/capabilities/EnergyConsumptionCap.ts";
+import {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
+import {LootTable} from "./util/LootTable.ts";
+import {oreLootTableConfig} from "./config/loottable.ts";
 
 /* RESOURCES */
 /* TIER 1 */
@@ -17,8 +20,21 @@ export const COAL_ORE = new Resource("coal_ore", "Coal Ore", resourceValueConfig
 const COAL = new Resource("coal", "Coal", resourceValueConfig.coal.processed);
 COAL.addCapability(new BurnableCap(resourceFuelConfig.coal));
 
+/* LOOT TABLES */
+export const MINING_TIER1 = new LootTable([
+    [ROCK, oreLootTableConfig.planetA.mining.tier1.rock],
+    [COPPER_ORE, oreLootTableConfig.planetA.mining.tier1.copper],
+    [COAL_ORE, oreLootTableConfig.planetA.mining.tier1.coal],
+    [IRON_ORE, oreLootTableConfig.planetA.mining.tier1.iron]
+]);
+
 /* PRODUCERS */
 /* ENERGY */
 export const HAMSTER_WHEEL = Producer.energy("hamster_wheel", "Hamster Wheel",
-    new GigaNum(producerConfig.energy.hamsterWheel.defaultCost), new GigaNum(producerConfig.energy.hamsterWheel.defaultCostScale));
-HAMSTER_WHEEL.addCapability(new EnergyGenCap(new GigaNum(producerConfig.energy.hamsterWheel.energyGeneration)));
+    producerConfig.energy.hamsterWheel.defaultCost, producerConfig.energy.hamsterWheel.defaultCostScale);
+HAMSTER_WHEEL.addCapability(new EnergyGenCap(producerConfig.energy.hamsterWheel.energyGeneration));
+/* RESOURCE */
+export const MINE = Producer.resource("mine", "Mine",
+    producerConfig.resource.mine.defaultCost, producerConfig.resource.mine.defaultCostScale);
+MINE.addCapability(new EnergyConsumptionCap(producerConfig.resource.mine.energyConsumption));
+MINE.addCapability(new MiningCap(MINING_TIER1));
