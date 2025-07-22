@@ -142,7 +142,7 @@ export class GigaNum {
         }
         let resultMain = this.mainPart * anotherNum.mainPart;
         let resultExp = this.exponentialFactor + anotherNum.exponentialFactor;
-        if (resultMain > 10) {
+        if (resultMain >= 10) {
             resultMain /= 10;
             resultExp += 1;
         }
