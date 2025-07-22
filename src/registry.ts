@@ -35,6 +35,6 @@ export const HAMSTER_WHEEL = Producer.energy("hamster_wheel", "Hamster Wheel",
 HAMSTER_WHEEL.addCapability(new EnergyGenCap(producerConfig.energy.hamsterWheel.energyGeneration));
 /* RESOURCE */
 export const MINE = Producer.resource("mine", "Mine",
-    producerConfig.resource.mine.defaultCost, producerConfig.resource.mine.defaultCostScale);
+    producerConfig.resource.mine.defaultCost, producerConfig.resource.mine.defaultCostScale, producerConfig.resource.mine.ticksPerOperation);
 MINE.addCapability(new EnergyConsumptionCap(producerConfig.resource.mine.energyConsumption));
 MINE.addCapability(new MiningCap(MINING_TIER1));
