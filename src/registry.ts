@@ -4,6 +4,7 @@ import {BurnableCap} from "./util/resources/capabilities/BurnableCap";
 import {Producer} from "./util/producers/Producer.ts";
 import {GigaNum} from "./util/GigaNum.ts";
 import {EnergyGenCap} from "./util/producers/capabilities/EnergyGenCap.ts";
+import {producerConfig} from "./config/producer.ts";
 
 /* RESOURCES */
 /* TIER 1 */
@@ -19,5 +20,5 @@ COAL.addCapability(new BurnableCap(resourceFuelConfig.coal));
 /* PRODUCERS */
 /* ENERGY */
 export const HAMSTER_WHEEL = Producer.energy("hamster_wheel", "Hamster Wheel",
-    new GigaNum(5), new GigaNum(1.5));
-HAMSTER_WHEEL.addCapability(new EnergyGenCap(new GigaNum(10)));
+    new GigaNum(producerConfig.energy.hamsterWheel.defaultCost), new GigaNum(producerConfig.energy.hamsterWheel.defaultCostScale));
+HAMSTER_WHEEL.addCapability(new EnergyGenCap(new GigaNum(producerConfig.energy.hamsterWheel.energyGeneration)));
