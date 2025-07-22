@@ -18,13 +18,13 @@ export function ProducersTab() {
         <div class="grid grid-cols-4">
             <aside class="col-span-1 bg-card-background flex-col flex">
                 <div class="flex justify-evenly">
-                    <ProducersTabSidebarHeaderButton src={"../../../../public/sprites/lightning16.png"} type={"energy"} currentType={activeProducerList}
+                    <ProducersTabSidebarHeaderButton src={"/sprites/lightning16.png"} type={"energy"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("energy")}/>
-                    <ProducersTabSidebarHeaderButton src={"../../../../public/sprites/pickaxe16.png"} type={"resource"} currentType={activeProducerList}
+                    <ProducersTabSidebarHeaderButton src={"/sprites/pickaxe16.png"} type={"resource"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("resource")}/>
-                    <ProducersTabSidebarHeaderButton src={"../../../../public/sprites/money16.png"} type={"money"} currentType={activeProducerList}
+                    <ProducersTabSidebarHeaderButton src={"/sprites/money16.png"} type={"money"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("money")}/>
-                    <ProducersTabSidebarHeaderButton src={"../../../../public/sprites/wrench16.png"} type={"crafting"} currentType={activeProducerList}
+                    <ProducersTabSidebarHeaderButton src={"/sprites/wrench16.png"} type={"crafting"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("crafting")}/>
                 </div>
                 <div class="flex justify-evenly">

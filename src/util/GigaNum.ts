@@ -33,7 +33,7 @@ export class GigaNum {
     }
 
     toNumber() {
-        return this.mainPart * Math.pow(10, this.exponentialFactor);
+        return Math.round(this.mainPart * Math.pow(10, this.exponentialFactor));
     }
 
     subtract(anotherNum: GigaNum): GigaNum;
