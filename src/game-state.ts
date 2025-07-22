@@ -6,6 +6,8 @@ import type {EnergyGenCap} from "./util/producers/capabilities/EnergyGenCap.ts";
 import type {EnergyConsumptionCap} from "./util/producers/capabilities/EnergyConsumptionCap.ts";
 import {ProducersTab} from "./components/tabs/producer/ProducersTab.tsx";
 import type {JSX} from "react";
+import type {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
+import type {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal(ProducersTab);
@@ -208,4 +210,29 @@ export const gameActions = {
         }
         return 0;
     },
+    getResourceProducersYield(): [[Resource, number][], GigaNum] {
+        let resultNum = new GigaNum(0);
+        const resultRes = new Array<[Resource, number]>;
+        producers.value.forEach((entry) => {
+            const producer = entry[0];
+            const quantity = entry[1];
+            if (producer.type === "resource" && producer.getCapabilities().has("mining")) {
+                const cap = producer.getCapabilities().get("mining")! as MiningCap;
+                const output = cap.lootTable.roll(quantity);
+                if (cap.autoSell) {
+                    for (const resource of output) {
+                        resultNum = resultNum.add(resource.valuePer * cap.yieldMultiplier);
+                    }
+                } else {
+                    for (const resource of output) {
+                        resultRes.push([resource, cap.yieldMultiplier]);
+                    }
+                }
+            } else if (producer.type === "money" && producer.getCapabilities().has("money")) {
+                const cap = producer.getCapabilities().get("money")! as MoneyProdCap;
+                resultNum = resultNum.add(cap.production.multiply(quantity));
+            }
+        });
+        return [resultRes, resultNum];
+    }
 };
