@@ -68,16 +68,21 @@ export const gameActions = {
         return currentResources.has(resource.getId()) && currentResources.get(resource.getId())![1] >= amount!;
     },
     depositResource(resource: Resource, amount: number = 1) {
-        const resPair = resources.value.get(resource.getId());
+        const current = resources.value;
+        const resPair = current.get(resource.getId());
         const prevCount = typeof resPair === "undefined" ? 0 : resPair[1];
-        resources.value = resources.value.set(resource.getId(), [resource, prevCount + amount]);
+        const newMap = new Map(current);
+        resources.value = newMap.set(resource.getId(), [resource, prevCount + amount]);
     },
     withdrawResource(resource: Resource, amount: number) {
+        const current = resources.value;
         if (!this.hasEnoughOf(resource, amount)) {
             return;
         }
-        const prevCount = resources.value.get(resource.getId())![1];
-        resources.value = resources.value.set(resource.getId(), [resource, prevCount - amount]);
+        const prevCount = current.get(resource.getId())![1];
+        const newMap = new Map(current);
+        newMap.set(resource.getId(), [resource, prevCount - amount]);
+        resources.value = newMap;
     },
     updateResource<K extends keyof Resource>(resource: Resource | string, valueToUpdate: K, value: Resource[K]): boolean {
         if (resource instanceof Resource) {
