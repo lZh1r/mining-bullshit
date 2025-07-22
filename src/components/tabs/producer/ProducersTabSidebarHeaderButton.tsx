@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import type {ProducerType} from "../../../util/producers/Producer.ts";
 
-export function ProducersTabSidebarHeaderButton({title, type, currentType, callback}:
-                                               {title: string, type: ProducerType, currentType: ProducerType, callback: () => void}) {
+export function ProducersTabSidebarHeaderButton({src, type, currentType, callback}:
+                                               {src: string, type: ProducerType, currentType: ProducerType, callback: () => void}) {
 
     const [isActive, setIsActive] = useState(false);
 
@@ -17,10 +17,12 @@ export function ProducersTabSidebarHeaderButton({title, type, currentType, callb
     return (
         <button
             class={`text-5xl border-2 w-full px-5 p-3 border-muted-foreground cursor-pointer
-            hover:bg-hover-card-background hover:border-foreground
+            hover:bg-hover-card-background hover:border-foreground pixelated
             ${isActive ? "bg-hover-card-background hover:border-foreground" : "border-muted-foreground"}`}
             onClick={callback}>
-            {title}
+            <img class="place-self-center w-full"
+                 style="image-rendering: pixelated; image-rendering: crisp-edges;"
+                 src={src} alt={type.at(0)}/>
         </button>
     );
 }

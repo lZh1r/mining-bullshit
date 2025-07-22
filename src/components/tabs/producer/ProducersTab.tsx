@@ -18,13 +18,13 @@ export function ProducersTab() {
         <div class="grid grid-cols-4">
             <aside class="col-span-1 bg-card-background flex-col flex">
                 <div class="flex justify-evenly">
-                    <ProducersTabSidebarHeaderButton title={"P"} type={"energy"} currentType={activeProducerList}
+                    <ProducersTabSidebarHeaderButton src={"../../../../public/sprites/lightning16.png"} type={"energy"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("energy")}/>
-                    <ProducersTabSidebarHeaderButton title={"R"} type={"resource"} currentType={activeProducerList}
+                    <ProducersTabSidebarHeaderButton src={"../../../../public/sprites/pickaxe16.png"} type={"resource"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("resource")}/>
-                    <ProducersTabSidebarHeaderButton title={"M"} type={"money"} currentType={activeProducerList}
+                    <ProducersTabSidebarHeaderButton src={"../../../../public/sprites/money16.png"} type={"money"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("money")}/>
-                    <ProducersTabSidebarHeaderButton title={"C"} type={"crafting"} currentType={activeProducerList}
+                    <ProducersTabSidebarHeaderButton src={"../../../../public/sprites/wrench16.png"} type={"crafting"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("crafting")}/>
                 </div>
                 <div class="flex justify-evenly">
@@ -33,12 +33,18 @@ export function ProducersTab() {
                 {
                     producerMap.get(activeProducerList)!.map(
                         (entry) => <button
-                            class="flex justify-between py-4 px-2 text-2xl border-2 border-muted-foreground cursor-pointer
-                            hover:bg-hover-card-background hover:border-foreground"
+                            class={`flex justify-between py-4 px-2 text-2xl border-2
+                            ${gameActions.canPurchaseProducer(entry[0], buyAmount) ?
+                                "border-muted-foreground hover:bg-hover-card-background cursor-pointer hover:border-foreground" :
+                                "text-muted-foreground"}`}
+                            onContextMenu={(e) => {
+                                e.preventDefault();
+                                gameActions.sellProducer(entry[0], buyAmount);
+                            }}
                             onClick={() => {
                                 gameActions.purchaseProducer(entry[0], buyAmount);
                             }}>
-                            <span>{entry[0].name}</span>
+                            <span>{entry[0].name} ({gameActions.getProducerAmount(entry[0])})</span>
                             <span>{gameActions.getProducerCost(entry[0], buyAmount)[0].toString()}</span>
                         </button>
                     )

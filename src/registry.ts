@@ -19,5 +19,5 @@ COAL.addCapability(new BurnableCap(resourceFuelConfig.coal));
 /* PRODUCERS */
 /* ENERGY */
 export const HAMSTER_WHEEL = Producer.energy("hamster_wheel", "Hamster Wheel",
-    new GigaNum(5), new GigaNum(2));
+    new GigaNum(5), new GigaNum(1.5));
 HAMSTER_WHEEL.addCapability(new EnergyGenCap(new GigaNum(10)));
