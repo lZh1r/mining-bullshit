@@ -145,20 +145,27 @@ export const gameActions = {
         }
         return [resultNum, resultRes];
     },
-    purchaseProducer(producer: Producer<ProducerType>, amount: number = 1) {
+    canPurchaseProducer(producer: Producer<ProducerType>, amount: number = 1): boolean {
         const cost = this.getProducerCost(producer, amount);
         if (cost[0].compareTo(money.value) === "less" || cost[0].compareTo(money.value) === "equal") {
             for (const resourceNumPair of cost[1]) {
                 if (!this.hasEnoughOf(resourceNumPair[0], resourceNumPair[1])) {
-                    return;
+                    return false;
                 }
             }
             if (producer.type !== "energy" && producer.getCapabilities().has("energy_consumption")) {
                 const cap = producer.getCapabilities().get("energy_consumption")! as EnergyConsumptionCap;
                 if (power.value.compareTo(powerConsumption.value.add(cap.consumption)) === "less") {
-                    return;
+                    return false;
                 }
             }
+            return true;
+        }
+        return false;
+    },
+    purchaseProducer(producer: Producer<ProducerType>, amount: number = 1) {
+        const cost = this.getProducerCost(producer, amount);
+        if (this.canPurchaseProducer(producer, amount)) {
             this.removeMoney(cost[0]);
             for (const resourceNumPair of cost[1]) {
                 this.withdrawResource(resourceNumPair[0], resourceNumPair[1]);
@@ -166,14 +173,20 @@ export const gameActions = {
             this.addProducer(producer, amount);
         }
     },
-    sellProducer(producer: Producer<ProducerType>, amount: number) {
+    canSellProducer(producer: Producer<ProducerType>, amount: number = 1): boolean {
         if (producers.value.get(producer.id) && producers.value.get(producer.id)![1] >= amount) {
             if (producer.type === "energy" && producer.getCapabilities().has("energy")) {
                 const cap = producer.getCapabilities().get("energy")! as EnergyGenCap;
                 if (power.value.subtract(cap.generation).compareTo(powerConsumption.value) === "less") {
-                    return;
+                    return false;
                 }
+                return true;
             }
+        }
+        return false;
+    },
+    sellProducer(producer: Producer<ProducerType>, amount: number = 1) {
+        if (this.canSellProducer(producer, amount)) {
             this.removeProducer(producer, amount);
             const moneyBack = this.getProducerCost(producer, amount);
             this.addMoney(moneyBack[0].divide(2));
@@ -187,5 +200,11 @@ export const gameActions = {
             }
         });
         return newMap;
+    },
+    getProducerAmount(producer: Producer<ProducerType>): number {
+        if (producers.value.has(producer.id)) {
+            return producers.value.get(producer.id)![1];
+        }
+        return 0;
     },
 };
