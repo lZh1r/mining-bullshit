@@ -7,6 +7,7 @@ import type {EnergyConsumptionCap} from "./util/producers/capabilities/EnergyCon
 import {ProducersTab} from "./components/tabs/producer/ProducersTab.tsx";
 import type {JSX} from "react";
 
+export const gameTickInterval = signal(1000);
 export const currentTab = signal(ProducersTab);
 export const money = signal(new GigaNum(100));
 export const resources = signal(new Map<string, [Resource, number]>());
