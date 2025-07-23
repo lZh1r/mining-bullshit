@@ -1,14 +1,13 @@
 import {NavBar} from "./components/header/NavBar.tsx";
-import {currentTab, gameActions, gameTickInterval} from "./game-state.ts";
+import {currentTab, gameTickInterval} from "./game-state.ts";
 import {useEffect} from "react";
-import {HAMSTER_WHEEL, MINE} from "./registry.ts";
 import {gameTick} from "./util/GameTick.ts";
+import {gameInit} from "./init.ts";
 
 export function App() {
 
     useEffect(() => {
-        gameActions.addProducer(HAMSTER_WHEEL);
-        gameActions.addProducer(MINE);
+        gameInit();
         const tickInterval = setInterval(gameTick, gameTickInterval.value);
         return () => clearInterval(tickInterval);
     }, []);
