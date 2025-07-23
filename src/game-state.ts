@@ -259,7 +259,30 @@ export const gameActions = {
     },
     addUpgrade(upgrade: ProducerUpgrade) {
         const newMap = new Map(upgrades.value);
-        newMap.get(upgrade.type)!.push();
+        newMap.get(upgrade.type)!.push(upgrade);
         upgrades.value = newMap;
-    }
+        console.log(upgrades.value.get(upgrade.type));
+    },
+    canPurchaseUpgrade(upgrade: ProducerUpgrade): boolean {
+        const [moneyCost, resourceCost] = upgrade.requirements;
+        if (moneyCost.compareTo(money.value) === "less" || moneyCost.compareTo(money.value) === "equal") {
+            for (const [resource, amount] of resourceCost) {
+                if (!this.hasEnoughOf(resource, amount)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    },
+    purchaseUpgrade(upgrade: ProducerUpgrade) {
+        const [moneyCost, resourceCost] = upgrade.requirements;
+        if (this.canPurchaseUpgrade(upgrade)) {
+            this.removeMoney(moneyCost);
+            for (const [resource, amount] of resourceCost) {
+                this.withdrawResource(resource, amount);
+            }
+            upgrade.effect();
+        }
+    },
 };

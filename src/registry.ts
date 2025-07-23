@@ -10,7 +10,7 @@ import {LootTable} from "./util/LootTable.ts";
 import {oreLootTableConfig} from "./config/loottable.ts";
 import {ProducerUpgrade} from "./util/upgrades/ProducerUpgrade.ts";
 import {GigaNum} from "./util/GigaNum.ts";
-import {gameActions} from "./game-state.ts";
+import {gameActions, upgrades} from "./game-state.ts";
 
 /* RESOURCES */
 /* TIER 1 */
@@ -44,10 +44,19 @@ MINE.addCapability(new MiningCap(MINING_TIER1));
 /* CRAFTING */
 export const FURNACE = Producer.crafting("furnace", "Furnace",
     producerConfig.crafting.furnace.defaultCost, producerConfig.crafting.furnace.defaultCostScale,
-    producerConfig.crafting.furnace.ticksPerOperation, 1, producerConfig.crafting.furnace.resourceCost);
+    producerConfig.crafting.furnace.ticksPerOperation, 1, [[ROCK, 10]]);
 
 /* UPGRADES */
-export const UNLOCK_FURNACE_UP = new ProducerUpgrade("unlock_furnace", "Unlock Furnaces",
+export const UNLOCK_FURNACE_UP = new ProducerUpgrade("unlock_furnace", "Unlock Furnace",
     "Unlocks a new building!", "crafting", () => {
         gameActions.addProducer(FURNACE);
+        UNLOCK_FURNACE_UP.isBought = true;
     }, [new GigaNum(30), new Array([ROCK, 20])]);
+
+/* INITIALIZATION */
+export function gameInit() {
+    gameActions.addProducer(HAMSTER_WHEEL);
+    gameActions.addProducer(MINE);
+    gameActions.addUpgrade(UNLOCK_FURNACE_UP);
+    console.log(upgrades);
+}

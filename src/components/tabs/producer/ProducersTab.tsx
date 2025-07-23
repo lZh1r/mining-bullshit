@@ -1,7 +1,7 @@
 import {ProducersTabSidebarHeaderButton} from "./ProducersTabSidebarHeaderButton.tsx";
 import {useState} from "react";
 import {Producer, type ProducerType} from "../../../util/producers/Producer.ts";
-import {gameActions} from "../../../game-state.ts";
+import {gameActions, upgrades} from "../../../game-state.ts";
 import {displayResourceRequirement} from "../../../util/utils.ts";
 import {BuyAmountButton} from "./BuyAmountButton.tsx";
 
@@ -17,7 +17,7 @@ export function ProducersTab() {
     ]);
 
     return (
-        <div class="grid grid-cols-4">
+        <div class="grid grid-cols-4 space-x-2">
             <aside class="col-span-1 bg-card-background flex-col flex">
                 <div class="flex justify-evenly">
                     <ProducersTabSidebarHeaderButton src={"/sprites/lightning16.png"} type={"energy"} currentType={activeProducerList}
@@ -39,27 +39,49 @@ export function ProducersTab() {
                 </div>
                 {
                     producerMap.get(activeProducerList)!.map(
-                        (entry) => <button
-                            key={entry[0].id}
+                        ([producer, amount]) => <button
+                            key={producer.id}
                             class={`flex justify-between py-4 px-2 text-2xl border-2
-                            ${gameActions.canPurchaseProducer(entry[0], buyAmount) ?
+                            ${gameActions.canPurchaseProducer(producer, buyAmount) ?
                                 "border-muted-foreground hover:bg-hover-card-background cursor-pointer hover:border-foreground" :
                                 "text-muted-foreground"}`}
                             onContextMenu={(e) => {
                                 e.preventDefault();
-                                gameActions.sellProducer(entry[0], buyAmount);
+                                gameActions.sellProducer(producer, buyAmount);
                             }}
                             onClick={() => {
-                                gameActions.purchaseProducer(entry[0], buyAmount);
+                                gameActions.purchaseProducer(producer, buyAmount);
                             }}>
-                            <span>{entry[0].name} ({gameActions.getProducerAmount(entry[0])})</span>
-                            <span>{gameActions.getProducerCost(entry[0], buyAmount)[0].toString()}$
-                                {gameActions.getProducerCost(entry[0], buyAmount)[1].length > 0 ? `,  
-                                ${displayResourceRequirement(gameActions.getProducerCost(entry[0], buyAmount)[1])}` : ""}</span>
+                            <span>{producer.name} ({amount})</span>
+                            <span>{gameActions.getProducerCost(producer, buyAmount)[0].toString()}$
+                                {gameActions.getProducerCost(producer, buyAmount)[1].length > 0 ? `,  
+                                ${displayResourceRequirement(gameActions.getProducerCost(producer, buyAmount)[1])}` : ""}</span>
                         </button>
                     )
                 }
             </aside>
+            <div class="col-span-1 bg-card-background border-2 border-muted-foreground">
+                <h1 class="text-3xl text-center p-2 border-b-2 border-b-muted-foreground">Upgrades</h1>
+                <div class="grid grid-cols-2 space-x-2 space-y-2">
+                    {
+                        upgrades.value.get(activeProducerList)!.map((entry) =>
+                            <div class={`col-span-1 w-full p-2 bg-card-content-background border-2 border-muted-foreground text-xl
+                            ${entry.isBought ? "hidden" : ""} ${gameActions.canPurchaseUpgrade(entry) ? 
+                                "cursor-pointer hover:bg-hover-card-background" :
+                                "text-muted-foreground"}`}
+                                 key={entry.id}
+                                 onClick={() => {
+                                     gameActions.purchaseUpgrade(entry);
+                                 }}>
+                                <h2>{entry.name}</h2>
+                                <span>{entry.requirements[0].toString()}$
+                                    {entry.requirements[1].length > 0 ? `,  
+                                ${displayResourceRequirement(entry.requirements[1])}` : ""}</span>
+                            </div>
+                        )
+                    }
+                </div>
+            </div>
             <div>
 
             </div>

@@ -2,7 +2,7 @@ import {NavBar} from "./components/header/NavBar.tsx";
 import {currentTab, gameTickInterval} from "./game-state.ts";
 import {useEffect} from "react";
 import {gameTick} from "./util/GameTick.ts";
-import {gameInit} from "./init.ts";
+import {gameInit} from "./registry.ts";
 
 export function App() {
 
