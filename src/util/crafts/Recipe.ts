@@ -1,8 +1,9 @@
 import type {Resource} from "../resources/Resource.ts";
 import type {Producer} from "../producers/Producer.ts";
+import {batch, type Signal, signal} from "@preact/signals";
 
 export class Recipe {
-    private currentTicks: number = 0;
+    private currentTicks: Signal<number> = signal(0);
     constructor(
         public readonly id: IDString,
         public readonly name: NameString,
@@ -19,11 +20,24 @@ export class Recipe {
     }
 
     tick(times: number): boolean {
-        this.currentTicks += times;
-        if (this.currentTicks >= this.craftDuration) {
-            this.currentTicks = 0;
-            return true;
-        }
-        return false;
+        let result = false;
+        batch(() => {
+            this.currentTicks.value += times;
+            if (this.currentTicks.value >= this.craftDuration) {
+                this.currentTicks.value = 0;
+                result = true;
+            } else {
+                result = false;
+            }
+        });
+        return result;
+    }
+
+    getCurrentTicks() {
+        return this.currentTicks;
+    }
+
+    resetCurrentTicks() {
+        this.currentTicks.value = 0;
     }
 }

@@ -10,7 +10,7 @@ import {LootTable} from "./util/LootTable.ts";
 import {oreLootTableConfig} from "./config/loottable.ts";
 import {ProducerUpgrade} from "./util/upgrades/ProducerUpgrade.ts";
 import {GigaNum} from "./util/GigaNum.ts";
-import {gameActions, upgrades} from "./game-state.ts";
+import {gameActions} from "./game-state.ts";
 import {Recipe} from "./util/crafts/Recipe.ts";
 
 /* RESOURCES */
@@ -46,13 +46,14 @@ MINE.addCapability(new MiningCap(MINING_TIER1));
 export const FURNACE = Producer.crafting("furnace", "Furnace",
     producerConfig.crafting.furnace.defaultCost, producerConfig.crafting.furnace.defaultCostScale,
     producerConfig.crafting.furnace.ticksPerOperation, 1, [[ROCK, 10]]);
+FURNACE.addCapability(new EnergyConsumptionCap(producerConfig.crafting.furnace.energyConsumption));
 
 /* RECIPES */
 const IRON_INGOT_FURNACE = new Recipe("iron_ingot_furnace", "Iron Ore to Ingot",
     FURNACE, [[IRON_INGOT, 1]], [[IRON_ORE, 2]], 5);
 const COPPER_INGOT_FURNACE = new Recipe("copper_ingot_furnace", "Copper Ore to Ingot",
     FURNACE, [[COPPER_INGOT, 1]], [[COPPER_ORE, 2]], 4);
-const COAL_FURNACE = new Recipe("iron_ingot_furnace", "Iron Ore to Ingot",
+const COAL_FURNACE = new Recipe("coal_furnace", "Coal Ore to Processed",
     FURNACE, [[COAL, 1]], [[COAL_ORE, 2]], 2);
 
 /* UPGRADES */
@@ -67,8 +68,8 @@ export const UNLOCK_FURNACE_UP = new ProducerUpgrade("unlock_furnace", "Unlock F
 
 /* INITIALIZATION */
 export function gameInit() {
+    gameActions.depositResource(ROCK, 30);
     gameActions.addProducer(HAMSTER_WHEEL);
     gameActions.addProducer(MINE);
     gameActions.addUpgrade(UNLOCK_FURNACE_UP);
-    console.log(upgrades);
 }

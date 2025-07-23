@@ -4,6 +4,7 @@ import {Producer, type ProducerType} from "../../../util/producers/Producer.ts";
 import {gameActions, upgrades} from "../../../game-state.ts";
 import {displayResourceRequirement} from "../../../util/utils.ts";
 import {BuyAmountButton} from "./BuyAmountButton.tsx";
+import {RecipePanel} from "./crafting/RecipePanel.tsx";
 
 export function ProducersTab() {
 
@@ -18,7 +19,7 @@ export function ProducersTab() {
 
     return (
         <div class="grid grid-cols-4 space-x-2">
-            <aside class="col-span-1 bg-card-background flex-col flex">
+            <aside class="col-span-1 bg-card-background flex-col flex ml-2">
                 <div class="flex justify-evenly">
                     <ProducersTabSidebarHeaderButton src={"/sprites/lightning16.png"} type={"energy"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("energy")}/>
@@ -62,10 +63,10 @@ export function ProducersTab() {
             </aside>
             <div class="col-span-1 bg-card-background border-2 border-muted-foreground">
                 <h1 class="text-3xl text-center p-2 border-b-2 border-b-muted-foreground">Upgrades</h1>
-                <div class="grid grid-cols-2 space-x-2 space-y-2">
+                <div class="grid grid-cols-2">
                     {
                         upgrades.value.get(activeProducerList)!.map((entry) =>
-                            <div class={`col-span-1 w-full p-2 bg-card-content-background border-2 border-muted-foreground text-xl
+                            <div class={`col-span-1 w-full p-2 bg-card-content-background border-2 border-muted-foreground text-xl m-1
                             ${entry.isBought ? "hidden" : ""} ${gameActions.canPurchaseUpgrade(entry) ? 
                                 "cursor-pointer hover:bg-hover-card-background" :
                                 "text-muted-foreground"}`}
@@ -82,9 +83,7 @@ export function ProducersTab() {
                     }
                 </div>
             </div>
-            <div>
-
-            </div>
+            {activeProducerList === "crafting" ? <RecipePanel/> : <h1>WIP</h1>}
         </div>
     );
 }

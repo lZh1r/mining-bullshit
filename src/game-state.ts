@@ -13,7 +13,7 @@ import type {Recipe} from "./util/crafts/Recipe.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal(ProducersTab);
-export const money = signal(new GigaNum(100));
+export const money = signal(new GigaNum(10000));
 export const resources = signal(new Map<string, [Resource, number]>());
 export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
 export const upgrades = signal(new Map<ProducerType, ProducerUpgrade[]>([
@@ -22,7 +22,7 @@ export const upgrades = signal(new Map<ProducerType, ProducerUpgrade[]>([
     ["money", []],
     ["crafting", []]
 ]));
-export const recipies = signal(new Map<Producer<"crafting">, Recipe[]>());
+export const recipes = signal(new Map<Producer<"crafting">, Recipe[]>());
 export const recipeQueue = signal(new Map<Producer<"crafting">, Recipe[]>());
 export const totalValue = computed(() => {
     let result = new GigaNum(0);
@@ -177,7 +177,7 @@ export const gameActions = {
     },
     canPurchaseProducer(producer: Producer<ProducerType>, amount: number = 1): boolean {
         const cost = this.getProducerCost(producer, amount);
-        if (cost[0].compareTo(money.value) === "less" || cost[0].compareTo(money.value) === "equal" && this.hasEnoughOf(cost[1])) {
+        if ((cost[0].compareTo(money.value) === "less" || cost[0].compareTo(money.value) === "equal") && this.hasEnoughOf(cost[1])) {
             if (producer.type !== "energy" && producer.getCapabilities().has("energy_consumption")) {
                 const cap = producer.getCapabilities().get("energy_consumption")! as EnergyConsumptionCap;
                 if (power.value.compareTo(powerConsumption.value.add(cap.consumption)) === "less") {
@@ -269,11 +269,10 @@ export const gameActions = {
         const newMap = new Map(upgrades.value);
         newMap.get(upgrade.type)!.push(upgrade);
         upgrades.value = newMap;
-        console.log(upgrades.value.get(upgrade.type));
     },
     canPurchaseUpgrade(upgrade: ProducerUpgrade): boolean {
         const [moneyCost, resourceCost] = upgrade.requirements;
-        return moneyCost.compareTo(money.value) === "less" || moneyCost.compareTo(money.value) === "equal" && this.hasEnoughOf(resourceCost);
+        return (moneyCost.compareTo(money.value) === "less" || moneyCost.compareTo(money.value) === "equal") && this.hasEnoughOf(resourceCost);
 
     },
     purchaseUpgrade(upgrade: ProducerUpgrade) {
@@ -286,23 +285,45 @@ export const gameActions = {
             upgrade.effect();
         }
     },
+    registerProducerInRecipeQueue(producer: Producer<"crafting">) {
+        const newMap = new Map(recipeQueue.value);
+        newMap.set(producer, []);
+        recipeQueue.value = newMap;
+    },
     addRecipe(recipe: Recipe) {
-        const newMap = new Map(recipies.value);
+        const newMap = new Map(recipes.value);
         const producer = recipe.producer;
         if (!newMap.has(producer)) {
             newMap.set(producer, []);
         }
         newMap.get(producer)!.push(recipe);
-        recipies.value = newMap;
+        recipes.value = newMap;
+    },
+    canStartRecipe(recipe: Recipe): boolean {
+        let current = recipeQueue.value;
+        const unlocked = recipes.value;
+        const producer = recipe.producer;
+        if (!current.has(producer)) {
+            this.registerProducerInRecipeQueue(producer);
+            current = recipeQueue.value;
+            return false;
+        }
+        return !(!unlocked.has(producer) ||
+            current.get(producer)!.includes(recipe) ||
+            !this.hasEnoughOf(recipe.inputs) ||
+            this.getProducerAmount(producer) === 0);
     },
     startRecipe(recipe: Recipe) {
         const newMap = new Map(recipeQueue.value);
         const producer = recipe.producer;
-        if (!newMap.has(producer) || newMap.get(producer)!.includes(recipe) || !this.hasEnoughOf(recipe.inputs)) {
+        if (!this.canStartRecipe(recipe)) {
             return;
         }
         for (const [resource, number] of recipe.inputs) {
             this.withdrawResource(resource, number);
+        }
+        if (!newMap.has(producer)) {
+            this.registerProducerInRecipeQueue(producer);
         }
         newMap.get(recipe.producer)!.push(recipe);
         recipeQueue.value = newMap;
@@ -313,7 +334,8 @@ export const gameActions = {
         if (!newMap.has(producer) || !newMap.get(producer)!.includes(recipe)) {
             return;
         }
-        newMap.get(recipe.producer)!.filter((val) => val.id !== recipe.id);
+        newMap.get(recipe.producer)?.find((value) => value.id === recipe.id)!.resetCurrentTicks();
+        newMap.set(recipe.producer, newMap.get(recipe.producer)!.filter((val) => val.id !== recipe.id));
         recipeQueue.value = newMap;
     }
 };
