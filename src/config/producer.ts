@@ -24,7 +24,7 @@ export const producerConfig = {
             defaultCost: new GigaNum(30),
             defaultCostScale: new GigaNum(2),
             energyConsumption: new GigaNum(15),
-            ticksPerOperation: 10,
+            ticksPerOperation: 2,
         }
     },
 };
