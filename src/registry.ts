@@ -11,6 +11,7 @@ import {oreLootTableConfig} from "./config/loottable.ts";
 import {ProducerUpgrade} from "./util/upgrades/ProducerUpgrade.ts";
 import {GigaNum} from "./util/GigaNum.ts";
 import {gameActions, upgrades} from "./game-state.ts";
+import {Recipe} from "./util/crafts/Recipe.ts";
 
 /* RESOURCES */
 /* TIER 1 */
@@ -46,11 +47,22 @@ export const FURNACE = Producer.crafting("furnace", "Furnace",
     producerConfig.crafting.furnace.defaultCost, producerConfig.crafting.furnace.defaultCostScale,
     producerConfig.crafting.furnace.ticksPerOperation, 1, [[ROCK, 10]]);
 
+/* RECIPES */
+const IRON_INGOT_FURNACE = new Recipe("iron_ingot_furnace", "Iron Ore to Ingot",
+    FURNACE, [[IRON_INGOT, 1]], [[IRON_ORE, 2]], 5);
+const COPPER_INGOT_FURNACE = new Recipe("copper_ingot_furnace", "Copper Ore to Ingot",
+    FURNACE, [[COPPER_INGOT, 1]], [[COPPER_ORE, 2]], 4);
+const COAL_FURNACE = new Recipe("iron_ingot_furnace", "Iron Ore to Ingot",
+    FURNACE, [[COAL, 1]], [[COAL_ORE, 2]], 2);
+
 /* UPGRADES */
 export const UNLOCK_FURNACE_UP = new ProducerUpgrade("unlock_furnace", "Unlock Furnace",
     "Unlocks a new building!", "crafting", () => {
         gameActions.addProducer(FURNACE);
         UNLOCK_FURNACE_UP.isBought = true;
+        gameActions.addRecipe(IRON_INGOT_FURNACE);
+        gameActions.addRecipe(COPPER_INGOT_FURNACE);
+        gameActions.addRecipe(COAL_FURNACE);
     }, [new GigaNum(30), new Array([ROCK, 20])]);
 
 /* INITIALIZATION */

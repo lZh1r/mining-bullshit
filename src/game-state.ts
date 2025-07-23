@@ -9,6 +9,7 @@ import type {JSX} from "react";
 import type {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
 import type {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
 import type {ProducerUpgrade} from "./util/upgrades/ProducerUpgrade.ts";
+import type {Recipe} from "./util/crafts/Recipe.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal(ProducersTab);
@@ -21,6 +22,8 @@ export const upgrades = signal(new Map<ProducerType, ProducerUpgrade[]>([
     ["money", []],
     ["crafting", []]
 ]));
+export const recipies = signal(new Map<Producer<"crafting">, Recipe[]>());
+export const recipeQueue = signal(new Map<Producer<"crafting">, Recipe[]>());
 export const totalValue = computed(() => {
     let result = new GigaNum(0);
     resources.value.forEach((resourceNumberPair) => {
@@ -70,9 +73,21 @@ export const gameActions = {
     addResource(resource: Resource) {
         resources.value = resources.value.set(resource.getId(), [resource, 0]);
     },
-    hasEnoughOf(resource: Resource, amount: number): boolean {
-        const currentResources = resources.value;
-        return currentResources.has(resource.getId()) && currentResources.get(resource.getId())![1] >= amount!;
+    hasEnoughOf(resource: Resource | [Resource, number][], amount?: number): boolean {
+        if (resource instanceof Resource && amount) {
+            const currentResources = resources.value;
+            return currentResources.has(resource.getId()) && currentResources.get(resource.getId())![1] >= amount!;
+        } else if (resource instanceof Resource && !amount) {
+            throw new Error("Incorrect usage of hasEnoughOf! Can't pass Resource and null!");
+        } else {
+            for (const [res, amount] of resource as [Resource, number][]) {
+                if (!this.hasEnoughOf(res, amount)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
     },
     depositResource(resource: Resource, amount: number = 1) {
         const current = resources.value;
@@ -162,12 +177,7 @@ export const gameActions = {
     },
     canPurchaseProducer(producer: Producer<ProducerType>, amount: number = 1): boolean {
         const cost = this.getProducerCost(producer, amount);
-        if (cost[0].compareTo(money.value) === "less" || cost[0].compareTo(money.value) === "equal") {
-            for (const resourceNumPair of cost[1]) {
-                if (!this.hasEnoughOf(resourceNumPair[0], resourceNumPair[1])) {
-                    return false;
-                }
-            }
+        if (cost[0].compareTo(money.value) === "less" || cost[0].compareTo(money.value) === "equal" && this.hasEnoughOf(cost[1])) {
             if (producer.type !== "energy" && producer.getCapabilities().has("energy_consumption")) {
                 const cap = producer.getCapabilities().get("energy_consumption")! as EnergyConsumptionCap;
                 if (power.value.compareTo(powerConsumption.value.add(cap.consumption)) === "less") {
@@ -192,10 +202,8 @@ export const gameActions = {
         if (producers.value.get(producer.id) && producers.value.get(producer.id)![1] >= amount) {
             if (producer.type === "energy" && producer.getCapabilities().has("energy")) {
                 const cap = producer.getCapabilities().get("energy")! as EnergyGenCap;
-                if (power.value.subtract(cap.generation).compareTo(powerConsumption.value) === "less") {
-                    return false;
-                }
-                return true;
+                return power.value.subtract(cap.generation).compareTo(powerConsumption.value) !== "less";
+
             }
         }
         return false;
@@ -265,15 +273,8 @@ export const gameActions = {
     },
     canPurchaseUpgrade(upgrade: ProducerUpgrade): boolean {
         const [moneyCost, resourceCost] = upgrade.requirements;
-        if (moneyCost.compareTo(money.value) === "less" || moneyCost.compareTo(money.value) === "equal") {
-            for (const [resource, amount] of resourceCost) {
-                if (!this.hasEnoughOf(resource, amount)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+        return moneyCost.compareTo(money.value) === "less" || moneyCost.compareTo(money.value) === "equal" && this.hasEnoughOf(resourceCost);
+
     },
     purchaseUpgrade(upgrade: ProducerUpgrade) {
         const [moneyCost, resourceCost] = upgrade.requirements;
@@ -285,4 +286,34 @@ export const gameActions = {
             upgrade.effect();
         }
     },
+    addRecipe(recipe: Recipe) {
+        const newMap = new Map(recipies.value);
+        const producer = recipe.producer;
+        if (!newMap.has(producer)) {
+            newMap.set(producer, []);
+        }
+        newMap.get(producer)!.push(recipe);
+        recipies.value = newMap;
+    },
+    startRecipe(recipe: Recipe) {
+        const newMap = new Map(recipeQueue.value);
+        const producer = recipe.producer;
+        if (!newMap.has(producer) || newMap.get(producer)!.includes(recipe) || !this.hasEnoughOf(recipe.inputs)) {
+            return;
+        }
+        for (const [resource, number] of recipe.inputs) {
+            this.withdrawResource(resource, number);
+        }
+        newMap.get(recipe.producer)!.push(recipe);
+        recipeQueue.value = newMap;
+    },
+    stopRecipe(recipe: Recipe) {
+        const newMap = new Map(recipeQueue.value);
+        const producer = recipe.producer;
+        if (!newMap.has(producer) || !newMap.get(producer)!.includes(recipe)) {
+            return;
+        }
+        newMap.get(recipe.producer)!.filter((val) => val.id !== recipe.id);
+        recipeQueue.value = newMap;
+    }
 };
