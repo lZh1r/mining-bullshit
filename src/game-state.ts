@@ -8,12 +8,19 @@ import {ProducersTab} from "./components/tabs/producer/ProducersTab.tsx";
 import type {JSX} from "react";
 import type {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
 import type {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
+import type {ProducerUpgrade} from "./util/upgrades/ProducerUpgrade.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal(ProducersTab);
 export const money = signal(new GigaNum(100));
 export const resources = signal(new Map<string, [Resource, number]>());
 export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
+export const upgrades = signal(new Map<ProducerType, ProducerUpgrade[]>([
+    ["energy", []],
+    ["resource", []],
+    ["money", []],
+    ["crafting", []]
+]));
 export const totalValue = computed(() => {
     let result = new GigaNum(0);
     resources.value.forEach((resourceNumberPair) => {
@@ -249,5 +256,10 @@ export const gameActions = {
             }
         });
         return [resultRes, resultNum];
+    },
+    addUpgrade(upgrade: ProducerUpgrade) {
+        const newMap = new Map(upgrades.value);
+        newMap.get(upgrade.type)!.push();
+        upgrades.value = newMap;
     }
 };

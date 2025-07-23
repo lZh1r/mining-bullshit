@@ -1,4 +1,6 @@
 import {GigaNum} from "../util/GigaNum.ts";
+import {ROCK} from "../registry.ts";
+import type {Resource} from "../util/resources/Resource.ts";
 
 export const producerConfig = {
     energy: {
@@ -20,6 +22,12 @@ export const producerConfig = {
 
     },
     crafting: {
-
+        furnace: {
+            defaultCost: new GigaNum(30),
+            resourceCost: new Array<[Resource, number]>([ROCK, 10]),
+            defaultCostScale: new GigaNum(2),
+            energyConsumption: new GigaNum(15),
+            ticksPerOperation: 10,
+        }
     },
 };

@@ -8,6 +8,9 @@ import {EnergyConsumptionCap} from "./util/producers/capabilities/EnergyConsumpt
 import {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
 import {LootTable} from "./util/LootTable.ts";
 import {oreLootTableConfig} from "./config/loottable.ts";
+import {ProducerUpgrade} from "./util/upgrades/ProducerUpgrade.ts";
+import {GigaNum} from "./util/GigaNum.ts";
+import {gameActions} from "./game-state.ts";
 
 /* RESOURCES */
 /* TIER 1 */
@@ -38,3 +41,13 @@ export const MINE = Producer.resource("mine", "Mine",
     producerConfig.resource.mine.defaultCost, producerConfig.resource.mine.defaultCostScale, producerConfig.resource.mine.ticksPerOperation);
 MINE.addCapability(new EnergyConsumptionCap(producerConfig.resource.mine.energyConsumption));
 MINE.addCapability(new MiningCap(MINING_TIER1));
+/* CRAFTING */
+export const FURNACE = Producer.crafting("furnace", "Furnace",
+    producerConfig.crafting.furnace.defaultCost, producerConfig.crafting.furnace.defaultCostScale,
+    producerConfig.crafting.furnace.ticksPerOperation, 1, producerConfig.crafting.furnace.resourceCost);
+
+/* UPGRADES */
+export const UNLOCK_FURNACE_UP = new ProducerUpgrade("unlock_furnace", "Unlock Furnaces",
+    "Unlocks a new building!", "crafting", () => {
+        gameActions.addProducer(FURNACE);
+    }, [new GigaNum(30), new Array([ROCK, 20])]);
