@@ -13,7 +13,7 @@ import type {Recipe} from "./util/crafts/Recipe.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal(ProducersTab);
-export const money = signal(new GigaNum(100));
+export const money = signal(new GigaNum(10000));
 export const resources = signal(new Map<string, [Resource, number]>());
 export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
 export const upgrades = signal(new Map<ProducerType, ProducerUpgrade[]>([
@@ -24,6 +24,7 @@ export const upgrades = signal(new Map<ProducerType, ProducerUpgrade[]>([
 ]));
 export const recipes = signal(new Map<Producer<"crafting">, Recipe[]>());
 export const recipeQueue = signal(new Map<Producer<"crafting">, Recipe[]>());
+export const automationQueue = signal(new Array<Recipe>());
 export const totalValue = computed(() => {
     let result = new GigaNum(0);
     resources.value.forEach((resourceNumberPair) => {
@@ -35,12 +36,11 @@ export const totalValue = computed(() => {
 });
 export const power = computed(() => {
     let result = new GigaNum(0);
-    producers.value.forEach((producerNumPair) => {
-        const prod = producerNumPair[0];
-        if (prod.type === "energy") {
-            if (prod.getCapabilities().has("energy")) {
-                const cap = prod.getCapabilities().get("energy") as EnergyGenCap;
-                result = result.add(cap.baseEnergyGeneration.multiply(cap.energyGenerationMultiplier)).multiply(producerNumPair[1]);
+    producers.value.forEach(([producer, amount]) => {
+        if (producer.type === "energy") {
+            if (producer.getCapabilities().has("energy")) {
+                const cap = producer.getCapabilities().get("energy") as EnergyGenCap;
+                result = result.add(cap.baseEnergyGeneration.multiply(cap.energyGenerationMultiplier).multiply(amount));
             }
         }
     });

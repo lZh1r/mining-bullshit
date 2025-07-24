@@ -9,6 +9,7 @@ export class Producer<T extends ProducerType> {
 
     private milestones: [number, () => void][] = [];
     private achievedMilestones: [number, () => void][] = [];
+    private canBeAutomated: boolean = false;
 
     private constructor(
         public readonly type: T,
@@ -139,6 +140,14 @@ export class Producer<T extends ProducerType> {
     resetMilestones() {
         this.milestones.concat(this.achievedMilestones);
         this.achievedMilestones = [];
+    }
+
+    getCanBeAutomated() {
+        return this.canBeAutomated;
+    }
+
+    setCanBeAutomated(value: boolean) {
+        this.canBeAutomated = value;
     }
 }
 

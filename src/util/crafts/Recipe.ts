@@ -3,6 +3,7 @@ import type {Producer} from "../producers/Producer.ts";
 import {batch, type Signal, signal} from "@preact/signals";
 
 export class Recipe {
+    public automate: boolean = false;
     private currentTicks: Signal<number> = signal(0);
     constructor(
         public readonly id: IDString,
