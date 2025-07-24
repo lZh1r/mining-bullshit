@@ -5,6 +5,7 @@ import {gameActions, upgrades} from "../../../game-state.ts";
 import {displayResourceRequirement} from "../../../util/utils.ts";
 import {BuyAmountButton} from "./BuyAmountButton.tsx";
 import {RecipePanel} from "./crafting/RecipePanel.tsx";
+import {GigaNum} from "../../../util/GigaNum.ts";
 
 export function ProducersTab() {
 
@@ -55,6 +56,8 @@ export function ProducersTab() {
                             }}>
                             <span>{producer.name} ({amount})</span>
                             <span>{gameActions.getProducerCost(producer, buyAmount)[0].toString()}$
+                                {gameActions.getProducerEnergyConsumption(producer, buyAmount).compareTo(new GigaNum(0)) === "equal" ?
+                                    "" : ` ${gameActions.getProducerEnergyConsumption(producer, buyAmount).toString()}GE`}
                                 {gameActions.getProducerCost(producer, buyAmount)[1].length > 0 ? `,  
                                 ${displayResourceRequirement(gameActions.getProducerCost(producer, buyAmount)[1])}` : ""}</span>
                         </button>

@@ -34,17 +34,19 @@ export const MINING_TIER1 = new LootTable([
 /* PRODUCERS */
 /* ENERGY */
 export const HAMSTER_WHEEL = Producer.energy("hamster_wheel", "Hamster Wheel",
-    new GigaNum(5), new GigaNum(1.5));
+    new GigaNum(5), new GigaNum(1.2));
 HAMSTER_WHEEL.addCapability(new EnergyGenCap(new GigaNum(5)));
+
 /* RESOURCE */
 export const MINE = Producer.resource("mine", "Mine",
-    new GigaNum(20), new GigaNum(2.5), 5);
+    new GigaNum(20), new GigaNum(1.7), 5);
 MINE.addCapability(new EnergyConsumptionCap(new GigaNum(10)));
 MINE.addCapability(new MiningCap(MINING_TIER1));
+
 /* CRAFTING */
 export const FURNACE = Producer.crafting("furnace", "Furnace",
-    new GigaNum(30), new GigaNum(2), 2, 1, [[ROCK, 10]]);
-FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(15)));
+    new GigaNum(30), new GigaNum(1.5), 2, 1, [[ROCK, 10]]);
+FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(10)));
 
 
 
@@ -66,7 +68,7 @@ export const UNLOCK_FURNACE_UP = new ProducerUpgrade("unlock_furnace", "Unlock F
         gameActions.addRecipe(IRON_INGOT_FURNACE);
         gameActions.addRecipe(COPPER_INGOT_FURNACE);
         gameActions.addRecipe(COAL_FURNACE);
-    }, [new GigaNum(30), new Array([ROCK, 20])]);
+    }, [new GigaNum(30), new Array([ROCK, 10])]);
 
 
 

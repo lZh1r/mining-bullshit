@@ -13,7 +13,7 @@ import type {Recipe} from "./util/crafts/Recipe.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal(ProducersTab);
-export const money = signal(new GigaNum(10000));
+export const money = signal(new GigaNum(100));
 export const resources = signal(new Map<string, [Resource, number]>());
 export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
 export const upgrades = signal(new Map<ProducerType, ProducerUpgrade[]>([
@@ -175,16 +175,18 @@ export const gameActions = {
         }
         return [resultNum, resultRes];
     },
+    getProducerEnergyConsumption(producer: Producer<ProducerType>, amount: number = 1) {
+        let result = new GigaNum(0);
+        if (producer.type !== "energy" && producer.getCapabilities().has("energy_consumption")) {
+            const cap = producer.getCapabilities().get("energy_consumption")! as EnergyConsumptionCap;
+            result = result.add(cap.consumption.multiply(amount));
+        }
+        return result;
+    },
     canPurchaseProducer(producer: Producer<ProducerType>, amount: number = 1): boolean {
         const cost = this.getProducerCost(producer, amount);
         if ((cost[0].compareTo(money.value) === "less" || cost[0].compareTo(money.value) === "equal") && this.hasEnoughOf(cost[1])) {
-            if (producer.type !== "energy" && producer.getCapabilities().has("energy_consumption")) {
-                const cap = producer.getCapabilities().get("energy_consumption")! as EnergyConsumptionCap;
-                if (power.value.compareTo(powerConsumption.value.add(cap.consumption)) === "less") {
-                    return false;
-                }
-            }
-            return true;
+            return power.value.compareTo(powerConsumption.value.add(this.getProducerEnergyConsumption(producer, amount))) !== "less";
         }
         return false;
     },
