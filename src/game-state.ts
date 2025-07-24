@@ -13,7 +13,7 @@ import type {Recipe} from "./util/crafts/Recipe.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal(ProducersTab);
-export const money = signal(new GigaNum(10000));
+export const money = signal(new GigaNum(103));
 export const resources = signal(new Map<string, [Resource, number]>());
 export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
 export const upgrades = signal(new Map<ProducerType, ProducerUpgrade[]>([

@@ -29,11 +29,11 @@ export class GigaNum {
     }
 
     toString() {
-        return this.exponentialFactor <= GigaNum.startingExp ? this.toNumber().toString() : `${GigaNum.formatMainPart(this.mainPart, GigaNum.toStringPrecision)}e${this.exponentialFactor}`;
+        return this.exponentialFactor <= GigaNum.startingExp ? this.toNumber().toFixed(2) : `${GigaNum.formatMainPart(this.mainPart, GigaNum.toStringPrecision)}e${this.exponentialFactor}`;
     }
 
     toNumber() {
-        return Math.round(this.mainPart * Math.pow(10, this.exponentialFactor));
+        return this.mainPart * Math.pow(10, this.exponentialFactor);
     }
 
     subtract(anotherNum: GigaNum): GigaNum;
