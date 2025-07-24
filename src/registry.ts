@@ -19,6 +19,8 @@ export const COPPER_INGOT = new Resource("copper_ingot", "Copper Ingot", 9);
 export const COAL_ORE = new Resource("coal_ore", "Coal Ore", 2);
 const COAL = new Resource("coal", "Coal", 6);
 
+
+
 /* LOOT TABLES */
 export const MINING_TIER1 = new LootTable([
     [ROCK, 10],
@@ -26,6 +28,8 @@ export const MINING_TIER1 = new LootTable([
     [COAL_ORE, 5],
     [IRON_ORE, 2]
 ]);
+
+
 
 /* PRODUCERS */
 /* ENERGY */
@@ -42,6 +46,8 @@ export const FURNACE = Producer.crafting("furnace", "Furnace",
     new GigaNum(30), new GigaNum(2), 2, 1, [[ROCK, 10]]);
 FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(15)));
 
+
+
 /* RECIPES */
 const IRON_INGOT_FURNACE = new Recipe("iron_ingot_furnace", "Iron Ore to Ingot",
     FURNACE, [[IRON_INGOT, 1]], [[IRON_ORE, 2]], 5);
@@ -49,6 +55,8 @@ const COPPER_INGOT_FURNACE = new Recipe("copper_ingot_furnace", "Copper Ore to I
     FURNACE, [[COPPER_INGOT, 1]], [[COPPER_ORE, 2]], 4);
 const COAL_FURNACE = new Recipe("coal_furnace", "Coal Ore to Processed",
     FURNACE, [[COAL, 1]], [[COAL_ORE, 2]], 2);
+
+
 
 /* UPGRADES */
 export const UNLOCK_FURNACE_UP = new ProducerUpgrade("unlock_furnace", "Unlock Furnace",
@@ -60,9 +68,10 @@ export const UNLOCK_FURNACE_UP = new ProducerUpgrade("unlock_furnace", "Unlock F
         gameActions.addRecipe(COAL_FURNACE);
     }, [new GigaNum(30), new Array([ROCK, 20])]);
 
+
+
 /* INITIALIZATION */
 export function gameInit() {
-    gameActions.depositResource(ROCK, 30);
     gameActions.addProducer(HAMSTER_WHEEL);
     gameActions.addProducer(MINE);
     gameActions.addUpgrade(UNLOCK_FURNACE_UP);
