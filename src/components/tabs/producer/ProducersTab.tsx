@@ -40,36 +40,39 @@ export function ProducersTab() {
                     <BuyAmountButton amount={100}
                                      callback={() => {setBuyAmount(100);}} currentAmount={buyAmount}/>
                 </div>
-                {
-                    producerMap.get(activeProducerList)!.map(
-                        ([producer, amount]) => <button
-                            onMouseEnter={() => {
-                                setHoverTarget(producer);
-                            }}
-                            key={producer.id}
-                            onMouseLeave={() => {
-                                setHoverTarget(undefined);
-                            }}
-                            class={`flex justify-between py-4 px-2 text-2xl border-2
+                <div className="[&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-card-background
+                    [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:w-3 overflow-x-hidden overflow-scroll">
+                    {
+                        producerMap.get(activeProducerList)!.map(
+                            ([producer, amount]) => <button
+                                onMouseEnter={() => {
+                                    setHoverTarget(producer);
+                                }}
+                                key={producer.id}
+                                onMouseLeave={() => {
+                                    setHoverTarget(undefined);
+                                }}
+                                class={`flex justify-between py-4 px-2 text-2xl border-2 w-full 
                             ${gameActions.canPurchaseProducer(producer, buyAmount) ?
-                                "border-muted-foreground hover:bg-hover-card-background cursor-pointer hover:border-foreground" :
-                                "text-muted-foreground"}`}
-                            onContextMenu={(e) => {
-                                e.preventDefault();
-                                gameActions.sellProducer(producer, buyAmount);
-                            }}
-                            onClick={() => {
-                                gameActions.purchaseProducer(producer, buyAmount);
-                            }}>
-                            <span>{producer.name} ({amount})</span>
-                            <span>{gameActions.getProducerCost(producer, buyAmount)[0].toString()}$
-                                {gameActions.getProducerEnergyConsumption(producer, buyAmount).compareTo(new GigaNum(0)) === "equal" ?
-                                    "" : ` ${gameActions.getProducerEnergyConsumption(producer, buyAmount).toString()}GE`}
-                                {gameActions.getProducerCost(producer, buyAmount)[1].length > 0 ? `,  
+                                    "border-muted-foreground hover:bg-hover-card-background cursor-pointer hover:border-foreground" :
+                                    "text-muted-foreground"}`}
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    gameActions.sellProducer(producer, buyAmount);
+                                }}
+                                onClick={() => {
+                                    gameActions.purchaseProducer(producer, buyAmount);
+                                }}>
+                                <span>{producer.name} ({amount})</span>
+                                <span>{gameActions.getProducerCost(producer, buyAmount)[0].toString()}$
+                                    {gameActions.getProducerEnergyConsumption(producer, buyAmount).compareTo(new GigaNum(0)) === "equal" ?
+                                        "" : ` ${gameActions.getProducerEnergyConsumption(producer, buyAmount).toString()}GE`}
+                                    {gameActions.getProducerCost(producer, buyAmount)[1].length > 0 ? `,  
                                 ${displayResourceRequirement(gameActions.getProducerCost(producer, buyAmount)[1])}` : ""}</span>
-                        </button>
-                    )
-                }
+                            </button>
+                        )
+                    }
+                </div>
                 <div className="bg-card-background border-2 border-muted-foreground p-2 justify-self-end flex flex-col">
                     <span className="text-xl">{hoverTarget ? displayProducerDetails(hoverTarget) : ""}</span>
                     <q>{hoverTarget ? hoverTarget.description : "Hover over a building to see what it does"}</q>
