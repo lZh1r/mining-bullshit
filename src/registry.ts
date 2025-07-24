@@ -11,41 +11,44 @@ import {Recipe} from "./util/crafts/Recipe.ts";
 
 /* RESOURCES */
 /* TIER 1 */
-export const ROCK = new Resource("rock", "Rocks", 1);
+const ROCK = new Resource("rock", "Rocks", 1);
 ROCK.addOnGet(() => {
     gameActions.addProducer(FURNACE);
 });
-export const IRON_ORE = new Resource("iron_ore", "Iron Ore", 5);
-export const IRON_INGOT = new Resource("iron_ingot", "Iron Ingot", 15);
+const IRON_ORE = new Resource("iron_ore", "Iron Ore", 5);
+const IRON_INGOT = new Resource("iron_ingot", "Iron Ingot", 15);
 IRON_INGOT.addOnGet(() => {
     gameActions.addUpgrade(MINE_IRON_DRILLS);
 });
-export const COPPER_ORE = new Resource("copper_ore", "Copper Ore", 3);
-export const COPPER_INGOT = new Resource("copper_ingot", "Copper Ingot", 9);
+const COPPER_ORE = new Resource("copper_ore", "Copper Ore", 3);
+const COPPER_INGOT = new Resource("copper_ingot", "Copper Ingot", 9);
 COPPER_INGOT.addOnGet(() => {
     gameActions.addProducer(EXCAVATOR);
 });
-export const COAL_ORE = new Resource("coal_ore", "Coal Ore", 2);
-export const COAL = new Resource("coal", "Coal", 6);
+const COAL_ORE = new Resource("coal_ore", "Coal Ore", 2);
+const COAL = new Resource("coal", "Coal", 6);
 COAL.addOnGet(() => {
     gameActions.addProducer(COMBUSTION_GENERATOR);
     gameActions.addUpgrade(HAMSTER_WHEEL_CARBS);
 });
-export const SAND = new Resource("sand", "Sand", 1);
-export const CLAY = new Resource("clay", "Clay", 1);
+const SAND = new Resource("sand", "Sand", 1);
+const CLAY = new Resource("clay", "Clay", 1);
 /* TIER 2 */
-export const QUARTZ = new Resource("quartz", "Quartz", 2);
+const QUARTZ = new Resource("quartz", "Quartz", 2);
 QUARTZ.addOnGet(() => {
     gameActions.addRecipe(GLASS_FURNACE);
     gameActions.addRecipe(SILICON_FURNACE);
 });
-export const TIN_ORE = new Resource("tin_ore", "Tin Ore", 4);
-export const TIN_INGOT = new Resource("tin_ingot", "Tin Ingot", 12);
-export const NICKEL_ORE = new Resource("nickel_ore", "Nickel Ore", 6);
-export const NICKEL_INGOT = new Resource("nickel_ingot", "Nickel Ingot", 18);
-export const STEEL_INGOT = new Resource("steel_ingot", "Steel Ingot", 25);
-export const GLASS = new Resource("glass", "Glass", 4);
-export const SILICON = new Resource("silicon", "Silicon", 12);
+const TIN_ORE = new Resource("tin_ore", "Tin Ore", 4);
+const TIN_INGOT = new Resource("tin_ingot", "Tin Ingot", 12);
+const NICKEL_ORE = new Resource("nickel_ore", "Nickel Ore", 6);
+const NICKEL_INGOT = new Resource("nickel_ingot", "Nickel Ingot", 18);
+NICKEL_INGOT.addOnGet(() => {
+    gameActions.addProducer(BLAST_FURNACE);
+});
+const STEEL_INGOT = new Resource("steel_ingot", "Steel Ingot", 25);
+const GLASS = new Resource("glass", "Glass", 4);
+const SILICON = new Resource("silicon", "Silicon", 12);
 SILICON.addOnGet(() => {
     //Add solar panel
 });
@@ -53,13 +56,13 @@ SILICON.addOnGet(() => {
 
 
 /* LOOT TABLES */
-export const MINING_TIER1 = new LootTable([
+const MINING_TIER1 = new LootTable([
     [ROCK, 10],
     [COPPER_ORE, 3],
     [COAL_ORE, 5],
     [IRON_ORE, 2]
 ]);
-export const MINING_TIER2 = new LootTable([
+const MINING_TIER2 = new LootTable([
     [ROCK, 6],
     [IRON_ORE, 2],
     [QUARTZ, 5],
@@ -68,7 +71,7 @@ export const MINING_TIER2 = new LootTable([
     [COPPER_ORE, 1],
     [COAL, 1],
 ]);
-export const EXCAVATION_TIER1 = new LootTable([
+const EXCAVATION_TIER1 = new LootTable([
     [SAND, 3],
     [CLAY, 1],
 ]);
@@ -77,27 +80,27 @@ export const EXCAVATION_TIER1 = new LootTable([
 
 /* PRODUCERS */
 /* ENERGY */
-export const HAMSTER_WHEEL = Producer.energy("hamster_wheel", "Hamster Wheel",
+const HAMSTER_WHEEL = Producer.energy("hamster_wheel", "Hamster Wheel",
     "Who knew that hamsters are so good at power generation?",
     new GigaNum(5), new GigaNum(1.2));
 HAMSTER_WHEEL.addCapability(new EnergyGenCap(new GigaNum(5)));
-export const COMBUSTION_GENERATOR = Producer.energy("combustion_generator", "Combustion Generator",
+const COMBUSTION_GENERATOR = Producer.energy("combustion_generator", "Combustion Generator",
     "Watch the world burn.", new GigaNum(25), new GigaNum(2), [[COAL, 5]]);
 COMBUSTION_GENERATOR.addCapability(new EnergyGenCap(new GigaNum(25)));
 
 /* RESOURCE */
-export const MINE = Producer.resource("mine", "Mine",
+const MINE = Producer.resource("mine", "Mine",
 "Send your enemies to work for you in this beautiful resort!",
     new GigaNum(20), new GigaNum(1.7), 5);
 MINE.addCapability(new EnergyConsumptionCap(new GigaNum(10)));
 MINE.addCapability(new MiningCap(MINING_TIER1));
-export const EXCAVATOR = Producer.resource("excavator", "Excavator",
+const EXCAVATOR = Producer.resource("excavator", "Excavator",
     "That big yellow car.", new GigaNum(25), new GigaNum(1.8), 3, 1, [[COPPER_INGOT, 2]]);
 EXCAVATOR.addCapability(new EnergyConsumptionCap(new GigaNum(10)));
 EXCAVATOR.addCapability(new MiningCap(EXCAVATION_TIER1));
 
 /* CRAFTING */
-export const FURNACE = Producer.crafting("furnace", "Furnace",
+const FURNACE = Producer.crafting("furnace", "Furnace",
     "Smelts things on the most primitive level.",
     new GigaNum(30), new GigaNum(1.5), 2, 1, [[ROCK, 10]]);
 FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(10)));
@@ -106,7 +109,7 @@ FURNACE.addMilestone(1, () => {
     gameActions.addRecipe(COPPER_INGOT_FURNACE);
     gameActions.addRecipe(COAL_FURNACE);
 });
-export const BLAST_FURNACE = Producer.crafting("blast_furnace", "Blast Furnace",
+const BLAST_FURNACE = Producer.crafting("blast_furnace", "Blast Furnace",
     "Makes steel and some other alloys.", new GigaNum(50), new GigaNum(1.7), 5, 1,
     [[ROCK, 20], [NICKEL_INGOT, 2]]);
 BLAST_FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(40)));
@@ -138,14 +141,14 @@ const SILICON_FURNACE = new Recipe("silicon_furnace", "Quartz and Coal into Sili
 
 
 /* UPGRADES */
-export const HAMSTER_WHEEL_CARBS = new ProducerUpgrade("hamster_wheel_carbs", "Carboloading",
+const HAMSTER_WHEEL_CARBS = new ProducerUpgrade("hamster_wheel_carbs", "Carboloading",
     "Changes hamsters' diet to make them run faster.", "energy", () => {
         const cap = HAMSTER_WHEEL.getCapabilities().get("energy") as EnergyGenCap;
         cap.energyGenerationMultiplier *= 1.5;
         HAMSTER_WHEEL.updateCapability(cap);
         HAMSTER_WHEEL_CARBS.isBought = true;
     }, [new GigaNum(100), [[COAL, 10]]]);
-export const MINE_IRON_DRILLS = new ProducerUpgrade("mine_iron_drills", "Iron Drills",
+const MINE_IRON_DRILLS = new ProducerUpgrade("mine_iron_drills", "Iron Drills",
     "What were you drilling with before? Mines now give new ores.", "resource", () => {
         const cap = MINE.getCapabilities().get("mining") as MiningCap;
         cap.expandLootTable(MINING_TIER2);
