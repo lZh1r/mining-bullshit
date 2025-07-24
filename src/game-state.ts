@@ -196,6 +196,7 @@ export const gameActions = {
                 this.withdrawResource(resourceNumPair[0], resourceNumPair[1]);
             }
             this.addProducer(producer, amount);
+            producer.checkForMilestones();
         }
     },
     canSellProducer(producer: Producer<ProducerType>, amount: number = 1): boolean {

@@ -37,6 +37,7 @@ export const MINING_TIER1 = new LootTable([
 export const HAMSTER_WHEEL = Producer.energy("hamster_wheel", "Hamster Wheel",
     producerConfig.energy.hamsterWheel.defaultCost, producerConfig.energy.hamsterWheel.defaultCostScale);
 HAMSTER_WHEEL.addCapability(new EnergyGenCap(producerConfig.energy.hamsterWheel.energyGeneration));
+HAMSTER_WHEEL.addMilestone(1, () => {console.log("I was triggered");});
 /* RESOURCE */
 export const MINE = Producer.resource("mine", "Mine",
     producerConfig.resource.mine.defaultCost, producerConfig.resource.mine.defaultCostScale, producerConfig.resource.mine.ticksPerOperation);

@@ -1,10 +1,15 @@
 import type {IProdCapability} from "./capabilities/IProdCapability";
 import {GigaNum} from "../GigaNum";
 import {Resource} from "../resources/Resource";
+import {producers} from "../../game-state.ts";
 
 export type ProducerType = "crafting" | "energy" | "money" | "resource";
 
 export class Producer<T extends ProducerType> {
+
+    private milestones: [number, () => void][] = [];
+    private achievedMilestones: [number, () => void][] = [];
+
     private constructor(
         public readonly type: T,
         public readonly id: IDString,
@@ -99,5 +104,32 @@ export class Producer<T extends ProducerType> {
         return false;
     }
 
+    addMilestone(amountNeeded: number, effect: () => void) {
+        this.milestones.push([amountNeeded, effect]);
+    }
+
+    checkForMilestones() {
+        const producer = producers.peek().get(this.id);
+        let producerQuantity = 0;
+        if (typeof producer === "undefined") {
+            return;
+        } else {
+            producerQuantity = producer[1];
+        }
+        let newMilestones = this.milestones;
+        for (const [neededQuantity, effect] of this.milestones) {
+            if (neededQuantity <= producerQuantity) {
+                newMilestones = newMilestones.filter((milestone) => milestone[0] !== neededQuantity && milestone[1] !== effect);
+                this.achievedMilestones.push([neededQuantity, effect]);
+                effect();
+            }
+        }
+        this.milestones = newMilestones;
+    }
+
+    resetMilestones() {
+        this.milestones.concat(this.achievedMilestones);
+        this.achievedMilestones = [];
+    }
 }
 
