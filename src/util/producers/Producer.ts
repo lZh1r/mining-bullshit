@@ -96,6 +96,10 @@ export class Producer<T extends ProducerType> {
         }
     }
 
+    updateCapability(capability: IProdCapability) {
+        this.capabilities.set(capability.id, capability);
+    }
+
     get ticksRequired() {
         return this.ticksPerOperation === -1 ? 0 : this.ticksPerOperation! * this.ticksMultiplier;
     }
