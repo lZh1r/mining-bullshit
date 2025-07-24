@@ -2,13 +2,14 @@ import {ProducersTabSidebarHeaderButton} from "./ProducersTabSidebarHeaderButton
 import {useState} from "react";
 import {Producer, type ProducerType} from "../../../util/producers/Producer.ts";
 import {gameActions, upgrades} from "../../../game-state.ts";
-import {displayResourceRequirement} from "../../../util/utils.ts";
+import {displayProducerDetails, displayResourceRequirement} from "../../../util/utils.ts";
 import {BuyAmountButton} from "./BuyAmountButton.tsx";
 import {RecipePanel} from "./crafting/RecipePanel.tsx";
 import {GigaNum} from "../../../util/GigaNum.ts";
 
 export function ProducersTab() {
 
+    const [hoverTarget, setHoverTarget] = useState<Producer<ProducerType>>();
     const [activeProducerList, setActiveProducerList] = useState<ProducerType>("energy");
     const [buyAmount, setBuyAmount] = useState(1);
     const producerMap = new Map<ProducerType, [Producer<ProducerType>, number][]>([
@@ -42,7 +43,13 @@ export function ProducersTab() {
                 {
                     producerMap.get(activeProducerList)!.map(
                         ([producer, amount]) => <button
+                            onMouseEnter={() => {
+                                setHoverTarget(producer);
+                            }}
                             key={producer.id}
+                            onMouseLeave={() => {
+                                setHoverTarget(undefined);
+                            }}
                             class={`flex justify-between py-4 px-2 text-2xl border-2
                             ${gameActions.canPurchaseProducer(producer, buyAmount) ?
                                 "border-muted-foreground hover:bg-hover-card-background cursor-pointer hover:border-foreground" :
@@ -63,6 +70,10 @@ export function ProducersTab() {
                         </button>
                     )
                 }
+                <div className="bg-card-background border-2 border-muted-foreground p-2 justify-self-end flex flex-col">
+                    <span className="text-xl">{hoverTarget ? displayProducerDetails(hoverTarget) : ""}</span>
+                    <q>{hoverTarget ? hoverTarget.description : "Hover over a building to see what it does"}</q>
+                </div>
             </aside>
             <div class="col-span-1 bg-card-background border-2 border-muted-foreground">
                 <h1 class="text-3xl text-center p-2 border-b-2 border-b-muted-foreground">Upgrades</h1>

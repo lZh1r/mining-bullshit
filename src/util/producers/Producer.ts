@@ -14,6 +14,7 @@ export class Producer<T extends ProducerType> {
         public readonly type: T,
         public readonly id: IDString,
         public readonly name: NameString,
+        public readonly description: string,
         public baseCost: GigaNum,
         public costScale: GigaNum,
         public ticksPerOperation?: number,
@@ -27,6 +28,7 @@ export class Producer<T extends ProducerType> {
     static crafting(
         id: IDString,
         name: NameString,
+        description: string,
         baseCost: GigaNum,
         costScale: GigaNum,
         ticksPerOperation?: number,
@@ -35,13 +37,14 @@ export class Producer<T extends ProducerType> {
         costMultiplier: number = 1,
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"crafting"> {
-        return new Producer("crafting", id, name, baseCost, costScale, ticksPerOperation,
+        return new Producer("crafting", id, name, description, baseCost, costScale, ticksPerOperation,
             ticksMultiplier, resourcesNeeded, costMultiplier, capabilities);
     }
 
     static resource(
         id: IDString,
         name: NameString,
+        description: string,
         baseCost: GigaNum,
         costScale: GigaNum,
         ticksPerOperation?: number,
@@ -50,25 +53,27 @@ export class Producer<T extends ProducerType> {
         costMultiplier: number = 1,
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"resource"> {
-        return new Producer("resource", id, name, baseCost, costScale, ticksPerOperation,
+        return new Producer("resource", id, name, description, baseCost, costScale, ticksPerOperation,
             ticksMultiplier, resourcesNeeded, costMultiplier, capabilities);
     }
 
     static energy(
         id: IDString,
         name: NameString,
+        description: string,
         baseCost: GigaNum,
         costScale: GigaNum,
         resourcesNeeded: [Resource, number][] = [],
         costMultiplier: number = 1,
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"energy"> {
-        return new Producer("energy", id, name, baseCost, costScale, -1, 0, resourcesNeeded, costMultiplier, capabilities);
+        return new Producer("energy", id, name, description, baseCost, costScale, -1, 0, resourcesNeeded, costMultiplier, capabilities);
     }
 
     static money(
         id: IDString,
         name: NameString,
+        description: string,
         baseCost: GigaNum,
         costScale: GigaNum,
         ticksPerOperation?: number,
@@ -77,7 +82,7 @@ export class Producer<T extends ProducerType> {
         costMultiplier: number = 1,
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"money"> {
-        return new Producer("money", id, name, baseCost, costScale, ticksPerOperation,
+        return new Producer("money", id, name, description, baseCost, costScale, ticksPerOperation,
             ticksMultiplier, resourcesNeeded, costMultiplier, capabilities);
     }
 

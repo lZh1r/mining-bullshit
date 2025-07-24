@@ -34,17 +34,20 @@ export const MINING_TIER1 = new LootTable([
 /* PRODUCERS */
 /* ENERGY */
 export const HAMSTER_WHEEL = Producer.energy("hamster_wheel", "Hamster Wheel",
+    "Who knew that hamsters are so good at power generation?",
     new GigaNum(5), new GigaNum(1.2));
 HAMSTER_WHEEL.addCapability(new EnergyGenCap(new GigaNum(5)));
 
 /* RESOURCE */
 export const MINE = Producer.resource("mine", "Mine",
+"Send your enemies to work for you in this beautiful resort!",
     new GigaNum(20), new GigaNum(1.7), 5);
 MINE.addCapability(new EnergyConsumptionCap(new GigaNum(10)));
 MINE.addCapability(new MiningCap(MINING_TIER1));
 
 /* CRAFTING */
 export const FURNACE = Producer.crafting("furnace", "Furnace",
+    "Smelts things on the most primitive level.",
     new GigaNum(30), new GigaNum(1.5), 2, 1, [[ROCK, 10]]);
 FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(10)));
 
