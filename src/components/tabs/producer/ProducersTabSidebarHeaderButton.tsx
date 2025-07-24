@@ -20,7 +20,7 @@ export function ProducersTabSidebarHeaderButton({src, type, currentType, callbac
             hover:bg-hover-card-background hover:border-foreground pixelated
             ${isActive ? "bg-hover-card-background hover:border-foreground" : "border-muted-foreground"}`}
             onClick={callback}>
-            <img class="place-self-center w-full"
+            <img class="w-16"
                  style="image-rendering: pixelated; image-rendering: crisp-edges;"
                  src={src} alt={type.at(0)}/>
         </button>

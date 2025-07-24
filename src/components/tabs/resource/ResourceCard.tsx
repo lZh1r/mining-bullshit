@@ -6,7 +6,7 @@ export function ResourceCard({resource, amount, spriteSrc}:
                              {resource: Resource, amount: number, spriteSrc: string}) {
     return (
         <div class="text-xl bg-card-background p-2 border-2 border-muted-foreground hover:border-foreground flex flex-col">
-            <img src={spriteSrc} alt={resource.getId()}/>
+            <img class="w-32" style="image-rendering: pixelated; image-rendering: crisp-edges;" src={spriteSrc} alt={resource.getId()}/>
             <h3>{resource.getName()} ({amount.toString()})</h3>
             <p>Total value: {gameActions.getTotalValue(resource).toString()}</p>
             <div class="flex mt-2">
