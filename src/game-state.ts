@@ -92,7 +92,13 @@ export const gameActions = {
     depositResource(resource: Resource, amount: number = 1) {
         const current = resources.value;
         const resPair = current.get(resource.getId());
-        const prevCount = typeof resPair === "undefined" ? 0 : resPair[1];
+        let prevCount = 0;
+        if (resPair === undefined) {
+            prevCount = 0;
+            resource.performOnGet();
+        } else {
+            prevCount = resPair[1];
+        }
         const newMap = new Map(current);
         resources.value = newMap.set(resource.getId(), [resource, prevCount + amount]);
     },

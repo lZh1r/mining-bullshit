@@ -17,7 +17,7 @@ export const IRON_INGOT = new Resource("iron_ingot", "Iron Ingot", 15);
 export const COPPER_ORE = new Resource("copper_ore", "Copper Ore", 3);
 export const COPPER_INGOT = new Resource("copper_ingot", "Copper Ingot", 9);
 export const COAL_ORE = new Resource("coal_ore", "Coal Ore", 2);
-const COAL = new Resource("coal", "Coal", 6);
+export const COAL = new Resource("coal", "Coal", 6);
 
 
 

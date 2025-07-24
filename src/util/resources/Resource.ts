@@ -1,6 +1,9 @@
 import type {ICapability} from "./capabilities/ICapability";
 
 export class Resource {
+
+    private onGet: () => void = () => {};
+
     constructor(
         private readonly id: IDString,
         private readonly name: NameString,
@@ -26,5 +29,13 @@ export class Resource {
 
     addCapability(capability: ICapability) {
         this.capabilities.set(capability.id, capability);
+    }
+
+    addOnGet(effect: () => void) {
+        this.onGet = effect;
+    }
+
+    performOnGet() {
+        this.onGet();
     }
 }
