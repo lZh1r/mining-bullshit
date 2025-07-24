@@ -17,7 +17,8 @@ export function RecipeCard({recipe}:
     return (
         <div
             key={recipe.id}
-            className={`bg-card-content-background border-2 border-muted-foreground grid text-center grid-cols-3 m-1`}>
+            className={`bg-card-content-background border-2 border-muted-foreground grid text-center grid-cols-3 m-1
+             ${gameActions.canStartRecipe(recipe) ? "text-foreground" : "text-muted-foreground"}`}>
             <span className="text-xl place-self-center">{displayResourceRequirement(recipe.inputs)}</span>
             <div className="flex flex-col text-center">
                 <span className="place-self-center">{recipe.craftDuration}s by default</span>
