@@ -76,40 +76,6 @@ export class Producer<T extends ProducerType> {
             ticksMultiplier, resourcesNeeded, costMultiplier, capabilities);
     }
 
-    // getCost(amount: number = 1): [GigaNum, [Resource, number][]] {
-    //     let resultNum = new GigaNum(0);
-    //     for (let i = 0; i < amount; i++) {
-    //         resultNum = resultNum.add(this.baseCost.multiply(this.costScale.pow(this.quantity + i)).multiply(this.costMultiplier));
-    //     }
-    //     const resultRes: Array<[Resource, number]> = [];
-    //     for (const resource of this.resourcesNeeded) {
-    //         resultRes.push([resource[0], resource[1] * amount]);
-    //     }
-    //     return [resultNum, resultRes];
-    // }
-
-    // purchase(amount: number = 1): boolean {
-    //     const required = this.getCost(amount);
-    //     const currentMoney = window.gameState.money;
-    //     if (currentMoney >= required[0] && window.gameState.resourceManager.hasEnoughOf(required[1])) {
-    //         window.gameState.money = currentMoney.subtract(required[0]);
-    //         for (const resourceNumberPair of required[1]) {
-    //             window.gameState.resourceManager.withdrawResource(resourceNumberPair[0], resourceNumberPair[1]);
-    //         }
-    //         return true;
-    //     }
-    //     return false;
-    // }
-    //
-    // sell(amount: number = 1): boolean {
-    //     if (this.quantity >= amount) {
-    //         this.quantity -= amount;
-    //         window.gameState.money = window.gameState.money.add(this.getCost(amount)[0].divide(2));
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
     getCapabilities() {
         return this.capabilities;
     }
