@@ -126,7 +126,7 @@ export function ProducersTab() {
                     }
                 </div>
             </div>
-            {activeProducerList === "crafting" ? <RecipePanel/> : <h1>WIP</h1>}
+            {activeProducerList === "crafting" || activeProducerList === "all" ? <RecipePanel/> : <h1>WIP</h1>}
         </div>
     );
 }
