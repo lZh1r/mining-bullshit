@@ -1,28 +1,53 @@
 import {ProducersTabSidebarHeaderButton} from "./ProducersTabSidebarHeaderButton.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Producer, type ProducerType} from "../../../util/producers/Producer.ts";
 import {gameActions, upgrades} from "../../../game-state.ts";
 import {displayProducerDetails, displayResourceRequirement} from "../../../util/utils.ts";
 import {BuyAmountButton} from "./BuyAmountButton.tsx";
 import {RecipePanel} from "./crafting/RecipePanel.tsx";
 import {GigaNum} from "../../../util/GigaNum.ts";
+import {useSignalEffect} from "@preact/signals";
+import type {ProducerUpgrade} from "../../../util/upgrades/ProducerUpgrade.ts";
 
 export function ProducersTab() {
 
     const [hoverTarget, setHoverTarget] = useState<Producer<ProducerType>>();
-    const [activeProducerList, setActiveProducerList] = useState<ProducerType>("energy");
+    const [activeProducerList, setActiveProducerList] = useState<ProducerType | "all">("energy");
     const [buyAmount, setBuyAmount] = useState(1);
-    const producerMap = new Map<ProducerType, [Producer<ProducerType>, number][]>([
+    const producerMap = new Map<ProducerType | "all", [Producer<ProducerType>, number][]>([
         ["energy", gameActions.getAllProducersOfType("energy")],
         ["money", gameActions.getAllProducersOfType("money")],
         ["crafting", gameActions.getAllProducersOfType("crafting")],
-        ["resource", gameActions.getAllProducersOfType("resource")]
+        ["resource", gameActions.getAllProducersOfType("resource")],
+        ["all", gameActions.getAllProducersOfType("energy").concat(gameActions.getAllProducersOfType("money"))
+            .concat(gameActions.getAllProducersOfType("crafting")).concat(gameActions.getAllProducersOfType("resource"))]
     ]);
+    const [allUpgradesArray, setAllUpgradesArray] = useState<ProducerUpgrade[]>([]);
+    const [upgradesToDisplay, setUpgradesToDisplay] = useState<ProducerUpgrade[]>([]);
+
+    useSignalEffect(() => {
+        const abomination = Array.from(upgrades.value.values());
+        let newArray: ProducerUpgrade[] = [];
+        for (const upgrades of abomination) {
+            newArray = newArray.concat(upgrades);
+        }
+        setAllUpgradesArray(newArray);
+    });
+
+    useEffect(() => {
+        if (activeProducerList === "all") {
+            setUpgradesToDisplay(allUpgradesArray);
+        } else {
+            setUpgradesToDisplay(upgrades.value.get(activeProducerList)!);
+        }
+    }, [activeProducerList]);
 
     return (
         <div class="grid grid-cols-4 space-x-2">
             <aside class="col-span-1 bg-card-background flex-col flex ml-2 border-2 border-muted-foreground">
                 <div class="flex justify-evenly">
+                    <ProducersTabSidebarHeaderButton src={"/sprites/lightning16.png"} type={"all"} currentType={activeProducerList}
+                                                     callback={() => setActiveProducerList("all")}/>
                     <ProducersTabSidebarHeaderButton src={"/sprites/lightning16.png"} type={"energy"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("energy")}/>
                     <ProducersTabSidebarHeaderButton src={"/sprites/pickaxe16.png"} type={"resource"} currentType={activeProducerList}
@@ -83,7 +108,7 @@ export function ProducersTab() {
                 <div class="grid grid-cols-2 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-card-background
                     [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:w-3 overflow-x-hidden overflow-scroll">
                     {
-                        upgrades.value.get(activeProducerList)!.map((entry) =>
+                       upgradesToDisplay.map((entry) =>
                             <div class={`col-span-1 w-full p-2 bg-card-content-background border-2 border-muted-foreground text-xl m-1
                             ${entry.isBought ? "hidden" : ""} ${gameActions.canPurchaseUpgrade(entry) ? 
                                 "cursor-pointer hover:bg-hover-card-background" :

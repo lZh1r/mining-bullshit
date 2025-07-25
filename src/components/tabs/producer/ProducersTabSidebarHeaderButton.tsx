@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import type {ProducerType} from "../../../util/producers/Producer.ts";
 
 export function ProducersTabSidebarHeaderButton({src, type, currentType, callback}:
-                                               {src: string, type: ProducerType, currentType: ProducerType, callback: () => void}) {
+                                               {src: string, type: ProducerType | "all", currentType: ProducerType | "all", callback: () => void}) {
 
     const [isActive, setIsActive] = useState(false);
 
