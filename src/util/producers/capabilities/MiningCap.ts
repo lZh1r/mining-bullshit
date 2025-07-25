@@ -8,7 +8,6 @@ export class MiningCap implements IProdCapability {
     constructor(
         public lootTable: LootTable,
         public yieldMultiplier: number = 1,
-        public autoSell: boolean = false,
     ) {
         this.id = "mining";
         this.applicableToProducerOfType = "resource";

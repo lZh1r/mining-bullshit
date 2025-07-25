@@ -7,7 +7,7 @@ interface LootInterval {
 }
 
 export class LootTable {
-    private totalWeight: number;
+    private readonly totalWeight: number;
     private lootLookUpTable: LootInterval[];
     constructor(
         private resourceWeightPairs: [Resource, number][]
@@ -28,15 +28,15 @@ export class LootTable {
         this.totalWeight = totalWeight;
     }
 
-    roll(n: number = 1): Resource[] {
-        const outcome = new Array<Resource>;
+    roll(n: number = 1): [Resource, number][] {
+        const outcome = new Map<Resource, number>;
         for (let i = 0; i < n; i++) {
             const rolledNumber = Math.floor(Math.random() * this.totalWeight);
-            outcome.push(
-                this.lootLookUpTable.find(entry => rolledNumber >= entry.min && rolledNumber < entry.max)!.value
-            );
+            const resourceToAdd = this.lootLookUpTable.find(entry => rolledNumber >= entry.min && rolledNumber < entry.max)!.value;
+            const prevCount = outcome.get(resourceToAdd) ?? 0;
+            outcome.set(resourceToAdd, prevCount + 1);
         }
-        return outcome;
+        return Array.from(outcome);
     }
 
     combine(...tables: LootTable[]): LootTable {

@@ -258,14 +258,19 @@ export const gameActions = {
             if (producer.type === "resource" && this.tickProducer(producer) && producer.getCapabilities().has("mining")) {
                 const cap = producer.getCapabilities().get("mining")! as MiningCap;
                 const output = cap.lootTable.roll(quantity);
-                if (cap.autoSell) {
-                    for (const resource of output) {
-                        resultNum = resultNum.add(resource.valuePer * cap.yieldMultiplier);
+                for (const [resource, amount] of output) {
+                    let amountToDeposit = amount * cap.yieldMultiplier;
+                    if (resource.autoSell) {
+                        let amountToSell = 0;
+                        const sellCap = resource.autoCellCap;
+                        const prevCount = resources.value.get(resource.getId()) ?? [resource, 0];
+                        if (amountToDeposit + prevCount[1] > sellCap) {
+                            amountToSell = amountToDeposit + prevCount[1] - sellCap;
+                            amountToDeposit -= amountToSell;
+                            resultNum = resultNum.add(amountToSell * resource.valuePer);
+                        }
                     }
-                } else {
-                    for (const resource of output) {
-                        resultRes.push([resource, cap.yieldMultiplier]);
-                    }
+                    resultRes.push([resource, amountToDeposit]);
                 }
             } else if (producer.type === "money" && this.tickProducer(producer) && producer.getCapabilities().has("money")) {
                 const cap = producer.getCapabilities().get("money")! as MoneyProdCap;
