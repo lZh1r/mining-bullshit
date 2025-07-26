@@ -20,6 +20,14 @@
     --shadow-button: 0px 5px 0px 5px rgba(0, 0, 0, 0.4);
 }
 
+@layer base {
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
 :root {
     --background: hsl(0, 0%, 10%);
     --foreground: hsl(0, 0%, 80%);

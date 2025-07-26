@@ -46,7 +46,7 @@ export function ProducersTab() {
         <div class="grid grid-cols-4 space-x-2">
             <aside class="col-span-1 bg-card-background flex-col flex ml-2 border-2 border-muted-foreground">
                 <div class="flex justify-evenly">
-                    <ProducersTabSidebarHeaderButton src={"/sprites/lightning16.png"} type={"all"} currentType={activeProducerList}
+                    <ProducersTabSidebarHeaderButton src={"/sprites/all16.png"} type={"all"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("all")}/>
                     <ProducersTabSidebarHeaderButton src={"/sprites/lightning16.png"} type={"energy"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("energy")}/>

@@ -5,6 +5,7 @@ export class Resource {
     private onGet: () => void = () => {};
     public autoSell: boolean = false;
     public autoCellCap: number = 0;
+    public canBeAutomated: boolean = false;
 
     constructor(
         private readonly id: IDString,

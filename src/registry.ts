@@ -30,6 +30,7 @@ const COAL = new Resource("coal", "Coal", 6);
 COAL.addOnGet(() => {
     gameActions.addProducer(COMBUSTION_GENERATOR);
     gameActions.addUpgrade(HAMSTER_WHEEL_CARBS);
+    gameActions.addUpgrade(FURNACE_OVERCLOCK_TIER1);
 });
 const SAND = new Resource("sand", "Sand", 1);
 const CLAY = new Resource("clay", "Clay", 1);
@@ -47,11 +48,37 @@ NICKEL_INGOT.addOnGet(() => {
     gameActions.addProducer(BLAST_FURNACE);
 });
 const STEEL_INGOT = new Resource("steel_ingot", "Steel Ingot", 25);
+STEEL_INGOT.addOnGet(() => {
+    gameActions.addProducer(SAWMILL);
+});
 const GLASS = new Resource("glass", "Glass", 4);
 const SILICON = new Resource("silicon", "Silicon", 12);
 SILICON.addOnGet(() => {
-    //Add solar panel
+    gameActions.addProducer(SOLAR_PANEL);
 });
+const WOOD = new Resource("wood", "Wood", 2);
+WOOD.addOnGet(() => {
+    gameActions.addRecipe(CHARCOAL_FURNACE);
+});
+const SAWDUST = new Resource("sawdust", "Sawdust", 1);
+const CHARCOAL = new Resource("charcoal", "Charcoal", 5);
+CHARCOAL.addOnGet(() => {
+    gameActions.addRecipe(CAST_IRON_BLAST_FURNACE);
+});
+const CAST_IRON_INGOT = new Resource("cast_iron_ingot", "Cast Iron Ingot", 20);
+/* TIER 3 */
+const SILVER_ORE = new Resource("silver_ore", "Silver Ore", 10);
+const SILVER_INGOT = new Resource("silver_ingot", "Silver Ingot", 30);
+const GOLD_ORE = new Resource("gold_ore", "Gold Ore", 100);
+const GOLD_INGOT = new Resource("gold_ingot", "Gold Ingot", 300);
+const ALUMINUM_ORE = new Resource("aluminum_ore", "Aluminum Ore", 7);
+const ALUMINUM_INGOT = new Resource("aluminum_ingot", "Aluminum Ingot", 21);
+const RUBY = new Resource("ruby", "Ruby", 100);
+const SAPPHIRE = new Resource("sapphire", "Sapphire", 100);
+const EMERALD = new Resource("emerald", "Emerald", 100);
+const TOPAZ = new Resource("topaz", "Topaz", 100);
+/* TIER 4 */
+
 
 
 
@@ -71,9 +98,26 @@ const MINING_TIER2 = new LootTable([
     [COPPER_ORE, 1],
     [COAL, 1],
 ]);
+const MINING_TIER3 = new LootTable([
+    [ROCK, 4],
+    [SILVER_ORE, 2],
+    [GOLD_ORE, 1],
+    [ALUMINUM_ORE, 4],
+    [RUBY, 1],
+    [SAPPHIRE, 1],
+    [EMERALD, 1],
+    [TOPAZ, 1],
+    [IRON_ORE, 2],
+    [NICKEL_ORE, 2],
+    [TIN_ORE, 1],
+]);
 const EXCAVATION_TIER1 = new LootTable([
     [SAND, 3],
     [CLAY, 1],
+]);
+const SAWMILL_TABLE = new LootTable([
+    [WOOD, 2],
+    [SAWDUST, 1],
 ]);
 
 
@@ -87,6 +131,9 @@ HAMSTER_WHEEL.addCapability(new EnergyGenCap(new GigaNum(5)));
 const COMBUSTION_GENERATOR = Producer.energy("combustion_generator", "Combustion Generator",
     "Watch the world burn.", new GigaNum(25), new GigaNum(2), [[COAL, 5]]);
 COMBUSTION_GENERATOR.addCapability(new EnergyGenCap(new GigaNum(25)));
+const SOLAR_PANEL = Producer.energy("solar_panel", "Solar Panel",
+    "Eco-friendly energy production.", new GigaNum(100), new GigaNum(1.1), [[SILICON, 2], [GLASS, 4]]);
+SOLAR_PANEL.addCapability(new EnergyGenCap(new GigaNum(20)));
 
 /* RESOURCE */
 const MINE = Producer.resource("mine", "Mine",
@@ -98,6 +145,10 @@ const EXCAVATOR = Producer.resource("excavator", "Excavator",
     "That big yellow car.", new GigaNum(25), new GigaNum(1.8), 3, 1, [[COPPER_INGOT, 2]]);
 EXCAVATOR.addCapability(new EnergyConsumptionCap(new GigaNum(10)));
 EXCAVATOR.addCapability(new MiningCap(EXCAVATION_TIER1));
+const SAWMILL = Producer.resource("sawmill", "Sawmill",
+    "TREES! THEY ARE EVERYWHERE!", new GigaNum(250), new GigaNum(2), 2, 1,
+    [[STEEL_INGOT, 5], [COPPER_INGOT, 10]]);
+SAWMILL.addCapability(new MiningCap(SAWMILL_TABLE));
 
 /* CRAFTING */
 const FURNACE = Producer.crafting("furnace", "Furnace",
@@ -129,7 +180,7 @@ const COPPER_INGOT_FURNACE = new Recipe("copper_ingot_furnace", "Copper Ore to I
 const COAL_FURNACE = new Recipe("coal_furnace", "Coal Ore to Processed",
     FURNACE, [[COAL, 1]], [[COAL_ORE, 2]], 2);
 const STEEL_BLAST_FURNACE = new Recipe("steel_blast_furnace", "Iron and Coal into Steel", BLAST_FURNACE,
-    [[STEEL_INGOT, 1]], [[IRON_INGOT, 1], [COAL, 1]], 4);
+    [[STEEL_INGOT, 4]], [[IRON_INGOT, 4], [COAL, 1]], 8);
 const TIN_INGOT_FURNACE = new Recipe("tin_ingot_furnace", "Tin Ore to Ingot",
     FURNACE, [[TIN_INGOT, 1]], [[TIN_ORE, 2]], 3);
 const NICKEL_INGOT_FURNACE = new Recipe("nickel_ingot_furnace", "Nickel Ore to Ingot",
@@ -137,6 +188,9 @@ const NICKEL_INGOT_FURNACE = new Recipe("nickel_ingot_furnace", "Nickel Ore to I
 const GLASS_FURNACE = new Recipe("glass_furnace", "Sand into Glass", FURNACE, [[GLASS, 1]], [[SAND, 2]], 2);
 const SILICON_FURNACE = new Recipe("silicon_furnace", "Quartz and Coal into Silicon",
     FURNACE, [[SILICON, 1]], [[QUARTZ, 2], [COAL, 1]], 6);
+const CHARCOAL_FURNACE = new Recipe("charcoal_furnace", "Wood to Charcoal", FURNACE, [[CHARCOAL, 1]], [[WOOD, 2]], 2);
+const CAST_IRON_BLAST_FURNACE = new Recipe("cast_iron_blast_furnace", "Iron and Charcoal to Cast Iron",
+    BLAST_FURNACE, [[CAST_IRON_INGOT, 1]], [[IRON_INGOT, 1], [CHARCOAL, 1]], 4);
 
 
 
@@ -157,6 +211,29 @@ const MINE_IRON_DRILLS = new ProducerUpgrade("mine_iron_drills", "Iron Drills",
         gameActions.addRecipe(NICKEL_INGOT_FURNACE);
         MINE_IRON_DRILLS.isBought = true;
     }, [new GigaNum(50), [[IRON_INGOT, 4]]]);
+const MINE_STEEL_DRILLS = new ProducerUpgrade("mine_steel_drills", "Composite Steel Drills",
+    "Mines now go even deeper and yield new resources.", "resource", () => {
+        const cap = MINE.getCapabilities().get("mining") as MiningCap;
+        cap.expandLootTable(MINING_TIER3);
+        MINE.updateCapability(cap);
+        gameActions.addUpgrade(FURNACE_BELLOWS_TIER1);
+        MINE_STEEL_DRILLS.isBought = true;
+    }, [new GigaNum(250), [[STEEL_INGOT, 16], [CAST_IRON_INGOT, 16], [TIN_INGOT, 4]]]);
+const FURNACE_AUTOCLICKER = new ProducerUpgrade("furnace_autoclicker", "Furnace Autoclicker",
+    "Automates furnaces", "crafting", () => {
+        FURNACE.setCanBeAutomated(true);
+        FURNACE_AUTOCLICKER.isBought = true;
+    }, [new GigaNum(100), [[STEEL_INGOT, 5]]]);
+const FURNACE_OVERCLOCK_TIER1 = new ProducerUpgrade("furnace_overclock_tier1", "Furnace Overclock I",
+    "Speeds up furnaces by 25%.", "crafting", () => {
+        FURNACE.ticksPerOperation! *= 0.75;
+        FURNACE_OVERCLOCK_TIER1.isBought = true;
+    }, [new GigaNum(200), [[COAL, 15]]]);
+const FURNACE_BELLOWS_TIER1 = new ProducerUpgrade("furnace_bellows_tier1", "Furnace Bellows I",
+    "Enables furnaces to smelt more ores.", "crafting", () => {
+        //TODO: unlock recipes for silver, gold and aluminum
+        FURNACE_BELLOWS_TIER1.isBought = true;
+    }, [new GigaNum(1000), [[STEEL_INGOT, 12], [WOOD, 25]]]);
 
 
 
@@ -164,4 +241,5 @@ const MINE_IRON_DRILLS = new ProducerUpgrade("mine_iron_drills", "Iron Drills",
 export function gameInit() {
     gameActions.addProducer(HAMSTER_WHEEL);
     gameActions.addProducer(MINE);
+    ROCK.canBeAutomated = true;
 }
