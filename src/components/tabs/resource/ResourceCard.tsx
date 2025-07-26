@@ -25,8 +25,8 @@ export function ResourceCard({resource, amount, spriteSrc}:
                     Auto-sell: {autoSell ? "On" : "Off"}
                 </button>
                 <div className="space-x-2">
-                    <label htmlFor="cap">Cap:</label>
-                    <input defaultValue={resource.autoCellCap} className="w-16" id="cap" type="number"
+                    <label htmlFor={resource.getId()+"_auto"}>Cap:</label>
+                    <input defaultValue={resource.autoCellCap} className="w-16" id={resource.getId()+"_auto"} type="number"
                            onChange={(e) => {
                                resource.autoCellCap = Number(e.currentTarget.value);
                            }}/>
