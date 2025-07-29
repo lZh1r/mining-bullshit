@@ -40,7 +40,7 @@ export class LootTable {
     }
 
     combine(...tables: LootTable[]): LootTable {
-        let newResourceWeightPairs = new Array<[Resource, number]>;
+        let newResourceWeightPairs = this.resourceWeightPairs;
         for (const table of tables) {
             newResourceWeightPairs = newResourceWeightPairs.concat(table.resourceWeightPairs);
         }
