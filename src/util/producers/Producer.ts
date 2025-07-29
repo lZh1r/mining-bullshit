@@ -102,7 +102,7 @@ export class Producer<T extends ProducerType> {
     }
 
     get ticksRequired() {
-        return this.ticksPerOperation === -1 ? 0 : this.ticksPerOperation! * this.ticksMultiplier;
+        return this.ticksPerOperation === -1 ? 0 : Number((this.ticksPerOperation! * this.ticksMultiplier).toFixed(3));
     }
 
     tick(): boolean {

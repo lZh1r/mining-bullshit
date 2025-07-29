@@ -1,4 +1,4 @@
-import type {ICapability} from "./capabilities/ICapability";
+import type {ICapability, ResourceCapabilityType} from "./capabilities/ICapability";
 
 export class Resource {
 
@@ -12,7 +12,7 @@ export class Resource {
         private readonly name: NameString,
         public baseValue: number,
         public valueMultiplier: number = 1,
-        private readonly capabilities: Map<IDString, ICapability> = new Map()) {}
+        private readonly capabilities: Map<ResourceCapabilityType, ICapability> = new Map()) {}
 
     get valuePer() {
         return this.baseValue * this.valueMultiplier;

@@ -10,6 +10,7 @@ import type {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
 import type {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
 import type {ProducerUpgrade} from "./util/upgrades/ProducerUpgrade.ts";
 import type {Recipe} from "./util/crafts/Recipe.ts";
+import type {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal(ProducersTab);
@@ -98,6 +99,10 @@ export const gameActions = {
             resource.performOnGet();
         } else {
             prevCount = resPair[1];
+        }
+        if (resource.getCapabilities().has("mastery")) {
+            const masteryCap = resource.getCapabilities().get("mastery")! as MasteryCap;
+            masteryCap.incrementXp(amount);
         }
         const newMap = new Map(current);
         resources.value = newMap.set(resource.getId(), [resource, prevCount + amount]);
