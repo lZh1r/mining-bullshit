@@ -18,12 +18,10 @@ export class MasteryCap implements ICapability {
 
     incrementXp(times: number = 1) {
         this.xp += times;
-        if (this.level <= MasteryCap.maxLevel) {
-            while (this.requirementForNextLevel <= this.xp) {
+            while (this.requirementForNextLevel <= this.xp && this.level < MasteryCap.maxLevel) {
                 this.xp = this.xp - this.requirementForNextLevel;
                 this.level++;
                 this.effect();
             }
-        }
     }
 }
