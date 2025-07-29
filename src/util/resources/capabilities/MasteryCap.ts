@@ -1,12 +1,13 @@
 import type {ICapability, ResourceCapabilityType} from "./ICapability.ts";
 export class MasteryCap implements ICapability {
     public readonly id: ResourceCapabilityType;
+    static maxLevel: number = 100;
     constructor(
         public readonly initialRequirement: number,
         public requirementScale: number,
         public effect: () => void,
         public xp: number = 0,
-        public level: number = 0
+        public level: number = 0,
     ) {
         this.id = "mastery";
     }
@@ -17,10 +18,12 @@ export class MasteryCap implements ICapability {
 
     incrementXp(times: number = 1) {
         this.xp += times;
-        while (this.requirementForNextLevel <= this.xp) {
-            this.xp = this.xp - this.requirementForNextLevel;
-            this.level++;
-            this.effect();
+        if (this.level <= MasteryCap.maxLevel) {
+            while (this.requirementForNextLevel <= this.xp) {
+                this.xp = this.xp - this.requirementForNextLevel;
+                this.level++;
+                this.effect();
+            }
         }
     }
 }
