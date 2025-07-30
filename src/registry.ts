@@ -8,6 +8,7 @@ import {ProducerUpgrade} from "./util/upgrades/ProducerUpgrade.ts";
 import {GigaNum} from "./util/GigaNum.ts";
 import {gameActions} from "./game-state.ts";
 import {Recipe} from "./util/crafts/Recipe.ts";
+import {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
 
 /* RESOURCES */
 /* TIER 1 */
@@ -19,6 +20,7 @@ const IRON_ORE = new Resource("iron_ore", "Iron Ore", 5);
 const IRON_INGOT = new Resource("iron_ingot", "Iron Ingot", 15);
 IRON_INGOT.addOnGet(() => {
     gameActions.addUpgrade(MINE_IRON_DRILLS);
+    gameActions.addUpgrade(MINE_AUTOCLICKER_TIER1);
 });
 const COPPER_ORE = new Resource("copper_ore", "Copper Ore", 3);
 const COPPER_INGOT = new Resource("copper_ingot", "Copper Ingot", 9);
@@ -48,6 +50,9 @@ NICKEL_INGOT.addOnGet(() => {
     gameActions.addProducer(BLAST_FURNACE);
 });
 const STEEL_INGOT = new Resource("steel_ingot", "Steel Ingot", 25);
+STEEL_INGOT.addCapability(new MasteryCap(100, 1.1, () => {
+    BLAST_FURNACE.ticksMultiplier *= 0.99;
+}));
 STEEL_INGOT.addOnGet(() => {
     gameActions.addProducer(SAWMILL);
 });
@@ -77,13 +82,25 @@ const RUBY = new Resource("ruby", "Ruby", 100);
 const SAPPHIRE = new Resource("sapphire", "Sapphire", 100);
 const EMERALD = new Resource("emerald", "Emerald", 100);
 const TOPAZ = new Resource("topaz", "Topaz", 100);
-/* TIER 4 */
+const BRONZE_INGOT = new Resource("bronze_ingot", "Bronze Ingot", 14);
+const CONSTANTAN_INGOT = new Resource("constantan_ingot", "Constantan Ingot", 20);
+const ELECTRUM_INGOT = new Resource("electrum_ingot", "Electrum Ingot", 170);
+const CIRCUIT_TIER1 = new Resource("circuit_tier1", "Tier I Circuit", 50);
+const GEM_LATTICE = new Resource("gem_lattice", "Gem Lattice", 500);
 
+/* TIER 4 */
+const LEAD_ORE = new Resource("lead_ore", "Lead Ore", 10);
+const LEAD_INGOT = new Resource("lead_ingot", "Lead Ingot", 30);
+const DIAMOND = new Resource("diamond", "Diamond", 750);
+const ZINC_ORE = new Resource("zinc_ore", "Zinc Ore", 8);
+const ZINC_INGOT = new Resource("zinc_ingot", "Zinc Ingot", 24);
+const BRASS_INGOT = new Resource("brass_ingot", "Brass Ingot", 30);
+const CIRCUIT_TIER2 = new Resource("circuit_tier2", "Tier II Circuit", 75);
 
 
 
 /* LOOT TABLES */
-const MINING_TIER1 = new LootTable([
+export const MINING_TIER1 = new LootTable([
     [ROCK, 10],
     [COPPER_ORE, 3],
     [COAL_ORE, 5],
@@ -167,6 +184,19 @@ BLAST_FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(40)));
 BLAST_FURNACE.addMilestone(1, () => {
     gameActions.addRecipe(STEEL_BLAST_FURNACE);
 });
+//UNUSED
+const ALLOY_FURNACE = Producer.resource("alloy_furnace", "Alloy Furnace",
+    "Mother of all alloys.", new GigaNum(1000), new GigaNum(1.65), 4, 1,
+    []);
+ALLOY_FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(100)));
+ALLOY_FURNACE.addMilestone(1, () => {
+    //Add recipes
+});
+//UNUSED
+const ASSEMBLER = Producer.resource("assembler", "Assembler",
+    "Creates a whole lotta things.", new GigaNum(5000), new GigaNum(1.7), 5, 2,
+    []);
+ASSEMBLER.addCapability(new EnergyConsumptionCap(new GigaNum(100)));
 
 /* MONEY */
 
@@ -234,6 +264,14 @@ const FURNACE_BELLOWS_TIER1 = new ProducerUpgrade("furnace_bellows_tier1", "Furn
         //TODO: unlock recipes for silver, gold and aluminum
         FURNACE_BELLOWS_TIER1.isBought = true;
     }, [new GigaNum(1000), [[STEEL_INGOT, 12], [WOOD, 25]]]);
+const MINE_AUTOCLICKER_TIER1 = new ProducerUpgrade("mine_autoclicker_tier1", "Mine Autoclicker I",
+    "Gives you an ability to automatically sell items from tier I minig pool.", "resource", () => {
+        ROCK.canBeAutomated = true;
+        COAL_ORE.canBeAutomated = true;
+        IRON_ORE.canBeAutomated = true;
+        COPPER_ORE.canBeAutomated = true;
+        MINE_AUTOCLICKER_TIER1.isBought = true;
+    }, [new GigaNum(45), [[COPPER_INGOT, 2], [IRON_INGOT, 1]]]);
 
 
 
@@ -241,5 +279,4 @@ const FURNACE_BELLOWS_TIER1 = new ProducerUpgrade("furnace_bellows_tier1", "Furn
 export function gameInit() {
     gameActions.addProducer(HAMSTER_WHEEL);
     gameActions.addProducer(MINE);
-    ROCK.canBeAutomated = true;
 }
