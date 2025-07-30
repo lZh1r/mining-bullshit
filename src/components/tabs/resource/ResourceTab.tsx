@@ -14,7 +14,7 @@ export function ResourceTab() {
                              className={`
                              ${gameActions.canCompleteOrder(order) ? 
                                  "text-foreground hover:bg-hover-card-background hover:border-foreground" :
-                                 "text-muted-foreground"}
+                                 "text-muted-foreground cursor-pointer"}
                               bg-card-content-background border-2 border-muted-foreground flex flex-col text-xl
                         `}
                              onClick={() => {
