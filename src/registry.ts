@@ -279,4 +279,5 @@ const MINE_AUTOCLICKER_TIER1 = new ProducerUpgrade("mine_autoclicker_tier1", "Mi
 export function gameInit() {
     gameActions.addProducer(HAMSTER_WHEEL);
     gameActions.addProducer(MINE);
+    gameActions.addOrder();
 }
