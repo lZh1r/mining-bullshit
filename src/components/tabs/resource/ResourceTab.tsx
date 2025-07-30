@@ -13,8 +13,8 @@ export function ResourceTab() {
                         <div key={order.requirements.toString()}
                              className={`
                              ${gameActions.canCompleteOrder(order) ? 
-                                 "text-foreground hover:bg-hover-card-background hover:border-foreground" :
-                                 "text-muted-foreground cursor-pointer"}
+                                 "text-foreground hover:bg-hover-card-background hover:border-foreground cursor-pointer" :
+                                 "text-muted-foreground cursor-default"}
                               bg-card-content-background border-2 border-muted-foreground flex flex-col text-xl
                         `}
                              onClick={() => {
