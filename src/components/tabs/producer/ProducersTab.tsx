@@ -6,13 +6,12 @@ import {displayProducerDetails, displayResourceRequirement} from "../../../util/
 import {BuyAmountButton} from "./BuyAmountButton.tsx";
 import {RecipePanel} from "./crafting/RecipePanel.tsx";
 import {GigaNum} from "../../../util/GigaNum.ts";
-import {useSignalEffect} from "@preact/signals";
 import type {ProducerUpgrade} from "../../../util/upgrades/ProducerUpgrade.ts";
 
 export function ProducersTab() {
 
     const [hoverTarget, setHoverTarget] = useState<Producer<ProducerType>>();
-    const [activeProducerList, setActiveProducerList] = useState<ProducerType | "all">("energy");
+    const [activeProducerList, setActiveProducerList] = useState<ProducerType | "all">("all");
     const [buyAmount, setBuyAmount] = useState(1);
     const producerMap = new Map<ProducerType | "all", [Producer<ProducerType>, number][]>([
         ["energy", gameActions.getAllProducersOfType("energy")],
@@ -22,17 +21,8 @@ export function ProducersTab() {
         ["all", gameActions.getAllProducersOfType("energy").concat(gameActions.getAllProducersOfType("money"))
             .concat(gameActions.getAllProducersOfType("crafting")).concat(gameActions.getAllProducersOfType("resource"))]
     ]);
-    const [allUpgradesArray, setAllUpgradesArray] = useState<ProducerUpgrade[]>([]);
+    const allUpgradesArray = Array.from(upgrades.value.values()).flat();
     const [upgradesToDisplay, setUpgradesToDisplay] = useState<ProducerUpgrade[]>([]);
-
-    useSignalEffect(() => {
-        const abomination = Array.from(upgrades.value.values());
-        let newArray: ProducerUpgrade[] = [];
-        for (const upgrades of abomination) {
-            newArray = newArray.concat(upgrades);
-        }
-        setAllUpgradesArray(newArray);
-    });
 
     useEffect(() => {
         if (activeProducerList === "all") {
