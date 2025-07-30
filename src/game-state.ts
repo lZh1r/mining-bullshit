@@ -11,6 +11,9 @@ import type {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
 import type {ProducerUpgrade} from "./util/upgrades/ProducerUpgrade.ts";
 import type {Recipe} from "./util/crafts/Recipe.ts";
 import type {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
+import {Order} from "./util/resources/Order.ts";
+import type {LootTable} from "./util/LootTable.ts";
+import {MINING_TIER1} from "./registry.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal(ProducersTab);
@@ -26,6 +29,9 @@ export const upgrades = signal(new Map<ProducerType, ProducerUpgrade[]>([
 export const recipes = signal(new Map<Producer<"crafting">, Recipe[]>());
 export const recipeQueue = signal(new Map<Producer<"crafting">, Recipe[]>());
 export const automationQueue = signal(new Array<Recipe>());
+export const orderLootTable = signal<LootTable>(MINING_TIER1);
+export const orders = signal<Order[]>([]);
+export const maxOrderTier = signal<number>(1);
 export const totalValue = computed(() => {
     let result = new GigaNum(0);
     resources.value.forEach((resourceNumberPair) => {
@@ -90,6 +96,7 @@ export const gameActions = {
         }
 
     },
+    //TODO: add [Resource, number][] support
     depositResource(resource: Resource, amount: number = 1) {
         const current = resources.value;
         const resPair = current.get(resource.getId());
@@ -107,6 +114,7 @@ export const gameActions = {
         const newMap = new Map(current);
         resources.value = newMap.set(resource.getId(), [resource, prevCount + amount]);
     },
+    //TODO: add [Resource, number][] support
     withdrawResource(resource: Resource, amount: number) {
         const current = resources.value;
         if (!this.hasEnoughOf(resource, amount)) {
@@ -356,5 +364,28 @@ export const gameActions = {
         newMap.get(recipe.producer)?.find((value) => value.id === recipe.id)!.resetCurrentTicks();
         newMap.set(recipe.producer, newMap.get(recipe.producer)!.filter((val) => val.id !== recipe.id));
         recipeQueue.value = newMap;
+    },
+    addOrder() {
+        const currentOrders = orders.value;
+        currentOrders.push(new Order(Math.ceil(Math.random() * maxOrderTier.value), orderLootTable.value));
+        orders.value = currentOrders;
+    },
+    removeOrder(order: Order) {
+        const newOrders = orders.value;
+        orders.value = newOrders.filter(o => o !== order);
+    },
+    canCompleteOrder(order: Order) {
+        const requirements = order.requirements;
+        return this.hasEnoughOf(requirements);
+    },
+    completeOrder(order: Order) {
+        if (this.canCompleteOrder(order)) {
+            this.removeOrder(order);
+            this.addOrder();
+            for (const [resource, amount] of order.requirements) {
+                this.withdrawResource(resource, amount);
+            }
+            this.addMoney(order.reward);
+        }
     }
 };
