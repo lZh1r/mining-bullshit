@@ -272,7 +272,7 @@ const FURNACE_BELLOWS_TIER1 = new ProducerUpgrade("furnace_bellows_tier1", "Furn
         FURNACE_BELLOWS_TIER1.isBought = true;
     }, [new GigaNum(1000), [[STEEL_INGOT, 12], [WOOD, 25]]]);
 const MINE_AUTOCLICKER_TIER1 = new ProducerUpgrade("mine_autoclicker_tier1", "Mine Autoclicker I",
-    "Gives you an ability to automatically sell items from tier I minig pool.", "resource", () => {
+    "Gives you an ability to automatically sell items from tier I mining pool.", "resource", () => {
         ROCK.canBeAutomated = true;
         COAL_ORE.canBeAutomated = true;
         IRON_ORE.canBeAutomated = true;
