@@ -1,4 +1,4 @@
-import type {Resource} from "./resources/Resource.ts";
+import {Resource} from "./resources/Resource.ts";
 
 interface LootInterval {
     min: number,
@@ -60,24 +60,34 @@ export class LootTable {
         return new LootTable(newResourceWeightPairs);
     }
 
+    push(resource: Resource, weight: number): LootTable {
+        const newResourceWeightPairs = this.resourceWeightPairs;
+        const existingPair = newResourceWeightPairs.find((val) => val[0] === resource);
+        if (existingPair) {
+            newResourceWeightPairs[newResourceWeightPairs.indexOf(existingPair)] = [existingPair[0], existingPair[1] + weight];
+        } else {
+            newResourceWeightPairs.push([resource, weight]);
+        }
+        return new LootTable(newResourceWeightPairs);
+    }
+
     getResourceWeightPairs() {
         return this.resourceWeightPairs;
     }
 
-    expand(...tables: LootTable[]): void {
-        const newResourceWeightPairs = this.resourceWeightPairs;
-        for (const table of tables) {
-            for (const [resource, weight] of table.resourceWeightPairs) {
-                const existingPair =
-                    newResourceWeightPairs.find((val) => val[0] === resource);
-                if (existingPair) {
-                    newResourceWeightPairs[newResourceWeightPairs.indexOf(existingPair)] = [existingPair[0], existingPair[1] + weight];
-                } else {
-                    newResourceWeightPairs.push([resource, weight]);
-                }
+    remove(item: Resource | LootTable): LootTable {
+        let newTable: LootTable;
+        if (item instanceof Resource) {
+            const newWeightPairs =
+                this.resourceWeightPairs.filter(([resource, _]) => resource !== item);
+            newTable = new LootTable(newWeightPairs);
+        } else {
+            let newWeightPairs = this.resourceWeightPairs;
+            for (const [resource, _] of item.resourceWeightPairs) {
+                newWeightPairs = newWeightPairs.filter(([res, _]) => res !== resource);
             }
+            newTable = new LootTable(newWeightPairs);
         }
-        this.resourceWeightPairs = newResourceWeightPairs;
-        this.generateLootLookUpTable(newResourceWeightPairs);
+        return newTable;
     }
 }
