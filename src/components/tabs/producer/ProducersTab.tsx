@@ -34,7 +34,7 @@ export function ProducersTab() {
 
     return (
         <div class="grid grid-cols-4 space-x-2">
-            <aside class="col-span-1 bg-card-background flex-col flex ml-2 border-2 border-muted-foreground max-h-[84vh]">
+            <aside class="col-span-1 bg-card-background flex-col flex ml-2 border-2 border-muted-foreground max-h-[75vh]">
                 <div class="flex justify-evenly">
                     <ProducersTabSidebarHeaderButton src={"/sprites/all16.png"} type={"all"} currentType={activeProducerList}
                                                      callback={() => setActiveProducerList("all")}/>
@@ -85,7 +85,7 @@ export function ProducersTab() {
                     }
                 </div>
             </aside>
-            <div className="col-span-1 bg-card-background border-2 border-muted-foreground">
+            <div className="col-span-1 bg-card-background border-2 border-muted-foreground max-h-[75vh]">
                 <h1 className="text-3xl text-center p-2 border-b-2 border-b-muted-foreground">Upgrades</h1>
                 <div className="grid grid-cols-2 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-card-background
                     [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:w-3 overflow-x-hidden overflow-scroll">
@@ -115,7 +115,7 @@ export function ProducersTab() {
                 </div>
             </div>
             {activeProducerList === "crafting" || activeProducerList === "all" ? <RecipePanel/> : <h1>WIP</h1>}
-            <div className="absolute bottom-0 p-4 border-t-2 border-muted-foreground bg-navbar-background w-full">
+            <div className="fixed bottom-0 p-4 border-t-2 border-muted-foreground bg-navbar-background w-full">
                 {
                     hoverTarget ? <div className="flex flex-col">
                         <span className="text-2xl">{hoverTarget instanceof ProducerUpgrade ? hoverTarget.name : displayProducerDetails(hoverTarget)}</span>
