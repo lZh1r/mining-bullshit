@@ -12,8 +12,17 @@ import type {ProducerUpgrade} from "./util/upgrades/ProducerUpgrade.ts";
 import type {Recipe} from "./util/crafts/Recipe.ts";
 import type {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
 import {Order} from "./util/resources/Order.ts";
-import type {LootTable} from "./util/LootTable.ts";
-import {MINING_TIER1} from "./registry.ts";
+import {LootTable} from "./util/LootTable.ts";
+import {
+    COAL,
+    COPPER_INGOT,
+    EXCAVATION_TIER1,
+    IRON_INGOT,
+    MINING_TIER1,
+    MINING_TIER2, NICKEL_INGOT, SAWMILL_TABLE, SILICON,
+    STEEL_INGOT,
+    TIN_INGOT
+} from "./registry.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal(ProducersTab);
@@ -31,6 +40,7 @@ export const recipeQueue = signal(new Map<Producer<"crafting">, Recipe[]>());
 export const automationQueue = signal(new Array<Recipe>());
 export const orderLootTable = signal<LootTable>(MINING_TIER1);
 export const orders = signal<Order[]>([]);
+export const ordersCount = signal(0);
 export const maxOrderTier = signal<number>(1);
 export const totalValue = computed(() => {
     let result = new GigaNum(0);
@@ -386,6 +396,48 @@ export const gameActions = {
                 this.withdrawResource(resource, amount);
             }
             this.addMoney(order.reward);
+            this.incrementOrderCount();
         }
-    }
+    },
+    expandOrderLootTable(resources: [Resource, number][] | LootTable) {
+        let newTable = orderLootTable.value;
+        if (resources instanceof LootTable) {
+            newTable = newTable.combine(resources);
+        } else {
+            for (const [resource, weight] of resources) {
+                newTable = newTable.push(resource, weight);
+            }
+        }
+        orderLootTable.value = newTable;
+    },
+    shrinkOrderLootTable(loot: Resource | LootTable) {
+        let newLootTable = orderLootTable.value;
+        newLootTable = newLootTable.remove(loot);
+        orderLootTable.value = newLootTable;
+    },
+    incrementOrderCount() {
+        ordersCount.value += 1;
+        const count = ordersCount.value;
+        switch (count) {
+            case 5:
+                this.expandOrderLootTable([[COAL, 5], [COPPER_INGOT, 3], [IRON_INGOT, 2]]);
+                break;
+            case 20:
+                this.expandOrderLootTable(EXCAVATION_TIER1);
+                break;
+            case 30:
+                this.expandOrderLootTable(MINING_TIER2);
+                this.shrinkOrderLootTable(MINING_TIER1);
+                break;
+            case 40:
+                this.expandOrderLootTable([
+                    [STEEL_INGOT, 4], [TIN_INGOT, 6], [NICKEL_INGOT, 4],
+                    [SILICON, 6], [COPPER_INGOT, 4], [IRON_INGOT, 3]
+                ]);
+                break;
+            case 50:
+                this.expandOrderLootTable(SAWMILL_TABLE);
+                break;
+        }
+    },
 };
