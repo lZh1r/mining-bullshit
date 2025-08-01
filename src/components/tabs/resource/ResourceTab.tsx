@@ -9,8 +9,8 @@ export function ResourceTab() {
             <div className="bg-card-background border-2 border-muted-foreground max-h-[84vh]">
                 <h1 className="border-b-2 p-2 border-muted-foreground text-3xl text-center">Orders</h1>
                 {
-                    orders.value.map(order =>
-                        <div key={order.requirements.toString()}
+                    orders.value.map((order, index) =>
+                        <div key={`tier${order.tier}_order${index}`}
                              className={`
                              ${gameActions.canCompleteOrder(order) ? 
                                  "text-foreground hover:bg-hover-card-background hover:border-foreground cursor-pointer" :
@@ -40,7 +40,7 @@ export function ResourceTab() {
             <div className="sm:col-span-3 overflow-x-hidden overflow-scroll
         [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-card-background
         [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:w-3
-        bg-card-background border-2 border-muted-foreground max-h-[84vh]">
+        bg-card-background border-2 border-muted-foreground max-h-[84vh] grid grid-cols-2">
                 {
                     Array.from(resources.value).map(([id, resource]) =>
                         <ResourceCard key={id} resource={resource[0]} amount={resource[1]} spriteSrc={`/sprites/resources/${id}.png`}/>
