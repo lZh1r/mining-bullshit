@@ -93,13 +93,13 @@ export function ProducersTab() {
                     <q>{hoverTarget ? hoverTarget.description : "Hover over a building to see what it does"}</q>
                 </div>
             </aside>
-            <div class="col-span-1 bg-card-background border-2 border-muted-foreground">
-                <h1 class="text-3xl text-center p-2 border-b-2 border-b-muted-foreground">Upgrades</h1>
-                <div class="grid grid-cols-2 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-card-background
+            <div className="col-span-1 bg-card-background border-2 border-muted-foreground">
+                <h1 className="text-3xl text-center p-2 border-b-2 border-b-muted-foreground">Upgrades</h1>
+                <div className="grid grid-cols-2 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-card-background
                     [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:w-3 overflow-x-hidden overflow-scroll">
                     {
                        upgradesToDisplay.map((entry) =>
-                            <div class={`col-span-1 w-full p-2 bg-card-content-background border-2 border-muted-foreground text-xl m-1
+                            <div class={`col-span-1 w-full p-2 bg-card-content-background border-2 border-muted-foreground text-xl
                             ${entry.isBought ? "hidden" : ""} ${gameActions.canPurchaseUpgrade(entry) ? 
                                 "cursor-pointer hover:bg-hover-card-background" :
                                 "text-muted-foreground"}`}
