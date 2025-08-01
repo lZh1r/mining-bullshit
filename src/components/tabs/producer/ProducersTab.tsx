@@ -6,11 +6,11 @@ import {displayProducerDetails, displayResourceRequirement} from "../../../util/
 import {BuyAmountButton} from "./BuyAmountButton.tsx";
 import {RecipePanel} from "./crafting/RecipePanel.tsx";
 import {GigaNum} from "../../../util/GigaNum.ts";
-import type {ProducerUpgrade} from "../../../util/upgrades/ProducerUpgrade.ts";
+import {ProducerUpgrade} from "../../../util/upgrades/ProducerUpgrade.ts";
 
 export function ProducersTab() {
 
-    const [hoverTarget, setHoverTarget] = useState<Producer<ProducerType>>();
+    const [hoverTarget, setHoverTarget] = useState<Producer<ProducerType> | ProducerUpgrade>();
     const [activeProducerList, setActiveProducerList] = useState<ProducerType | "all">("all");
     const [buyAmount, setBuyAmount] = useState(1);
     const producerMap = new Map<ProducerType | "all", [Producer<ProducerType>, number][]>([
@@ -71,10 +71,6 @@ export function ProducersTab() {
                             ${gameActions.canPurchaseProducer(producer, buyAmount) ?
                                     "border-muted-foreground hover:bg-hover-card-background cursor-pointer hover:border-foreground" :
                                     "text-muted-foreground"}`}
-                                onContextMenu={(e) => {
-                                    e.preventDefault();
-                                    gameActions.sellProducer(producer, buyAmount);
-                                }}
                                 onClick={() => {
                                     gameActions.purchaseProducer(producer, buyAmount);
                                 }}>
@@ -88,10 +84,6 @@ export function ProducersTab() {
                         )
                     }
                 </div>
-                <div className="bg-card-background border-2 border-muted-foreground p-2 justify-self-end flex flex-col">
-                    <span className="text-xl">{hoverTarget ? displayProducerDetails(hoverTarget) : ""}</span>
-                    <q>{hoverTarget ? hoverTarget.description : "Hover over a building to see what it does"}</q>
-                </div>
             </aside>
             <div className="col-span-1 bg-card-background border-2 border-muted-foreground">
                 <h1 className="text-3xl text-center p-2 border-b-2 border-b-muted-foreground">Upgrades</h1>
@@ -104,6 +96,12 @@ export function ProducersTab() {
                                 "cursor-pointer hover:bg-hover-card-background" :
                                 "text-muted-foreground"}`}
                                  key={entry.id}
+                                 onMouseEnter={() => {
+                                     setHoverTarget(entry);
+                                 }}
+                                 onMouseLeave={() => {
+                                     setHoverTarget(undefined);
+                                 }}
                                  onClick={() => {
                                      gameActions.purchaseUpgrade(entry);
                                  }}>
@@ -117,6 +115,14 @@ export function ProducersTab() {
                 </div>
             </div>
             {activeProducerList === "crafting" || activeProducerList === "all" ? <RecipePanel/> : <h1>WIP</h1>}
+            <div className="absolute bottom-0 p-4 border-t-2 border-muted-foreground bg-navbar-background w-full">
+                {
+                    hoverTarget ? <div className="flex flex-col">
+                        <span className="text-2xl">{hoverTarget instanceof ProducerUpgrade ? hoverTarget.name : displayProducerDetails(hoverTarget)}</span>
+                        <q className="text-xl">{hoverTarget.description}</q>
+                    </div> : <p className="text-2xl">Hover over stuff to see its description</p>
+                }
+            </div>
         </div>
     );
 }
