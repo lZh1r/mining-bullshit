@@ -30,7 +30,7 @@ export function ProducersTab() {
         } else {
             setUpgradesToDisplay(upgrades.value.get(activeProducerList)!);
         }
-    }, [activeProducerList]);
+    }, [allUpgradesArray]);
 
     return (
         <div class="grid grid-cols-4 space-x-2">
