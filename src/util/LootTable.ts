@@ -83,12 +83,9 @@ export class LootTable {
             newTable = new LootTable(newWeightPairs);
         } else {
             let newWeightPairs = this.resourceWeightPairs;
-            console.log(item.resourceWeightPairs);
             for (const [resource, _] of item.resourceWeightPairs) {
                 newWeightPairs = newWeightPairs.filter(([res, _]) => res !== resource);
-                console.log(newWeightPairs);
             }
-            console.log(newWeightPairs);
             newTable = new LootTable(newWeightPairs);
         }
         return newTable;

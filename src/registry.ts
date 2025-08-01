@@ -20,7 +20,7 @@ const IRON_ORE = new Resource("iron_ore", "Iron Ore", 5);
 export const IRON_INGOT = new Resource("iron_ingot", "Iron Ingot", 15);
 IRON_INGOT.addOnGet(() => {
     gameActions.addUpgrade(MINE_IRON_DRILLS);
-    gameActions.addUpgrade(MINE_AUTOCLICKER_TIER1);
+    gameActions.addUpgrade(FURNACE_AUTOCLICKER);
     gameActions.addUpgrade(AGGRESSIVE_MARKETING_TIER1);
 });
 const COPPER_ORE = new Resource("copper_ore", "Copper Ore", 3);
@@ -167,6 +167,7 @@ const SAWMILL = Producer.resource("sawmill", "Sawmill",
     "TREES! THEY ARE EVERYWHERE!", new GigaNum(250), new GigaNum(2), 2, 1,
     [[STEEL_INGOT, 5], [COPPER_INGOT, 10]]);
 SAWMILL.addCapability(new MiningCap(SAWMILL_TABLE));
+SAWMILL.addCapability(new EnergyConsumptionCap(new GigaNum(30)));
 
 /* CRAFTING */
 const FURNACE = Producer.crafting("furnace", "Furnace",
@@ -255,7 +256,7 @@ const FURNACE_AUTOCLICKER = new ProducerUpgrade("furnace_autoclicker", "Furnace 
     "Automates furnaces", "crafting", () => {
         FURNACE.setCanBeAutomated(true);
         FURNACE_AUTOCLICKER.isBought = true;
-    }, [new GigaNum(100), [[STEEL_INGOT, 5]]]);
+    }, [new GigaNum(100), [[COPPER_INGOT, 2], [IRON_INGOT, 1]]]);
 const FURNACE_OVERCLOCK_TIER1 = new ProducerUpgrade("furnace_overclock_tier1", "Furnace Overclock I",
     "Speeds up furnaces by 25%.", "crafting", () => {
         FURNACE.ticksPerOperation! *= 0.75;

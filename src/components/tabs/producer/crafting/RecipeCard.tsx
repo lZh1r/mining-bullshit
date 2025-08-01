@@ -18,7 +18,7 @@ export function RecipeCard({recipe}:
     return (
         <div
             key={recipe.id}
-            className={`bg-card-content-background border-2 border-muted-foreground grid text-center grid-cols-3 m-1
+            className={`bg-card-content-background border-2 border-muted-foreground grid text-center grid-cols-3
              ${gameActions.canStartRecipe(recipe) ? "text-foreground" : "text-muted-foreground"}`}>
             <div className="flex justify-evenly">
                 <button className={`${recipe.producer.getCanBeAutomated() ? "cursor-pointer" : "hidden"}
