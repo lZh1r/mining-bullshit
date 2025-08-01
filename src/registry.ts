@@ -17,18 +17,19 @@ ROCK.addOnGet(() => {
     gameActions.addProducer(FURNACE);
 });
 const IRON_ORE = new Resource("iron_ore", "Iron Ore", 5);
-const IRON_INGOT = new Resource("iron_ingot", "Iron Ingot", 15);
+export const IRON_INGOT = new Resource("iron_ingot", "Iron Ingot", 15);
 IRON_INGOT.addOnGet(() => {
     gameActions.addUpgrade(MINE_IRON_DRILLS);
     gameActions.addUpgrade(MINE_AUTOCLICKER_TIER1);
+    gameActions.addUpgrade(AGGRESSIVE_MARKETING_TIER1);
 });
 const COPPER_ORE = new Resource("copper_ore", "Copper Ore", 3);
-const COPPER_INGOT = new Resource("copper_ingot", "Copper Ingot", 9);
+export const COPPER_INGOT = new Resource("copper_ingot", "Copper Ingot", 9);
 COPPER_INGOT.addOnGet(() => {
     gameActions.addProducer(EXCAVATOR);
 });
 const COAL_ORE = new Resource("coal_ore", "Coal Ore", 2);
-const COAL = new Resource("coal", "Coal", 6);
+export const COAL = new Resource("coal", "Coal", 6);
 COAL.addOnGet(() => {
     gameActions.addProducer(COMBUSTION_GENERATOR);
     gameActions.addUpgrade(HAMSTER_WHEEL_CARBS);
@@ -43,21 +44,21 @@ QUARTZ.addOnGet(() => {
     gameActions.addRecipe(SILICON_FURNACE);
 });
 const TIN_ORE = new Resource("tin_ore", "Tin Ore", 4);
-const TIN_INGOT = new Resource("tin_ingot", "Tin Ingot", 12);
+export const TIN_INGOT = new Resource("tin_ingot", "Tin Ingot", 12);
 const NICKEL_ORE = new Resource("nickel_ore", "Nickel Ore", 6);
-const NICKEL_INGOT = new Resource("nickel_ingot", "Nickel Ingot", 18);
+export const NICKEL_INGOT = new Resource("nickel_ingot", "Nickel Ingot", 18);
 NICKEL_INGOT.addOnGet(() => {
     gameActions.addProducer(BLAST_FURNACE);
 });
-const STEEL_INGOT = new Resource("steel_ingot", "Steel Ingot", 25);
+export const STEEL_INGOT = new Resource("steel_ingot", "Steel Ingot", 25);
 STEEL_INGOT.addCapability(new MasteryCap(100, 1.1, () => {
     BLAST_FURNACE.ticksMultiplier *= 0.99;
 }));
 STEEL_INGOT.addOnGet(() => {
     gameActions.addProducer(SAWMILL);
 });
-const GLASS = new Resource("glass", "Glass", 4);
-const SILICON = new Resource("silicon", "Silicon", 12);
+export const GLASS = new Resource("glass", "Glass", 4);
+export const SILICON = new Resource("silicon", "Silicon", 12);
 SILICON.addOnGet(() => {
     gameActions.addProducer(SOLAR_PANEL);
 });
@@ -66,36 +67,36 @@ WOOD.addOnGet(() => {
     gameActions.addRecipe(CHARCOAL_FURNACE);
 });
 const SAWDUST = new Resource("sawdust", "Sawdust", 1);
-const CHARCOAL = new Resource("charcoal", "Charcoal", 5);
+export const CHARCOAL = new Resource("charcoal", "Charcoal", 5);
 CHARCOAL.addOnGet(() => {
     gameActions.addRecipe(CAST_IRON_BLAST_FURNACE);
 });
-const CAST_IRON_INGOT = new Resource("cast_iron_ingot", "Cast Iron Ingot", 20);
+export const CAST_IRON_INGOT = new Resource("cast_iron_ingot", "Cast Iron Ingot", 20);
 /* TIER 3 */
 const SILVER_ORE = new Resource("silver_ore", "Silver Ore", 10);
-const SILVER_INGOT = new Resource("silver_ingot", "Silver Ingot", 30);
+export const SILVER_INGOT = new Resource("silver_ingot", "Silver Ingot", 30);
 const GOLD_ORE = new Resource("gold_ore", "Gold Ore", 100);
-const GOLD_INGOT = new Resource("gold_ingot", "Gold Ingot", 300);
+export const GOLD_INGOT = new Resource("gold_ingot", "Gold Ingot", 300);
 const ALUMINUM_ORE = new Resource("aluminum_ore", "Aluminum Ore", 7);
-const ALUMINUM_INGOT = new Resource("aluminum_ingot", "Aluminum Ingot", 21);
+export const ALUMINUM_INGOT = new Resource("aluminum_ingot", "Aluminum Ingot", 21);
 const RUBY = new Resource("ruby", "Ruby", 100);
 const SAPPHIRE = new Resource("sapphire", "Sapphire", 100);
 const EMERALD = new Resource("emerald", "Emerald", 100);
 const TOPAZ = new Resource("topaz", "Topaz", 100);
-const BRONZE_INGOT = new Resource("bronze_ingot", "Bronze Ingot", 14);
-const CONSTANTAN_INGOT = new Resource("constantan_ingot", "Constantan Ingot", 20);
-const ELECTRUM_INGOT = new Resource("electrum_ingot", "Electrum Ingot", 170);
-const CIRCUIT_TIER1 = new Resource("circuit_tier1", "Tier I Circuit", 50);
-const GEM_LATTICE = new Resource("gem_lattice", "Gem Lattice", 500);
+export const BRONZE_INGOT = new Resource("bronze_ingot", "Bronze Ingot", 14);
+export const CONSTANTAN_INGOT = new Resource("constantan_ingot", "Constantan Ingot", 20);
+export const ELECTRUM_INGOT = new Resource("electrum_ingot", "Electrum Ingot", 170);
+export const CIRCUIT_TIER1 = new Resource("circuit_tier1", "Tier I Circuit", 50);
+export const GEM_LATTICE = new Resource("gem_lattice", "Gem Lattice", 500);
 
 /* TIER 4 */
 const LEAD_ORE = new Resource("lead_ore", "Lead Ore", 10);
-const LEAD_INGOT = new Resource("lead_ingot", "Lead Ingot", 30);
+export const LEAD_INGOT = new Resource("lead_ingot", "Lead Ingot", 30);
 const DIAMOND = new Resource("diamond", "Diamond", 750);
 const ZINC_ORE = new Resource("zinc_ore", "Zinc Ore", 8);
-const ZINC_INGOT = new Resource("zinc_ingot", "Zinc Ingot", 24);
-const BRASS_INGOT = new Resource("brass_ingot", "Brass Ingot", 30);
-const CIRCUIT_TIER2 = new Resource("circuit_tier2", "Tier II Circuit", 75);
+export const ZINC_INGOT = new Resource("zinc_ingot", "Zinc Ingot", 24);
+export const BRASS_INGOT = new Resource("brass_ingot", "Brass Ingot", 30);
+export const CIRCUIT_TIER2 = new Resource("circuit_tier2", "Tier II Circuit", 75);
 
 
 
@@ -106,7 +107,7 @@ export const MINING_TIER1 = new LootTable([
     [COAL_ORE, 5],
     [IRON_ORE, 2]
 ]);
-const MINING_TIER2 = new LootTable([
+export const MINING_TIER2 = new LootTable([
     [ROCK, 6],
     [IRON_ORE, 2],
     [QUARTZ, 5],
@@ -115,7 +116,7 @@ const MINING_TIER2 = new LootTable([
     [COPPER_ORE, 1],
     [COAL, 1],
 ]);
-const MINING_TIER3 = new LootTable([
+export const MINING_TIER3 = new LootTable([
     [ROCK, 4],
     [SILVER_ORE, 2],
     [GOLD_ORE, 1],
@@ -128,13 +129,13 @@ const MINING_TIER3 = new LootTable([
     [NICKEL_ORE, 2],
     [TIN_ORE, 1],
 ]);
-const EXCAVATION_TIER1 = new LootTable([
-    [SAND, 3],
-    [CLAY, 1],
+export const EXCAVATION_TIER1 = new LootTable([
+    [SAND, 9],
+    [CLAY, 3],
 ]);
-const SAWMILL_TABLE = new LootTable([
-    [WOOD, 2],
-    [SAWDUST, 1],
+export const SAWMILL_TABLE = new LootTable([
+    [WOOD, 10],
+    [SAWDUST, 5],
 ]);
 
 
@@ -176,6 +177,7 @@ FURNACE.addMilestone(1, () => {
     gameActions.addRecipe(IRON_INGOT_FURNACE);
     gameActions.addRecipe(COPPER_INGOT_FURNACE);
     gameActions.addRecipe(COAL_FURNACE);
+
 });
 const BLAST_FURNACE = Producer.crafting("blast_furnace", "Blast Furnace",
     "Makes steel and some other alloys.", new GigaNum(50), new GigaNum(1.7), 5, 1,
@@ -259,6 +261,11 @@ const FURNACE_OVERCLOCK_TIER1 = new ProducerUpgrade("furnace_overclock_tier1", "
         FURNACE.ticksPerOperation! *= 0.75;
         FURNACE_OVERCLOCK_TIER1.isBought = true;
     }, [new GigaNum(200), [[COAL, 15]]]);
+const AGGRESSIVE_MARKETING_TIER1 = new ProducerUpgrade("aggressive_marketing_tier1", "Aggressive Marketing I",
+    "We now have billboards outside Ebbing. Adds another trade slot.", "money", () => {
+    gameActions.addOrder();
+    AGGRESSIVE_MARKETING_TIER1.isBought = true;
+    }, [new GigaNum(100), []]);
 const FURNACE_BELLOWS_TIER1 = new ProducerUpgrade("furnace_bellows_tier1", "Furnace Bellows I",
     "Enables furnaces to smelt more ores.", "crafting", () => {
         //TODO: unlock recipes for silver, gold and aluminum
