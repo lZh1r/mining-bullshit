@@ -7,7 +7,9 @@ export default tseslint.config(
     tseslint.configs.recommended,
     {
         rules: {
-            '@/semi': ['error', 'always']
+            '@/semi': ['error', 'always'],
+            'no-unused-vars': 'off',
+            '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_', 'varsIgnorePattern': '^_' }]
         }
     }
 );
