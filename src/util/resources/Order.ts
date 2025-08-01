@@ -6,6 +6,7 @@ export class Order {
     public requirements: [Resource, number][] = [];
     public baseReward: number = 0;
     public rewardMultiplier: number = 0;
+    public static previousRequirement: Resource; // for tier 1 trades only
     constructor(
         public readonly tier: number,
         lootTable: LootTable,
@@ -16,6 +17,12 @@ export class Order {
         const resourceWeightPairs = new Map(lootTable.getResourceWeightPairs());
         for (let i = 0; i < tier; i++) {
             let resource = lootTable.roll()[0][0];
+            if (tier === 1) {
+                while (resource === Order.previousRequirement) {
+                    resource = lootTable.roll()[0][0];
+                }
+                Order.previousRequirement = resource;
+            }
             while (alreadyAdded.includes(resource)) {
                 resource = lootTable.roll()[0][0];
             }
