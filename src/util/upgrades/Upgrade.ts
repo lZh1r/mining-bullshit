@@ -11,9 +11,6 @@ export class Upgrade {
         public readonly type: ProducerType,
         public effect: () => void,
         public requirements: [GigaNum, [Resource, number][]],
-        public repeatable: boolean = false,
-        public moneyCostScale: number = 1,
-        public resourceCostScale: number = 1,
     ) {
         this.isBought = false;
     }
