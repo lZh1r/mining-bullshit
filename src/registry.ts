@@ -6,7 +6,7 @@ import {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
 import {LootTable} from "./util/LootTable.ts";
 import {Upgrade} from "./util/upgrades/Upgrade.ts";
 import {GigaNum} from "./util/GigaNum.ts";
-import {gameActions} from "./game-state.ts";
+import {gameActions, orderAssistant} from "./game-state.ts";
 import {Recipe} from "./util/crafts/Recipe.ts";
 import {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
 
@@ -306,7 +306,7 @@ const MINE_AUTOCLICKER_TIER1 = new Upgrade("mine_autoclicker_tier1", "Mine Autoc
     }, [new GigaNum(45), [[COPPER_INGOT, 2], [IRON_INGOT, 1]]]);
 const ORDER_ASSISTANT_TIER1 = new Upgrade("order_assistant_tier1", "Order Assistants I",
     "Somewhat automates orders.", "money", () => {
-    
+    orderAssistant.value.enabled = true;
     ORDER_ASSISTANT_TIER1.isBought = true;
     }, [new GigaNum(1000), []]);
 
