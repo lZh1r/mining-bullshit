@@ -52,5 +52,6 @@ export function gameTick() {
                 }
             }
         }
+        orderAssistant.value = assistant;
     });
 }
