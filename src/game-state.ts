@@ -465,6 +465,7 @@ export const gameActions = {
                 ]);
                 break;
             case 100:
+                this.shrinkOrderLootTable(MINING_TIER3);
                 this.expandOrderLootTable([
                     [BRONZE_INGOT, 2], [CONSTANTAN_INGOT, 2], [ELECTRUM_INGOT, 1]
                 ]);

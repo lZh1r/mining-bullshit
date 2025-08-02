@@ -9,6 +9,7 @@ import {GigaNum} from "./util/GigaNum.ts";
 import {gameActions, orderAssistant} from "./game-state.ts";
 import {Recipe} from "./util/crafts/Recipe.ts";
 import {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
+import {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
 
 /* RESOURCES */
 /* TIER 1 */
@@ -90,11 +91,13 @@ export const SAPPHIRE = new Resource("sapphire", "Sapphire", 100);
 export const EMERALD = new Resource("emerald", "Emerald", 100);
 EMERALD.addOnGet(() => {
     gameActions.addProducer(ASSEMBLER);
+    gameActions.addProducer(MONEY_PRINTER);
 });
 export const TOPAZ = new Resource("topaz", "Topaz", 100);
 export const BRONZE_INGOT = new Resource("bronze_ingot", "Bronze Ingot", 14);
 export const CONSTANTAN_INGOT = new Resource("constantan_ingot", "Constantan Ingot", 20);
 export const ELECTRUM_INGOT = new Resource("electrum_ingot", "Electrum Ingot", 170);
+export const PAPER = new Resource("paper", "Paper", 1);
 export const CIRCUIT_TIER1 = new Resource("circuit_tier1", "Tier I Circuit", 50);
 export const GEM_LATTICE = new Resource("gem_lattice", "Gem Lattice", 500);
 
@@ -187,7 +190,6 @@ FURNACE.addMilestone(1, () => {
     gameActions.addRecipe(IRON_INGOT_FURNACE);
     gameActions.addRecipe(COPPER_INGOT_FURNACE);
     gameActions.addRecipe(COAL_FURNACE);
-
 });
 const BLAST_FURNACE = Producer.crafting("blast_furnace", "Blast Furnace",
     "Makes steel and some other alloys.", new GigaNum(50), new GigaNum(1.7), 5, 1,
@@ -205,13 +207,19 @@ ALLOY_FURNACE.addMilestone(1, () => {
     gameActions.addRecipe(CONSTANTAN_ALLOY_FURNACE);
     gameActions.addRecipe(ELECTRUM_ALLOY_FURNACE);
 });
-//UNUSED
 const ASSEMBLER = Producer.crafting("assembler", "Assembler",
     "Creates a whole lotta things.", new GigaNum(5000), new GigaNum(1.7), 5, 2,
     [[ELECTRUM_INGOT, 4], [STEEL_INGOT, 8], [BRONZE_INGOT, 8], [EMERALD, 1]]);
 ASSEMBLER.addCapability(new EnergyConsumptionCap(new GigaNum(100)));
+ASSEMBLER.addMilestone(1, () => {
+    gameActions.addRecipe(PAPER_ASSEMBLER);
+});
 
 /* MONEY */
+const MONEY_PRINTER = Producer.money("money_printer", "Money Printer",
+    "That's how economy works!", new GigaNum(10000), new GigaNum(10), 10, 1,
+    [[PAPER, 80]]);
+MONEY_PRINTER.addCapability(new MoneyProdCap(new GigaNum(100)));
 
 
 
@@ -246,6 +254,8 @@ const CONSTANTAN_ALLOY_FURNACE = new Recipe("constantan_alloy_furnace", "Copper 
     ALLOY_FURNACE, [[CONSTANTAN_INGOT, 2]], [[NICKEL_INGOT, 1], [IRON_INGOT, 1]], 10);
 const ELECTRUM_ALLOY_FURNACE = new Recipe("electrum_alloy_furnace", "Gold and Silver into Electrum",
     ALLOY_FURNACE, [[ELECTRUM_INGOT, 2]], [[SILVER_INGOT, 1], [GOLD_INGOT, 1]], 5);
+const PAPER_ASSEMBLER = new Recipe("paper_assembler", "Wood into Paper",
+    ASSEMBLER, [[PAPER, 8]], [[WOOD, 4]], 1);
 
 
 
