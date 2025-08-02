@@ -6,11 +6,11 @@ import {displayProducerDetails, displayResourceRequirement} from "../../../util/
 import {BuyAmountButton} from "./BuyAmountButton.tsx";
 import {RecipePanel} from "./crafting/RecipePanel.tsx";
 import {GigaNum} from "../../../util/GigaNum.ts";
-import {ProducerUpgrade} from "../../../util/upgrades/ProducerUpgrade.ts";
+import {Upgrade} from "../../../util/upgrades/Upgrade.ts";
 
 export function ProducersTab() {
 
-    const [hoverTarget, setHoverTarget] = useState<Producer<ProducerType> | ProducerUpgrade>();
+    const [hoverTarget, setHoverTarget] = useState<Producer<ProducerType> | Upgrade>();
     const [activeProducerList, setActiveProducerList] = useState<ProducerType | "all">("all");
     const [buyAmount, setBuyAmount] = useState(1);
     const producerMap = new Map<ProducerType | "all", [Producer<ProducerType>, number][]>([
@@ -22,7 +22,7 @@ export function ProducersTab() {
             .concat(gameActions.getAllProducersOfType("crafting")).concat(gameActions.getAllProducersOfType("resource"))]
     ]);
     const allUpgradesArray = Array.from(upgrades.value.values()).flat();
-    const [upgradesToDisplay, setUpgradesToDisplay] = useState<ProducerUpgrade[]>([]);
+    const [upgradesToDisplay, setUpgradesToDisplay] = useState<Upgrade[]>([]);
 
     useEffect(() => {
         if (activeProducerList === "all") {
@@ -118,7 +118,7 @@ export function ProducersTab() {
             <div className="fixed bottom-0 p-4 border-t-2 border-muted-foreground bg-navbar-background w-full">
                 {
                     hoverTarget ? <div className="flex flex-col">
-                        <span className="text-2xl">{hoverTarget instanceof ProducerUpgrade ? hoverTarget.name : displayProducerDetails(hoverTarget)}</span>
+                        <span className="text-2xl">{hoverTarget instanceof Upgrade ? hoverTarget.name : displayProducerDetails(hoverTarget)}</span>
                         <q className="text-xl">{hoverTarget.description}</q>
                     </div> : <p className="text-2xl">Hover over stuff to see its description</p>
                 }

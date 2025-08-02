@@ -8,20 +8,25 @@ import {ProducersTab} from "./components/tabs/producer/ProducersTab.tsx";
 import type {JSX} from "react";
 import type {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
 import type {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
-import type {ProducerUpgrade} from "./util/upgrades/ProducerUpgrade.ts";
+import type {Upgrade} from "./util/upgrades/Upgrade.ts";
 import type {Recipe} from "./util/crafts/Recipe.ts";
 import type {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
-import {Order} from "./util/resources/Order.ts";
+import {Order, type OrderAssistant} from "./util/resources/Order.ts";
 import {LootTable} from "./util/LootTable.ts";
 import {
-    COAL,
-    COPPER_INGOT,
+    ALUMINUM_INGOT, BRONZE_INGOT,
+    COAL, CONSTANTAN_INGOT,
+    COPPER_INGOT, ELECTRUM_INGOT, EMERALD,
     EXCAVATION_TIER1,
+    GLASS, GOLD_INGOT,
     IRON_INGOT,
     MINING_TIER1,
-    MINING_TIER2, NICKEL_INGOT, SAWMILL_TABLE, SILICON,
+    MINING_TIER2, MINING_TIER3,
+    NICKEL_INGOT, RUBY, SAPPHIRE,
+    SAWMILL_TABLE,
+    SILICON, SILVER_INGOT,
     STEEL_INGOT,
-    TIN_INGOT
+    TIN_INGOT, TOPAZ
 } from "./registry.ts";
 
 export const gameTickInterval = signal(1000);
@@ -29,7 +34,7 @@ export const currentTab = signal(ProducersTab);
 export const money = signal(new GigaNum(103));
 export const resources = signal(new Map<string, [Resource, number]>());
 export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
-export const upgrades = signal(new Map<ProducerType, ProducerUpgrade[]>([
+export const upgrades = signal(new Map<ProducerType, Upgrade[]>([
     ["energy", []],
     ["resource", []],
     ["money", []],
@@ -42,6 +47,13 @@ export const orderLootTable = signal<LootTable>(MINING_TIER1);
 export const orders = signal<Order[]>([]);
 export const ordersCount = signal(0);
 export const maxOrderTier = signal<number>(1);
+export const orderAssistant = signal<OrderAssistant>({
+    enabled: false,
+    ticksPerAutomation: 10,
+    numberOfOrdersAutomated: 1,
+    maxAutomatedOrderTier: 1,
+    currentTicks: 0,
+});
 export const totalValue = computed(() => {
     let result = new GigaNum(0);
     resources.value.forEach((resourceNumberPair) => {
@@ -302,17 +314,17 @@ export const gameActions = {
         });
         return [resultRes, resultNum];
     },
-    addUpgrade(upgrade: ProducerUpgrade) {
+    addUpgrade(upgrade: Upgrade) {
         const newMap = new Map(upgrades.value);
         newMap.get(upgrade.type)!.push(upgrade);
         upgrades.value = newMap;
     },
-    canPurchaseUpgrade(upgrade: ProducerUpgrade): boolean {
+    canPurchaseUpgrade(upgrade: Upgrade): boolean {
         const [moneyCost, resourceCost] = upgrade.requirements;
         return (moneyCost.compareTo(money.value) === "less" || moneyCost.compareTo(money.value) === "equal") && this.hasEnoughOf(resourceCost);
 
     },
-    purchaseUpgrade(upgrade: ProducerUpgrade) {
+    purchaseUpgrade(upgrade: Upgrade) {
         const [moneyCost, resourceCost] = upgrade.requirements;
         if (this.canPurchaseUpgrade(upgrade)) {
             this.removeMoney(moneyCost);
@@ -424,10 +436,12 @@ export const gameActions = {
                 break;
             case 20:
                 this.expandOrderLootTable(EXCAVATION_TIER1);
+                this.shrinkOrderLootTable(MINING_TIER1);
                 break;
             case 30:
                 this.expandOrderLootTable(MINING_TIER2);
                 this.shrinkOrderLootTable(MINING_TIER1);
+                this.expandOrderLootTable([[GLASS, 2]]);
                 break;
             case 40:
                 this.expandOrderLootTable([
@@ -437,7 +451,23 @@ export const gameActions = {
                 break;
             case 50:
                 this.expandOrderLootTable(SAWMILL_TABLE);
+                maxOrderTier.value += 1;
                 break;
+            case 70:
+                this.expandOrderLootTable(MINING_TIER3);
+                this.shrinkOrderLootTable(MINING_TIER2);
+                this.shrinkOrderLootTable(MINING_TIER1);
+                break;
+            case 85:
+                this.expandOrderLootTable([
+                    [ALUMINUM_INGOT, 4], [SILVER_INGOT, 2], [GOLD_INGOT, 1], [COPPER_INGOT, 1],
+                    [GLASS, 2], [IRON_INGOT, 1], [RUBY, 1], [SAPPHIRE, 1], [TOPAZ, 1], [EMERALD, 1]
+                ]);
+                break;
+            case 100:
+                this.expandOrderLootTable([
+                    [BRONZE_INGOT, 2], [CONSTANTAN_INGOT, 2], [ELECTRUM_INGOT, 1]
+                ]);
         }
     },
 };

@@ -40,3 +40,11 @@ export class Order {
         return new GigaNum(this.baseReward).multiply(this.rewardMultiplier + this.rewardMultiplierBonus);
     }
 }
+
+export interface OrderAssistant {
+    enabled: boolean,
+    ticksPerAutomation: number,
+    numberOfOrdersAutomated: number,
+    maxAutomatedOrderTier: number,
+    currentTicks: number;
+}

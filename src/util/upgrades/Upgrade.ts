@@ -2,7 +2,7 @@ import type {ProducerType} from "../producers/Producer.ts";
 import type {GigaNum} from "../GigaNum.ts";
 import type {Resource} from "../resources/Resource.ts";
 
-export class ProducerUpgrade {
+export class Upgrade {
     public isBought: boolean;
     constructor(
         public readonly id: IDString,

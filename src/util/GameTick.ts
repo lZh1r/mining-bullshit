@@ -1,4 +1,4 @@
-import {automationQueue, gameActions, recipeQueue} from "../game-state.ts";
+import {automationQueue, gameActions, orderAssistant, orders, recipeQueue} from "../game-state.ts";
 import {batch} from "@preact/signals";
 
 export function gameTick() {
@@ -35,5 +35,22 @@ export function gameTick() {
             }
         }
         automationQueue.value = Array.from(autoQueue);
+        const assistant = {...orderAssistant.value};
+        if (assistant.enabled) {
+            assistant.currentTicks += 1;
+            if (assistant.currentTicks === assistant.ticksPerAutomation) {
+                assistant.currentTicks = 0;
+                let completed = 0;
+                for (const order of orders.value) {
+                    if (gameActions.canCompleteOrder(order)) {
+                        gameActions.completeOrder(order);
+                        completed += 1;
+                        if (completed === assistant.numberOfOrdersAutomated) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     });
 }
