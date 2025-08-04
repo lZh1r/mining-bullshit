@@ -24,8 +24,10 @@ export class Order {
                 Order.previousRequirement = resource;
             }
             while (alreadyAdded.includes(resource)) {
+                console.log(resource);
                 resource = lootTable.roll()[0][0];
             }
+            alreadyAdded.push(resource);
             this.requirements.push([resource, Math.ceil(resourceWeightPairs.get(resource)! * Math.random()) * difficulty]);
         }
         let reward = 0;
