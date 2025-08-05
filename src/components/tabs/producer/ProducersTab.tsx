@@ -11,7 +11,7 @@ import {Upgrade} from "../../../util/upgrades/Upgrade.ts";
 export function ProducersTab() {
 
     const [hoverTarget, setHoverTarget] = useState<Producer<ProducerType> | Upgrade>();
-    const [activeProducerList, setActiveProducerList] = useState<ProducerType | "all">("energy");
+    const [activeProducerList, setActiveProducerList] = useState<ProducerType | "all">("all");
     const [buyAmount, setBuyAmount] = useState(1);
     const producerMap = useMemo(() => {
         const energyProducers = gameActions.getAllProducersOfType("energy");
@@ -98,10 +98,11 @@ export function ProducersTab() {
                     }
                 </div>
             </aside>
-            <div className="col-span-1 bg-card-background border-2 border-muted-foreground max-h-[75vh]">
+            <div className="col-span-1 bg-card-background border-2 border-muted-foreground">
                 <h1 className="text-3xl text-center p-2 border-b-2 border-b-muted-foreground">Upgrades</h1>
                 <div className="grid grid-cols-2 [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-card-background
-                    [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:w-3 overflow-x-hidden overflow-scroll">
+                    [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:w-3
+                     overflow-x-hidden overflow-scroll max-h-[68vh]">
                     {
                        upgradesToDisplay.map((entry) =>
                             <div class={`col-span-1 w-full p-2 bg-card-content-background border-2 border-muted-foreground text-xl
