@@ -1,7 +1,7 @@
 import {ProducersTabSidebarHeaderButton} from "./ProducersTabSidebarHeaderButton.tsx";
 import {useEffect, useMemo, useState} from "react";
 import {Producer, type ProducerType} from "../../../util/producers/Producer.ts";
-import {gameActions, producers, upgrades} from "../../../game-state.ts";
+import {gameActions, producerMap, upgrades} from "../../../game-state.ts";
 import {displayProducerDetails, displayResourceRequirement} from "../../../util/utils.ts";
 import {BuyAmountButton} from "./BuyAmountButton.tsx";
 import {RecipePanel} from "./crafting/RecipePanel.tsx";
@@ -13,19 +13,6 @@ export function ProducersTab() {
     const [hoverTarget, setHoverTarget] = useState<Producer<ProducerType> | Upgrade>();
     const [activeProducerList, setActiveProducerList] = useState<ProducerType | "all">("all");
     const [buyAmount, setBuyAmount] = useState(1);
-    const producerMap = useMemo(() => {
-        const energyProducers = gameActions.getAllProducersOfType("energy");
-        const moneyProducers = gameActions.getAllProducersOfType("money");
-        const craftingProducers = gameActions.getAllProducersOfType("crafting");
-        const resourceProducers = gameActions.getAllProducersOfType("resource");
-        return new Map([
-            ["energy", energyProducers],
-            ["money", moneyProducers],
-            ["crafting", craftingProducers],
-            ["resource", resourceProducers],
-            ["all", [...energyProducers, ...moneyProducers, ...craftingProducers, ...resourceProducers]]
-        ]);
-    }, [producers.value]);
 
     const allUpgradesArray = useMemo(() => {
         return Array.from(upgrades.value.values()).flat();
@@ -42,8 +29,35 @@ export function ProducersTab() {
     }, [allUpgradesArray, activeProducerList]);
 
     const currentProducers = useMemo(() => {
-        return producerMap.get(activeProducerList);
-    }, [producerMap, activeProducerList]);
+        return producerMap.value.get(activeProducerList);
+    }, [producerMap.value, activeProducerList]);
+
+    const displayedProducers = useMemo(() => {
+        return currentProducers?.map(
+            ([producer, amount]) => <button
+                onMouseEnter={() => {
+                    setHoverTarget(producer);
+                }}
+                key={producer.id}
+                onMouseLeave={() => {
+                    setHoverTarget(undefined);
+                }}
+                class={`flex justify-between py-4 px-2 text-2xl border-2 w-full 
+                            ${gameActions.canPurchaseProducer(producer, buyAmount) ?
+                    "border-muted-foreground hover:bg-hover-card-background cursor-pointer hover:border-foreground" :
+                    "text-muted-foreground"}`}
+                onClick={() => {
+                    gameActions.purchaseProducer(producer, buyAmount);
+                }}>
+                <span>{producer.name} ({amount})</span>
+                <span>{gameActions.getProducerCost(producer, buyAmount)[0].toString()}$
+                    {gameActions.getProducerEnergyConsumption(producer, buyAmount).compareTo(new GigaNum(0)) === "equal" ?
+                        "" : ` ${gameActions.getProducerEnergyConsumption(producer, buyAmount).toString()}GE`}
+                    {gameActions.getProducerCost(producer, buyAmount)[1].length > 0 ? `,  
+                                ${displayResourceRequirement(gameActions.getProducerCost(producer, buyAmount)[1])}` : ""}</span>
+            </button>
+        );
+    }, [currentProducers, buyAmount]);
 
     return (
         <div class="grid grid-cols-4 space-x-2">
@@ -71,30 +85,7 @@ export function ProducersTab() {
                 <div className="[&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-card-background
                     [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:w-3 overflow-x-hidden overflow-scroll">
                     {
-                        currentProducers?.map(
-                            ([producer, amount]) => <button
-                                onMouseEnter={() => {
-                                    setHoverTarget(producer);
-                                }}
-                                key={producer.id}
-                                onMouseLeave={() => {
-                                    setHoverTarget(undefined);
-                                }}
-                                class={`flex justify-between py-4 px-2 text-2xl border-2 w-full 
-                            ${gameActions.canPurchaseProducer(producer, buyAmount) ?
-                                    "border-muted-foreground hover:bg-hover-card-background cursor-pointer hover:border-foreground" :
-                                    "text-muted-foreground"}`}
-                                onClick={() => {
-                                    gameActions.purchaseProducer(producer, buyAmount);
-                                }}>
-                                <span>{producer.name} ({amount})</span>
-                                <span>{gameActions.getProducerCost(producer, buyAmount)[0].toString()}$
-                                    {gameActions.getProducerEnergyConsumption(producer, buyAmount).compareTo(new GigaNum(0)) === "equal" ?
-                                        "" : ` ${gameActions.getProducerEnergyConsumption(producer, buyAmount).toString()}GE`}
-                                    {gameActions.getProducerCost(producer, buyAmount)[1].length > 0 ? `,  
-                                ${displayResourceRequirement(gameActions.getProducerCost(producer, buyAmount)[1])}` : ""}</span>
-                            </button>
-                        )
+                        displayedProducers
                     }
                 </div>
             </aside>

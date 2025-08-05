@@ -9,10 +9,10 @@ export function RecipePanel() {
          [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:w-3 overflow-x-hidden overflow-scroll max-h-[69vh]">
                 {
                     Array.from(recipes.value).map(([producer, recipes]) =>
-                        <div>
+                        <div key={producer.id + "_recipes"}>
                             <h2 className="text-2xl text-center">{producer.name}</h2>
                             {recipes.map(recipe =>
-                                <RecipeCard recipe={recipe}/>
+                                <RecipeCard key={recipe.id} recipe={recipe}/>
                             )}
                         </div>
                     )

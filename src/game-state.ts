@@ -5,7 +5,7 @@ import type {Producer, ProducerType} from "./util/producers/Producer.ts";
 import type {EnergyGenCap} from "./util/producers/capabilities/EnergyGenCap.ts";
 import type {EnergyConsumptionCap} from "./util/producers/capabilities/EnergyConsumptionCap.ts";
 import {ProducersTab} from "./components/tabs/producer/ProducersTab.tsx";
-import type {JSX} from "react";
+import {type JSX} from "react";
 import type {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
 import type {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
 import type {Upgrade} from "./util/upgrades/Upgrade.ts";
@@ -14,19 +14,32 @@ import type {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
 import {Order, type OrderAssistant} from "./util/resources/Order.ts";
 import {LootTable} from "./util/LootTable.ts";
 import {
-    ALUMINUM_INGOT, BRICK, BRONZE_INGOT,
-    COAL, COKE, CONSTANTAN_INGOT,
-    COPPER_INGOT, CREOSOTE, ELECTRUM_INGOT, EMERALD,
+    ALUMINUM_INGOT,
+    BRICK,
+    BRONZE_INGOT,
+    COAL,
+    COKE,
+    CONSTANTAN_INGOT,
+    COPPER_INGOT,
+    CREOSOTE,
+    ELECTRUM_INGOT,
+    EMERALD,
     EXCAVATION_TIER1,
-    GLASS, GOLD_INGOT,
+    GLASS,
+    GOLD_INGOT,
     IRON_INGOT,
     MINING_TIER1,
-    MINING_TIER2, MINING_TIER3,
-    NICKEL_INGOT, RUBY, SAPPHIRE,
+    MINING_TIER2,
+    MINING_TIER3,
+    NICKEL_INGOT,
+    RUBY,
+    SAPPHIRE,
     SAWMILL_TABLE,
-    SILICON, SILVER_INGOT,
+    SILICON,
+    SILVER_INGOT,
     STEEL_INGOT,
-    TIN_INGOT, TOPAZ
+    TIN_INGOT,
+    TOPAZ
 } from "./registry.ts";
 
 export const gameTickInterval = signal(1000);
@@ -34,6 +47,19 @@ export const currentTab = signal(ProducersTab);
 export const money = signal(new GigaNum(103));
 export const resources = signal(new Map<string, [Resource, number]>());
 export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
+export const producerMap = computed(() => {
+    const energyProducers = gameActions.getAllProducersOfType("energy");
+    const moneyProducers = gameActions.getAllProducersOfType("money");
+    const craftingProducers = gameActions.getAllProducersOfType("crafting");
+    const resourceProducers = gameActions.getAllProducersOfType("resource");
+    return new Map([
+        ["energy", energyProducers],
+        ["money", moneyProducers],
+        ["crafting", craftingProducers],
+        ["resource", resourceProducers],
+        ["all", [...energyProducers, ...moneyProducers, ...craftingProducers, ...resourceProducers]]
+    ]);
+});
 export const upgrades = signal(new Map<ProducerType, Upgrade[]>([
     ["energy", []],
     ["resource", []],
