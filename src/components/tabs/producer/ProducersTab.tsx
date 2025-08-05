@@ -1,7 +1,7 @@
 import {ProducersTabSidebarHeaderButton} from "./ProducersTabSidebarHeaderButton.tsx";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Producer, type ProducerType} from "../../../util/producers/Producer.ts";
-import {gameActions, upgrades} from "../../../game-state.ts";
+import {gameActions, producers, upgrades} from "../../../game-state.ts";
 import {displayProducerDetails, displayResourceRequirement} from "../../../util/utils.ts";
 import {BuyAmountButton} from "./BuyAmountButton.tsx";
 import {RecipePanel} from "./crafting/RecipePanel.tsx";
@@ -11,17 +11,26 @@ import {Upgrade} from "../../../util/upgrades/Upgrade.ts";
 export function ProducersTab() {
 
     const [hoverTarget, setHoverTarget] = useState<Producer<ProducerType> | Upgrade>();
-    const [activeProducerList, setActiveProducerList] = useState<ProducerType | "all">("all");
+    const [activeProducerList, setActiveProducerList] = useState<ProducerType | "all">("energy");
     const [buyAmount, setBuyAmount] = useState(1);
-    const producerMap = new Map<ProducerType | "all", [Producer<ProducerType>, number][]>([
-        ["energy", gameActions.getAllProducersOfType("energy")],
-        ["money", gameActions.getAllProducersOfType("money")],
-        ["crafting", gameActions.getAllProducersOfType("crafting")],
-        ["resource", gameActions.getAllProducersOfType("resource")],
-        ["all", gameActions.getAllProducersOfType("energy").concat(gameActions.getAllProducersOfType("money"))
-            .concat(gameActions.getAllProducersOfType("crafting")).concat(gameActions.getAllProducersOfType("resource"))]
-    ]);
-    const allUpgradesArray = Array.from(upgrades.value.values()).flat();
+    const producerMap = useMemo(() => {
+        const energyProducers = gameActions.getAllProducersOfType("energy");
+        const moneyProducers = gameActions.getAllProducersOfType("money");
+        const craftingProducers = gameActions.getAllProducersOfType("crafting");
+        const resourceProducers = gameActions.getAllProducersOfType("resource");
+        return new Map([
+            ["energy", energyProducers],
+            ["money", moneyProducers],
+            ["crafting", craftingProducers],
+            ["resource", resourceProducers],
+            ["all", [...energyProducers, ...moneyProducers, ...craftingProducers, ...resourceProducers]]
+        ]);
+    }, [producers.value]);
+
+    const allUpgradesArray = useMemo(() => {
+        return Array.from(upgrades.value.values()).flat();
+    }, [upgrades.value]);
+
     const [upgradesToDisplay, setUpgradesToDisplay] = useState<Upgrade[]>([]);
 
     useEffect(() => {
@@ -30,7 +39,11 @@ export function ProducersTab() {
         } else {
             setUpgradesToDisplay(upgrades.value.get(activeProducerList)!);
         }
-    }, [allUpgradesArray]);
+    }, [allUpgradesArray, activeProducerList]);
+
+    const currentProducers = useMemo(() => {
+        return producerMap.get(activeProducerList);
+    }, [producerMap, activeProducerList]);
 
     return (
         <div class="grid grid-cols-4 space-x-2">
@@ -58,7 +71,7 @@ export function ProducersTab() {
                 <div className="[&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-card-background
                     [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:w-3 overflow-x-hidden overflow-scroll">
                     {
-                        producerMap.get(activeProducerList)!.map(
+                        currentProducers?.map(
                             ([producer, amount]) => <button
                                 onMouseEnter={() => {
                                     setHoverTarget(producer);

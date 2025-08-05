@@ -1,14 +1,17 @@
 import {automationQueue, gameActions, orderAssistant, orders, recipeQueue} from "../game-state.ts";
 import {batch} from "@preact/signals";
+import {GigaNum} from "./GigaNum.ts";
 
 export function gameTick() {
-    const [resourceGain, moneyGain] = gameActions.getProducersYield();
+    const [resGain, monGain] = gameActions.getProducersYield();
+    const resourceGain = resGain.slice();
+    const moneyGain = new GigaNum(0).add(monGain);
     batch(() => {
-        const queue = recipeQueue.value;
-        let autoQueue = automationQueue.value;
-        queue.forEach((array, producer) => {
-            const tickAdvance = gameActions.getProducerAmount(producer) / array.length;
-            array.forEach((recipe) => {
+        const queue = new Map(recipeQueue.value);
+        const autoQueue = automationQueue.value.slice();
+        queue.forEach((recipes, producer) => {
+            const tickAdvance = gameActions.getProducerAmount(producer) / recipes.length;
+            recipes.forEach((recipe) => {
                 if (recipe.tick(tickAdvance)) {
                     if (recipe.automate) {
                         if (!gameActions.canStartRecipe(recipe)) {
@@ -18,8 +21,8 @@ export function gameTick() {
                     } else {
                         gameActions.stopRecipe(recipe);
                     }
-                    for (const [resource, number] of recipe.result) {
-                        gameActions.depositResource(resource, number);
+                    for (const recipeResult of recipe.result) {
+                        resourceGain.push(recipeResult);
                     }
                 }
             });
@@ -28,13 +31,14 @@ export function gameTick() {
         for (const resource of resourceGain) {
             gameActions.depositResource(resource[0], resource[1]);
         }
+        const recipesToRemove = new Set<IDString>();
         for (const recipe of autoQueue) {
             if (gameActions.canStartRecipe(recipe)) {
                 gameActions.startRecipe(recipe);
-                autoQueue = autoQueue.filter(r => r.id !== recipe.id);
+                recipesToRemove.add(recipe.id);
             }
         }
-        automationQueue.value = Array.from(autoQueue);
+        automationQueue.value = recipesToRemove.size > 0 ? autoQueue.filter(r => !recipesToRemove.has(r.id)) : autoQueue;
         const assistant = {...orderAssistant.value};
         if (assistant.enabled) {
             assistant.currentTicks += 1;

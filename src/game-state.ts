@@ -14,9 +14,9 @@ import type {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
 import {Order, type OrderAssistant} from "./util/resources/Order.ts";
 import {LootTable} from "./util/LootTable.ts";
 import {
-    ALUMINUM_INGOT, BRONZE_INGOT,
-    COAL, CONSTANTAN_INGOT,
-    COPPER_INGOT, ELECTRUM_INGOT, EMERALD,
+    ALUMINUM_INGOT, BRICK, BRONZE_INGOT,
+    COAL, COKE, CONSTANTAN_INGOT,
+    COPPER_INGOT, CREOSOTE, ELECTRUM_INGOT, EMERALD,
     EXCAVATION_TIER1,
     GLASS, GOLD_INGOT,
     IRON_INGOT,
@@ -181,10 +181,7 @@ export const gameActions = {
         }
     },
     addProducer(producer: Producer<ProducerType>, amount: number = 0) {
-        let prevCount = 0;
-        if (producers.value.has(producer.id)) {
-            prevCount = producers.value.get(producer.id)![1];
-        }
+        const prevCount = producers.value.has(producer.id) ? producers.value.get(producer.id)![1] : 0;
         const newMap = new Map(producers.value);
         newMap.set(producer.id, [producer, amount + prevCount]);
         producers.value = newMap;
@@ -208,7 +205,8 @@ export const gameActions = {
         const prod = producers.peek().get(producer.id);
         const currentProducerQuantity = typeof prod === "undefined" ? 0 : prod[1];
         for (let i = 0; i < amount; i++) {
-            resultNum = resultNum.add(producer.baseCost.multiply(producer.costScale.pow(currentProducerQuantity + i)).multiply(producer.costMultiplier));
+            resultNum = resultNum.add(producer.baseCost.multiply(producer.costScale.pow(currentProducerQuantity + i)).
+            multiply(producer.costMultiplier));
         }
         const resultRes: [Resource, number][] = [];
         for (const resource of producer.resourcesNeeded) {
@@ -321,7 +319,8 @@ export const gameActions = {
     },
     canPurchaseUpgrade(upgrade: Upgrade): boolean {
         const [moneyCost, resourceCost] = upgrade.requirements;
-        return (moneyCost.compareTo(money.value) === "less" || moneyCost.compareTo(money.value) === "equal") && this.hasEnoughOf(resourceCost);
+        return (moneyCost.compareTo(money.value) === "less" || moneyCost.compareTo(money.value) === "equal") &&
+            this.hasEnoughOf(resourceCost);
 
     },
     purchaseUpgrade(upgrade: Upgrade) {
@@ -333,11 +332,6 @@ export const gameActions = {
             }
             upgrade.effect();
         }
-    },
-    registerProducerInRecipeQueue(producer: Producer<"crafting">) {
-        const newMap = new Map(recipeQueue.value);
-        newMap.set(producer, []);
-        recipeQueue.value = newMap;
     },
     addRecipe(recipe: Recipe) {
         const newMap = new Map(recipes.value);
@@ -353,7 +347,7 @@ export const gameActions = {
         const unlocked = recipes.value;
         const producer = recipe.producer;
         if (!current.has(producer)) {
-            this.registerProducerInRecipeQueue(producer);
+            current.set(producer, []);
             current = recipeQueue.value;
             return false;
         }
@@ -363,38 +357,39 @@ export const gameActions = {
             this.getProducerAmount(producer) === 0);
     },
     startRecipe(recipe: Recipe) {
-        const newMap = new Map(recipeQueue.value);
-        const producer = recipe.producer;
         if (!this.canStartRecipe(recipe)) {
             return;
         }
+        const newMap = new Map(recipeQueue.value);
+        const producer = recipe.producer;
         for (const [resource, number] of recipe.inputs) {
             this.withdrawResource(resource, number);
         }
         if (!newMap.has(producer)) {
-            this.registerProducerInRecipeQueue(producer);
+            newMap.set(producer, []);
         }
-        newMap.get(recipe.producer)!.push(recipe);
+        const existing = newMap.get(recipe.producer)!;
+        newMap.set(producer, [...existing, recipe]);
         recipeQueue.value = newMap;
     },
     stopRecipe(recipe: Recipe) {
         const newMap = new Map(recipeQueue.value);
         const producer = recipe.producer;
-        if (!newMap.has(producer) || !newMap.get(producer)!.includes(recipe)) {
+        const existing = newMap.get(producer);
+        if (!existing || !existing.includes(recipe)) {
             return;
         }
-        newMap.get(recipe.producer)?.find((value) => value.id === recipe.id)!.resetCurrentTicks();
-        newMap.set(recipe.producer, newMap.get(recipe.producer)!.filter((val) => val.id !== recipe.id));
+        existing.find((value) => value.id === recipe.id)!.resetCurrentTicks();
+        newMap.set(producer, existing.filter((val) => val.id !== recipe.id));
         recipeQueue.value = newMap;
     },
     addOrder() {
-        const currentOrders = orders.value;
+        const currentOrders = orders.value.slice();
         currentOrders.push(new Order(Math.ceil(Math.random() * maxOrderTier.value), orderLootTable.value));
         orders.value = currentOrders;
     },
     removeOrder(order: Order) {
-        const newOrders = orders.value;
-        orders.value = newOrders.filter(o => o !== order);
+        orders.value = orders.value.filter(o => o !== order);
     },
     canCompleteOrder(order: Order) {
         const requirements = order.requirements;
@@ -467,8 +462,14 @@ export const gameActions = {
             case 100:
                 this.shrinkOrderLootTable(MINING_TIER3);
                 this.expandOrderLootTable([
-                    [BRONZE_INGOT, 2], [CONSTANTAN_INGOT, 2], [ELECTRUM_INGOT, 1]
+                    [BRONZE_INGOT, 2], [CONSTANTAN_INGOT, 2], [ELECTRUM_INGOT, 1], [BRICK, 3]
                 ]);
+                break;
+            case 110:
+                this.expandOrderLootTable([
+                    [COKE, 2], [CREOSOTE, 3]
+                ]);
+                break;
         }
     },
 };
