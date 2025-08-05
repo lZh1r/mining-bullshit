@@ -7,6 +7,7 @@ import {BuyAmountButton} from "./BuyAmountButton.tsx";
 import {RecipePanel} from "./crafting/RecipePanel.tsx";
 import {GigaNum} from "../../../util/GigaNum.ts";
 import {Upgrade} from "../../../util/upgrades/Upgrade.ts";
+import {UpgradeCard} from "./UpgradeCard.tsx";
 
 export function ProducersTab() {
 
@@ -59,6 +60,14 @@ export function ProducersTab() {
         );
     }, [currentProducers, buyAmount]);
 
+    const displayedUpgrades = useMemo(() => {
+        return  upgradesToDisplay.map((entry) =>
+            <UpgradeCard key={entry.id} upgrade={entry} onMouseEnter={() => setHoverTarget(entry)}
+                         onMouseLeave={() => setHoverTarget(undefined)}
+                         onClick={() => gameActions.purchaseUpgrade(entry)}/>
+        );
+    }, [upgradesToDisplay]);
+
     return (
         <div class="grid grid-cols-4 space-x-2">
             <aside class="col-span-1 bg-card-background flex-col flex ml-2 border-2 border-muted-foreground max-h-[75vh]">
@@ -95,27 +104,7 @@ export function ProducersTab() {
                     [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:w-3
                      overflow-x-hidden overflow-scroll max-h-[68vh]">
                     {
-                       upgradesToDisplay.map((entry) =>
-                            <div class={`col-span-1 w-full p-2 bg-card-content-background border-2 border-muted-foreground text-xl
-                            ${entry.isBought ? "hidden" : ""} ${gameActions.canPurchaseUpgrade(entry) ? 
-                                "cursor-pointer hover:bg-hover-card-background" :
-                                "text-muted-foreground"}`}
-                                 key={entry.id}
-                                 onMouseEnter={() => {
-                                     setHoverTarget(entry);
-                                 }}
-                                 onMouseLeave={() => {
-                                     setHoverTarget(undefined);
-                                 }}
-                                 onClick={() => {
-                                     gameActions.purchaseUpgrade(entry);
-                                 }}>
-                                <h2>{entry.name}</h2>
-                                <span>{entry.requirements[0].toString()}$
-                                    {entry.requirements[1].length > 0 ? `,  
-                                ${displayResourceRequirement(entry.requirements[1])}` : ""}</span>
-                            </div>
-                        )
+                        displayedUpgrades
                     }
                 </div>
             </div>
@@ -123,7 +112,8 @@ export function ProducersTab() {
             <div className="fixed bottom-0 p-4 border-t-2 border-muted-foreground bg-navbar-background w-full">
                 {
                     hoverTarget ? <div className="flex flex-col">
-                        <span className="text-2xl">{hoverTarget instanceof Upgrade ? hoverTarget.name : displayProducerDetails(hoverTarget)}</span>
+                        <span className="text-2xl">{hoverTarget instanceof Upgrade ? hoverTarget.name :
+                            displayProducerDetails(hoverTarget)}</span>
                         <q className="text-xl">{hoverTarget.description}</q>
                     </div> : <p className="text-2xl">Hover over stuff to see its description</p>
                 }

@@ -20,7 +20,7 @@ export function NavBarButton({title, correspondingTab}: {title: string, correspo
                 w-[6em] max-sm:place-self-center hover:bg-hover-card-background hover:border-foreground
                 ${isActive ? "border-foreground shadow-none bg-hover-card-background" : "border-muted-foreground shadow-button"}`}
             onClick={() => {
-            gameActions.openTab(correspondingTab);
+                gameActions.openTab(correspondingTab);
             }}>
             {title}
         </button>

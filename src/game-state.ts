@@ -120,13 +120,13 @@ export const gameActions = {
         currentTab.value = tabToOpen;
     },
     addMoney(amount: GigaNum | number) {
-        money.value = money.value.add(amount);
+        money.value = money.peek().add(amount);
     },
     removeMoney(amount: GigaNum | number) {
-        money.value = money.value.subtract(amount);
+        money.value = money.peek().subtract(amount);
     },
     addResource(resource: Resource) {
-        resources.value = resources.value.set(resource.getId(), [resource, 0]);
+        resources.value = resources.peek().set(resource.getId(), [resource, 0]);
     },
     hasEnoughOf(resource: Resource | [Resource, number][], amount?: number): boolean {
         if (resource instanceof Resource && amount) {
@@ -207,8 +207,8 @@ export const gameActions = {
         }
     },
     addProducer(producer: Producer<ProducerType>, amount: number = 0) {
-        const prevCount = producers.value.has(producer.id) ? producers.value.get(producer.id)![1] : 0;
         const newMap = new Map(producers.value);
+        const prevCount = newMap.has(producer.id) ? newMap.get(producer.id)![1] : 0;
         newMap.set(producer.id, [producer, amount + prevCount]);
         producers.value = newMap;
     },
@@ -216,8 +216,8 @@ export const gameActions = {
         if (!producers.value.get(producer.id)) {
             return;
         }
-        const prevCount = producers.value.get(producer.id)![1];
         const newMap = new Map(producers.value);
+        const prevCount = newMap.get(producer.id)![1];
         newMap.set(producer.id, [producer, prevCount - amount]);
         producers.value = newMap;
     },
@@ -250,8 +250,11 @@ export const gameActions = {
     },
     canPurchaseProducer(producer: Producer<ProducerType>, amount: number = 1): boolean {
         const cost = this.getProducerCost(producer, amount);
-        if ((cost[0].compareTo(money.value) === "less" || cost[0].compareTo(money.value) === "equal") && this.hasEnoughOf(cost[1])) {
-            return power.value.compareTo(powerConsumption.value.add(this.getProducerEnergyConsumption(producer, amount))) !== "less";
+        if ((cost[0].compareTo(money.value) === "less" ||
+            cost[0].compareTo(money.value) === "equal") &&
+            this.hasEnoughOf(cost[1])) {
+            return power.value.compareTo(powerConsumption.value.add(
+                this.getProducerEnergyConsumption(producer, amount))) !== "less";
         }
         return false;
     },
@@ -271,7 +274,6 @@ export const gameActions = {
             if (producer.type === "energy" && producer.getCapabilities().has("energy")) {
                 const cap = producer.getCapabilities().get("energy")! as EnergyGenCap;
                 return power.value.subtract(cap.generation).compareTo(powerConsumption.value) !== "less";
-
             }
         }
         return false;
@@ -293,10 +295,7 @@ export const gameActions = {
         return newMap;
     },
     getProducerAmount(producer: Producer<ProducerType>): number {
-        if (producers.value.has(producer.id)) {
-            return producers.value.get(producer.id)![1];
-        }
-        return 0;
+        return producers.value.has(producer.id) ? producers.value.get(producer.id)![1] : 0;
     },
     tickProducer(producer: Producer<ProducerType>): boolean {
         if (producer.type === "energy") {
@@ -347,7 +346,6 @@ export const gameActions = {
         const [moneyCost, resourceCost] = upgrade.requirements;
         return (moneyCost.compareTo(money.value) === "less" || moneyCost.compareTo(money.value) === "equal") &&
             this.hasEnoughOf(resourceCost);
-
     },
     purchaseUpgrade(upgrade: Upgrade) {
         const [moneyCost, resourceCost] = upgrade.requirements;
@@ -357,6 +355,7 @@ export const gameActions = {
                 this.withdrawResource(resource, amount);
             }
             upgrade.effect();
+            upgrade.isBought = true;
         }
     },
     addRecipe(recipe: Recipe) {
@@ -369,12 +368,12 @@ export const gameActions = {
         recipes.value = newMap;
     },
     canStartRecipe(recipe: Recipe): boolean {
-        let current = recipeQueue.value;
+        const current = recipeQueue.value;
         const unlocked = recipes.value;
         const producer = recipe.producer;
         if (!current.has(producer)) {
             current.set(producer, []);
-            current = recipeQueue.value;
+            recipeQueue.value = new Map(current);
             return false;
         }
         return !(!unlocked.has(producer) ||
@@ -410,9 +409,7 @@ export const gameActions = {
         recipeQueue.value = newMap;
     },
     addOrder() {
-        const currentOrders = orders.value.slice();
-        currentOrders.push(new Order(Math.ceil(Math.random() * maxOrderTier.value), orderLootTable.value));
-        orders.value = currentOrders;
+        orders.value = [...orders.value, new Order(Math.ceil(Math.random() * maxOrderTier.value), orderLootTable.value)];
     },
     removeOrder(order: Order) {
         orders.value = orders.value.filter(o => o !== order);
@@ -444,9 +441,7 @@ export const gameActions = {
         orderLootTable.value = newTable;
     },
     shrinkOrderLootTable(loot: Resource | LootTable) {
-        let newLootTable = orderLootTable.value;
-        newLootTable = newLootTable.remove(loot);
-        orderLootTable.value = newLootTable;
+        orderLootTable.value = orderLootTable.value.remove(loot);
     },
     incrementOrderCount() {
         ordersCount.value += 1;

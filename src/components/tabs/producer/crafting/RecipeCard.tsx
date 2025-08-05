@@ -28,9 +28,7 @@ export function RecipeCard({recipe}:
                         onClick={() => {
                             setAutomated(!automated);
                             recipe.automate = !automated;
-                            const q = Array.from(automationQueue.value);
-                            q.push(recipe);
-                            automationQueue.value = q;
+                            automationQueue.value = [...automationQueue.peek(), recipe];
                         }}>
                     A
                 </button>
