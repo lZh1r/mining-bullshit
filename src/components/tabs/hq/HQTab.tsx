@@ -15,7 +15,6 @@ export function HqTab() {
     }
 
     const currentFacility = useMemo(() => {
-        console.log("change");
         return facilities.value[currentFacilityIndex];
     }, [currentFacilityIndex, facilities.value]);
 
