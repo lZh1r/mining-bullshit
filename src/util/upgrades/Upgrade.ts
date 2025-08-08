@@ -3,7 +3,7 @@ import type {GigaNum} from "../GigaNum.ts";
 import type {Resource} from "../resources/Resource.ts";
 
 export class Upgrade {
-    public isBought: boolean;
+    public isBought: boolean = false;
     constructor(
         public readonly id: IDString,
         public readonly name: NameString,
@@ -11,7 +11,5 @@ export class Upgrade {
         public readonly type: ProducerType,
         public effect: () => void,
         public requirements: [GigaNum, [Resource, number][]],
-    ) {
-        this.isBought = false;
-    }
+    ) {}
 }

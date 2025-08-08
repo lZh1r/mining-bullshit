@@ -25,7 +25,7 @@ export function ProducersTab() {
         if (activeProducerList === "all") {
             setUpgradesToDisplay(allUpgradesArray);
         } else {
-            setUpgradesToDisplay(upgrades.value.get(activeProducerList)!);
+            setUpgradesToDisplay(upgrades.value.get(activeProducerList ?? "all")!);
         }
     }, [allUpgradesArray, activeProducerList]);
 
@@ -61,7 +61,7 @@ export function ProducersTab() {
     }, [currentProducers, buyAmount]);
 
     const displayedUpgrades = useMemo(() => {
-        return  upgradesToDisplay.map((entry) =>
+        return  (upgradesToDisplay).map((entry) =>
             <UpgradeCard key={entry.id} upgrade={entry} onMouseEnter={() => setHoverTarget(entry)}
                          onMouseLeave={() => setHoverTarget(undefined)}
                          onClick={() => gameActions.purchaseUpgrade(entry)}/>
@@ -111,7 +111,7 @@ export function ProducersTab() {
             {activeProducerList === "crafting" || activeProducerList === "all" ? <RecipePanel/> : <h1>WIP</h1>}
             <div className="fixed bottom-0 p-4 border-t-2 border-muted-foreground bg-navbar-background w-full">
                 {
-                    hoverTarget ? <div className="flex flex-col">
+                    hoverTarget?.id !== undefined ? <div className="flex flex-col">
                         <span className="text-2xl">{hoverTarget instanceof Upgrade ? hoverTarget.name :
                             displayProducerDetails(hoverTarget)}</span>
                         <q className="text-xl">{hoverTarget.description}</q>

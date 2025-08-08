@@ -4,8 +4,6 @@ import {Resource} from "./util/resources/Resource.ts";
 import type {Producer, ProducerType} from "./util/producers/Producer.ts";
 import type {EnergyGenCap} from "./util/producers/capabilities/EnergyGenCap.ts";
 import type {EnergyConsumptionCap} from "./util/producers/capabilities/EnergyConsumptionCap.ts";
-import {ProducersTab} from "./components/tabs/producer/ProducersTab.tsx";
-import {type JSX} from "react";
 import type {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
 import type {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
 import type {Upgrade} from "./util/upgrades/Upgrade.ts";
@@ -41,9 +39,12 @@ import {
     TIN_INGOT,
     TOPAZ
 } from "./registry.ts";
+import type {Research} from "./util/upgrades/Research.ts";
+import type {Construction} from "./util/upgrades/Construction.ts";
+import type {NavBarTab} from "./app.tsx";
 
 export const gameTickInterval = signal(1000);
-export const currentTab = signal(ProducersTab);
+export const currentTab = signal<NavBarTab>("producer");
 export const money = signal(new GigaNum(103));
 export const resources = signal(new Map<string, [Resource, number]>());
 export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
@@ -80,6 +81,8 @@ export const orderAssistant = signal<OrderAssistant>({
     maxAutomatedOrderTier: 1,
     currentTicks: 0,
 });
+export const researches = signal(new Map<IDString, Research>());
+export const facilities = signal<Construction[]>([]);
 export const totalValue = computed(() => {
     let result = new GigaNum(0);
     resources.value.forEach((resourceNumberPair) => {
@@ -116,7 +119,10 @@ export const powerConsumption = computed(() => {
 });
 
 export const gameActions = {
-    openTab(tabToOpen: () => JSX.Element) {
+    addFacility(facility: Construction) {
+        facilities.value = [...facilities.value.slice(), facility];
+    },
+    openTab(tabToOpen: NavBarTab) {
         currentTab.value = tabToOpen;
     },
     addMoney(amount: GigaNum | number) {
@@ -162,15 +168,23 @@ export const gameActions = {
         const newMap = new Map(current);
         resources.value = newMap.set(resource.getId(), [resource, prevCount + amount]);
     },
-    //TODO: add [Resource, number][] support
-    withdrawResource(resource: Resource, amount: number) {
+    withdrawResource(resource: Resource | [Resource, number][], amount?: number) {
         const current = resources.value;
         if (!this.hasEnoughOf(resource, amount)) {
             return;
         }
-        const prevCount = current.get(resource.getId())![1];
         const newMap = new Map(current);
-        newMap.set(resource.getId(), [resource, prevCount - amount]);
+        if (resource instanceof Resource && amount) {
+            const prevCount = current.get(resource.getId())![1];
+            newMap.set(resource.getId(), [resource, prevCount - amount]);
+        } else if (resource instanceof Resource && !amount) {
+            throw new Error("Incorrect usage of withdrawResource! Can't pass Resource and null!");
+        } else {
+            (resource as [Resource, number][]).forEach(([res, quantity]) => {
+                const prevCount = current.get(res.getId())![1];
+                newMap.set(res.getId(), [res, prevCount - quantity]);
+            });
+        }
         resources.value = newMap;
     },
     updateResource<K extends keyof Resource>(resource: Resource | string, valueToUpdate: K, value: Resource[K]): boolean {

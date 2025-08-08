@@ -27,7 +27,9 @@ export function gameTick() {
                 }
             });
         });
-        gameActions.addMoney(moneyGain);
+        if (moneyGain.compareTo(new GigaNum(0)) !== "equal") {
+            gameActions.addMoney(moneyGain);
+        }
         for (const resource of resourceGain) {
             gameActions.depositResource(resource[0], resource[1]);
         }

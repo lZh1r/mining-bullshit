@@ -16,6 +16,7 @@
     --color-card-background: var(--card-background);
     --color-hover-card-background: var(--hover-card-background);
     --color-card-content-background: var(--card-content-background);
+    --color-sub-navbar-background: var(--sub-navbar-background);
     --font-main: var(--main);
     --shadow-button: 0px 5px 0px 5px rgba(0, 0, 0, 0.4);
 }
@@ -36,6 +37,7 @@
     --card-background: hsl(0, 0%, 20%);
     --hover-card-background: hsl(0, 0%, 15%);
     --card-content-background: hsl(0, 0%, 25%);
+    --sub-navbar-background: hsl(0, 0%, 17%);
     --main: "NFPixels", "serif";
 }
 

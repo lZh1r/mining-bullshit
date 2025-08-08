@@ -1,8 +1,9 @@
-import {type JSX, useState} from "react";
+import {useState} from "react";
 import {currentTab, gameActions} from "../../game-state.ts";
 import {useSignalEffect} from "@preact/signals";
+import type {NavBarTab} from "../../app.tsx";
 
-export function NavBarButton({title, correspondingTab}: {title: string, correspondingTab: () => JSX.Element}) {
+export function NavBarButton({title, correspondingTab}: {title: string, correspondingTab: NavBarTab}) {
 
     const [isActive, setIsActive] = useState(false);
 
