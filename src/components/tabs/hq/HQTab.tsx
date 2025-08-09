@@ -1,6 +1,11 @@
-import {useEffect, useMemo, useState} from "react";
+import {type JSX, useEffect, useMemo, useState} from "react";
 import {facilities} from "../../../game-state.ts";
 import {displayResourceRequirement} from "../../../util/utils.ts";
+import {ResearchFacility} from "./tabs/ResearchFacility.tsx";
+
+const facilityElements = new Map<IDString, () => JSX.Element>([
+    ["research_facility", ResearchFacility],
+]);
 
 export function HqTab() {
 
@@ -52,9 +57,7 @@ export function HqTab() {
                                     Construct
                             </button>
                         </> :
-                        <>
-                            <h1 className="text-center">Hello</h1>
-                        </>
+                        facilityElements.get(currentFacility?.id)!()
                 }
                 </div>
                 {hasNeighbours[1] ?
