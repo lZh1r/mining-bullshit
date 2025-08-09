@@ -19,10 +19,13 @@ export class Construction {
         return this.requirements[this.currentStage];
     }
 
+    get canAdvance() {
+        return gameActions.hasEnoughOf(this.currentRequirements);
+    }
+
     public advanceConstruction() {
-        const requirements = this.currentRequirements;
-        if (gameActions.hasEnoughOf(requirements)) {
-            gameActions.withdrawResource(requirements);
+        if (this.canAdvance) {
+            gameActions.withdrawResource(this.currentRequirements);
             this.currentStage += 1;
             if (this.currentStage === this.totalStages) {
                 this.effect();
