@@ -37,13 +37,25 @@ export function HqTab() {
                 </button> : <div className="p-4 m-2"></div>}
                 <div className="p-2 border-x-2 border-muted-foreground h-full bg-card-content-background
                 w-full flex flex-col justify-center">
-                    <p className="text-center text-2xl">
-                        {displayResourceRequirement(currentFacility?.currentRequirements ?? [])}
-                    </p>
-                    <button className={`place-self-center border-2 border-muted-foreground
-                     m-2 p-2 bg-card-content-background text-xl text-muted-foreground shadow-button`}>
-                        Construct
-                    </button>
+                    {!currentFacility?.isComplete ?
+                        <>
+                            <p className="text-center text-2xl">
+                                {displayResourceRequirement(currentFacility?.currentRequirements ?? [])}
+                            </p>
+                            <button className={`place-self-center border-2 border-muted-foreground
+                            m-2 p-2 bg-card-content-background text-xl shadow-button
+                            ${currentFacility?.canAdvance ?
+                                "cursor-pointer text-foreground hover:bg-hover-card-background hover:border-foreground" :
+                                "text-muted-foreground"}
+                            `}
+                                onClick={() => currentFacility?.advanceConstruction()}>
+                                    Construct
+                            </button>
+                        </> :
+                        <>
+                            <h1 className="text-center">Hello</h1>
+                        </>
+                }
                 </div>
                 {hasNeighbours[1] ?
                     <button className="place-self-center border-2 border-muted-foreground
