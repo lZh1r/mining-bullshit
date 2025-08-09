@@ -150,23 +150,30 @@ export const gameActions = {
         }
 
     },
-    //TODO: add [Resource, number][] support
-    depositResource(resource: Resource, amount: number = 1) {
+    depositResource(resource: Resource | [Resource, number][], amount?: number) {
         const current = resources.value;
-        const resPair = current.get(resource.getId());
-        let prevCount = 0;
-        if (resPair === undefined) {
-            prevCount = 0;
-            resource.performOnGet();
-        } else {
-            prevCount = resPair[1];
-        }
-        if (resource.getCapabilities().has("mastery")) {
-            const masteryCap = resource.getCapabilities().get("mastery")! as MasteryCap;
-            masteryCap.incrementXp(amount);
-        }
         const newMap = new Map(current);
-        resources.value = newMap.set(resource.getId(), [resource, prevCount + amount]);
+        if (resource instanceof Resource && amount) {
+            const resPair = current.get(resource.getId());
+            let prevCount = 0;
+            if (resPair === undefined) {
+                prevCount = 0;
+                resource.performOnGet();
+            } else {
+                prevCount = resPair[1];
+            }
+            if (resource.getCapabilities().has("mastery")) {
+                const masteryCap = resource.getCapabilities().get("mastery")! as MasteryCap;
+                masteryCap.incrementXp(amount);
+            }
+            resources.value = newMap.set(resource.getId(), [resource, prevCount + amount]);
+        } else if (resource instanceof Resource && !amount) {
+            throw new Error("Incorrect usage of depositResource! Can't pass Resource and null!");
+        } else {
+            for (const [res, num] of resource as [Resource, number][]) {
+                gameActions.depositResource(res, num);
+            }
+        }
     },
     withdrawResource(resource: Resource | [Resource, number][], amount?: number) {
         const current = resources.value;
