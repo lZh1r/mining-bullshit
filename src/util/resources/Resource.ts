@@ -1,6 +1,7 @@
 import type {ICapability, ResourceCapabilityType} from "./capabilities/ICapability";
+import {DisplayItem} from "../utils.ts";
 
-export class Resource {
+export class Resource extends DisplayItem{
 
     private onGet: () => void = () => {};
     public autoSell: boolean = false;
@@ -8,22 +9,16 @@ export class Resource {
     public canBeAutomated: boolean = false;
 
     constructor(
-        private readonly id: IDString,
-        private readonly name: NameString,
+        public readonly id: IDString,
+        public readonly name: NameString,
         public baseValue: number,
         public valueMultiplier: number = 1,
-        private readonly capabilities: Map<ResourceCapabilityType, ICapability> = new Map()) {}
+        private readonly capabilities: Map<ResourceCapabilityType, ICapability> = new Map()) {
+        super(id, name);
+    }
 
     get valuePer() {
         return this.baseValue * this.valueMultiplier;
-    }
-
-    getId() {
-        return this.id;
-    }
-
-    getName() {
-        return this.name;
     }
 
     getCapabilities() {

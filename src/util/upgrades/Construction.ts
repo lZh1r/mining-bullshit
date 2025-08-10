@@ -1,7 +1,8 @@
 import type {Resource} from "../resources/Resource.ts";
 import {gameActions} from "../../game-state.ts";
+import {DisplayItem} from "../utils.ts";
 
-export class Construction {
+export class Construction extends DisplayItem{
     public currentStage: number = 0;
     public totalStages: number;
     public isComplete: boolean = false;
@@ -12,6 +13,7 @@ export class Construction {
         public requirements: [Resource, number][][],
         public effect: () => void,
     ) {
+        super(id, name, description);
         this.totalStages = requirements.length;
     }
 

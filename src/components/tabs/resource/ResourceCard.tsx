@@ -10,9 +10,9 @@ export function ResourceCard({resource, amount, spriteSrc}:
     return (
         <div className="text-xl bg-card-background p-2 border-2 border-muted-foreground hover:border-foreground flex flex-col justify-between">
             <img className="w-32" style="image-rendering: pixelated; image-rendering: crisp-edges;" src={spriteSrc}
-                 alt={resource.getId()}/>
+                 alt={resource.id}/>
             <div>
-                <h3>{resource.getName()} ({amount.toString()})</h3>
+                <h3>{resource.name} ({amount.toString()})</h3>
                 <p>Total value: {gameActions.getTotalValue(resource).toString()}</p>
             </div>
             <div className={`${resource.canBeAutomated ? "" : "hidden"} flex justify-between flex-row`}>
@@ -25,8 +25,8 @@ export function ResourceCard({resource, amount, spriteSrc}:
                     Auto-sell: {autoSell ? "On" : "Off"}
                 </button>
                 <div className="space-x-2">
-                    <label htmlFor={resource.getId()+"_auto"}>Cap:</label>
-                    <input defaultValue={resource.autoCellCap} className="w-16" id={resource.getId()+"_auto"} type="number"
+                    <label htmlFor={resource.id+"_auto"}>Cap:</label>
+                    <input defaultValue={resource.autoCellCap} className="w-16" id={resource.id+"_auto"} type="number"
                            onChange={(e) => {
                                resource.autoCellCap = Number(e.currentTarget.value);
                            }}/>

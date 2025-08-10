@@ -1,8 +1,9 @@
 import type {GigaNum} from "../GigaNum.ts";
 import type {Resource} from "../resources/Resource.ts";
 import type {Treeable} from "../Tree.ts";
+import {DisplayItem} from "../utils.ts";
 
-export class Research implements Treeable<Research>{
+export class Research extends DisplayItem implements Treeable<Research>{
     public isBought: boolean = false;
     constructor(
         public readonly id: IDString,
@@ -12,7 +13,9 @@ export class Research implements Treeable<Research>{
         public effect: () => void,
         public ancestors: Research[] | null = null,
         public repeatable: boolean = false,
-    ) {}
+    ) {
+        super(id, name, description);
+    }
 
     get isAvailable(): boolean {
         if (this.isBought && !this.repeatable) {

@@ -1,8 +1,9 @@
 import type {Resource} from "../resources/Resource.ts";
 import type {Producer} from "../producers/Producer.ts";
 import {batch, type Signal, signal} from "@preact/signals";
+import {DisplayItem} from "../utils.ts";
 
-export class Recipe {
+export class Recipe extends DisplayItem{
     public automate: boolean = false;
     private currentTicks: Signal<number> = signal(0);
     constructor(
@@ -14,7 +15,9 @@ export class Recipe {
         public producerTicksRequired: number,
         public tickMultiplier: number = 1,
         public isActive: boolean = false,
-    ) {}
+    ) {
+        super(id, name);
+    }
 
     get craftDuration() {
         return this.producer.ticksRequired * this.producerTicksRequired * this.tickMultiplier;

@@ -8,7 +8,7 @@ export function displayResourceRequirement(requiredResources: [Resource, number]
     const len = requiredResources.length;
     for (let i = 0; i < len; i++) {
         const resourceNumberPair = requiredResources[i];
-        result += `${resourceNumberPair[0].getName()} x ${resourceNumberPair[1]}${len - i === 1 ? "" : ", "}`;
+        result += `${resourceNumberPair[0].name} x ${resourceNumberPair[1]}${len - i === 1 ? "" : ", "}`;
     }
     return result;
 }
@@ -31,4 +31,12 @@ export function displayProducerDetails(producer: Producer<ProducerType>): string
         }
     });
     return result;
+}
+
+export abstract class DisplayItem {
+    protected constructor(
+        public readonly id: IDString,
+        public readonly name: NameString,
+        public description?: string,
+    ) {}
 }

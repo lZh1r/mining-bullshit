@@ -132,12 +132,12 @@ export const gameActions = {
         money.value = money.peek().subtract(amount);
     },
     addResource(resource: Resource) {
-        resources.value = resources.peek().set(resource.getId(), [resource, 0]);
+        resources.value = resources.peek().set(resource.id, [resource, 0]);
     },
     hasEnoughOf(resource: Resource | [Resource, number][], amount?: number): boolean {
         if (resource instanceof Resource && amount) {
             const currentResources = resources.value;
-            return currentResources.has(resource.getId()) && currentResources.get(resource.getId())![1] >= amount!;
+            return currentResources.has(resource.id) && currentResources.get(resource.id)![1] >= amount!;
         } else if (resource instanceof Resource && !amount) {
             throw new Error("Incorrect usage of hasEnoughOf! Can't pass Resource and null!");
         } else {
@@ -154,7 +154,7 @@ export const gameActions = {
         const current = resources.value;
         const newMap = new Map(current);
         if (resource instanceof Resource && amount) {
-            const resPair = current.get(resource.getId());
+            const resPair = current.get(resource.id);
             let prevCount = 0;
             if (resPair === undefined) {
                 prevCount = 0;
@@ -166,7 +166,7 @@ export const gameActions = {
                 const masteryCap = resource.getCapabilities().get("mastery")! as MasteryCap;
                 masteryCap.incrementXp(amount);
             }
-            resources.value = newMap.set(resource.getId(), [resource, prevCount + amount]);
+            resources.value = newMap.set(resource.id, [resource, prevCount + amount]);
         } else if (resource instanceof Resource && !amount) {
             throw new Error("Incorrect usage of depositResource! Can't pass Resource and null!");
         } else {
@@ -182,21 +182,21 @@ export const gameActions = {
         }
         const newMap = new Map(current);
         if (resource instanceof Resource && amount) {
-            const prevCount = current.get(resource.getId())![1];
-            newMap.set(resource.getId(), [resource, prevCount - amount]);
+            const prevCount = current.get(resource.id)![1];
+            newMap.set(resource.id, [resource, prevCount - amount]);
         } else if (resource instanceof Resource && !amount) {
             throw new Error("Incorrect usage of withdrawResource! Can't pass Resource and null!");
         } else {
             (resource as [Resource, number][]).forEach(([res, quantity]) => {
-                const prevCount = current.get(res.getId())![1];
-                newMap.set(res.getId(), [res, prevCount - quantity]);
+                const prevCount = current.get(res.id)![1];
+                newMap.set(res.id, [res, prevCount - quantity]);
             });
         }
         resources.value = newMap;
     },
     updateResource<K extends keyof Resource>(resource: Resource | string, valueToUpdate: K, value: Resource[K]): boolean {
         if (resource instanceof Resource) {
-            resource = resource.getId();
+            resource = resource.id;
         }
         const currentResources = new Map(resources.value);
         const resourceToUpdate = currentResources.get(resource);
@@ -211,7 +211,7 @@ export const gameActions = {
         let result = new GigaNum(0);
         const currentResources = resources.value;
         if (resource) {
-            const id = resource.getId();
+            const id = resource.id;
             if (currentResources.has(id)) {
                 const target = currentResources.get(id)![0];
                 const targetAmount = currentResources.get(id)![1];
@@ -342,7 +342,7 @@ export const gameActions = {
                     if (resource.autoSell) {
                         let amountToSell = 0;
                         const sellCap = resource.autoCellCap;
-                        const prevCount = resources.value.get(resource.getId()) ?? [resource, 0];
+                        const prevCount = resources.value.get(resource.id) ?? [resource, 0];
                         if (amountToDeposit + prevCount[1] > sellCap) {
                             amountToSell = amountToDeposit + prevCount[1] - sellCap;
                             amountToDeposit -= amountToSell;

@@ -2,10 +2,11 @@ import type {IProdCapability} from "./capabilities/IProdCapability";
 import {GigaNum} from "../GigaNum";
 import {Resource} from "../resources/Resource";
 import {producers} from "../../game-state.ts";
+import {DisplayItem} from "../utils.ts";
 
 export type ProducerType = "crafting" | "energy" | "money" | "resource";
 
-export class Producer<T extends ProducerType> {
+export class Producer<T extends ProducerType> extends DisplayItem{
 
     private milestones: [number, () => void][] = [];
     private achievedMilestones: [number, () => void][] = [];
@@ -24,7 +25,9 @@ export class Producer<T extends ProducerType> {
         public costMultiplier: number = 1,
         private readonly capabilities: Map<string, IProdCapability> = new Map(),
         private currentTicks: number = 0,
-    ) {}
+    ) {
+        super(id, name, description);
+    }
 
     static crafting(
         id: IDString,
