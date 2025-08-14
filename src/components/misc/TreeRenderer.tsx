@@ -134,7 +134,7 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
                 {
                     nodesToDisplay.map((value, index) =>
                         <div key={`${index}/${tree.depth}`}
-                             className={`flex place-self-center space-x-4 
+                             className={`flex place-self-center space-x-4 w-fit h-fit m-0
                              ${(displayMode === "horizontal" || displayMode === "reverse-horizontal") &&
                              "flex-col space-y-4 space-x-0"}`}>
                             {value.map(node =>
