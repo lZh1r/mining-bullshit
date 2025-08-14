@@ -14,9 +14,7 @@ export function HqTab() {
 
     function changeDisplayedFacility(direction: -1 | 1) {
         const newIndex = currentFacilityIndex + direction;
-        if ((0 <= newIndex) && (newIndex < facilities.value.length)) {
-            setCurrentFacilityIndex(newIndex);
-        }
+        if ((0 <= newIndex) && (newIndex < facilities.value.length)) setCurrentFacilityIndex(newIndex);
     }
 
     const currentFacility = useMemo(() => {
@@ -40,7 +38,7 @@ export function HqTab() {
                             onClick={() => changeDisplayedFacility(-1)}>
                     {"<<<"}
                 </button> : <div className="p-4 m-2"></div>}
-                <div className="p-2 border-x-2 border-muted-foreground h-full bg-card-content-background
+                <div className="p-2 border-x-2 border-muted-foreground h-full bg-card-background
                 w-full flex flex-col justify-center">
                     {!currentFacility?.isComplete ?
                         <>

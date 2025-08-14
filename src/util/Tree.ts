@@ -67,7 +67,7 @@ export class Tree<T extends Treeable<T>> {
     }
 }
 
-interface TreeNode<T extends Treeable<T>> {
+export interface TreeNode<T extends Treeable<T>> {
     value: T,
     children: TreeNode<T>[]
 }
