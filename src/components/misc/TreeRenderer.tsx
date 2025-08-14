@@ -7,7 +7,7 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
     {
         tree: Tree<T>,
         nodeElement: ({node, ref}: {node: TreeNode<T>, ref: Ref<HTMLDivElement> | undefined}) => JSX.Element,
-        displayMode: "vertical" | "vertical-reversed" | "horizontal" | "reverse-horizontal"
+        displayMode: "vertical" | "reverse-vertical" | "horizontal" | "reverse-horizontal"
     }
 ) {
 
@@ -28,8 +28,9 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
                     const childRect = element.getBoundingClientRect();
                     if (childRect.width !== 0 && childRect.height !== 0) for (const parent of object.ancestors ?? []) {
                         const parentRect = nodeRefs.current.get(parent)!.getBoundingClientRect();
-                        if (parentRect.bottom !> containerRect.top &&
-                            childRect.y !< containerRect.bottom && childRect.left < containerRect.right &&
+                        if (childRect.y > containerRect.top &&
+                            parentRect.y < containerRect.bottom &&
+                            childRect.left < containerRect.right &&
                             childRect.right > containerRect.left) {
                             ctx.beginPath();
                             ctx.moveTo(childRect.x + (childRect.width / 2), childRect.top);
@@ -39,13 +40,14 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
                     }
                 });
             } break;
-            case "vertical-reversed": {
+            case "reverse-vertical": {
                 nodeRefs.current.forEach((element, object) => {
                     const childRect = element.getBoundingClientRect();
                     if (childRect.width !== 0 && childRect.height !== 0) for (const parent of object.ancestors ?? []) {
                         const parentRect = nodeRefs.current.get(parent)!.getBoundingClientRect();
-                        if (parentRect.top !< containerRect.bottom &&
-                            childRect.bottom !> containerRect.top && childRect.left < containerRect.right &&
+                        if (parentRect.y > containerRect.top &&
+                            childRect.y < containerRect.bottom &&
+                            childRect.left < containerRect.right &&
                             childRect.right > containerRect.left) {
                             ctx.beginPath();
                             ctx.moveTo(childRect.x + (childRect.width / 2), childRect.bottom);
@@ -61,8 +63,9 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
                     if (childRect.width !== 0 && childRect.height !== 0) for (const parent of object.ancestors ?? []) {
                         const parentRect = nodeRefs.current.get(parent)!.getBoundingClientRect();
                         if (parentRect.top !< containerRect.bottom &&
-                            childRect.bottom !> containerRect.top && childRect.left < containerRect.right &&
-                            parentRect.right > containerRect.left) {
+                            childRect.bottom !> containerRect.top &&
+                            childRect.left > containerRect.left &&
+                            parentRect.right < containerRect.right) {
                             ctx.beginPath();
                             ctx.moveTo(childRect.left, childRect.y + childRect.height / 2);
                             ctx.lineTo(parentRect.right, parentRect.y + parentRect.height / 2);
@@ -77,8 +80,9 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
                     if (childRect.width !== 0 && childRect.height !== 0) for (const parent of object.ancestors ?? []) {
                         const parentRect = nodeRefs.current.get(parent)!.getBoundingClientRect();
                         if (parentRect.top !< containerRect.bottom &&
-                            childRect.bottom !> containerRect.top && parentRect.left < containerRect.right &&
-                            childRect.right > containerRect.left) {
+                            childRect.bottom !> containerRect.top &&
+                            parentRect.left > containerRect.left &&
+                            childRect.right < containerRect.right) {
                             ctx.beginPath();
                             ctx.moveTo(childRect.right, childRect.y + childRect.height / 2);
                             ctx.lineTo(parentRect.left, parentRect.y + parentRect.height / 2);
@@ -88,6 +92,10 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
                 });
             } break;
         }
+        ctx.clearRect(0, 0, containerRect.x, containerRect.bottom);
+        ctx.clearRect(0, 0, containerRect.right, containerRect.top);
+        ctx.clearRect(containerRect.x, containerRect.bottom, canvas.width, canvas.height);
+        ctx.clearRect(containerRect.right, containerRect.y, canvas.width, canvas.height);
     }
 
     const nodesToDisplay = useMemo(() => {
@@ -95,7 +103,7 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
             case "horizontal":
             case "vertical": return tree.nodeArray;
             case "reverse-horizontal":
-            case "vertical-reversed": return tree.nodeArray.reverse();
+            case "reverse-vertical": return tree.nodeArray.reverse();
         }
     }, [tree.nodeArray]);
 
