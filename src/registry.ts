@@ -6,11 +6,12 @@ import {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
 import {LootTable} from "./util/LootTable.ts";
 import {Upgrade} from "./util/upgrades/Upgrade.ts";
 import {GigaNum} from "./util/GigaNum.ts";
-import {gameActions, orderAssistant} from "./game-state.ts";
+import {gameActions, maxOrderTier, orderAssistant, researches} from "./game-state.ts";
 import {Recipe} from "./util/crafts/Recipe.ts";
 import {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
 import {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
 import {Construction} from "./util/upgrades/Construction.ts";
+import {Research} from "./util/upgrades/Research.ts";
 
 /* RESOURCES */
 /* TIER 1 */
@@ -113,6 +114,7 @@ CIRCUIT_TIER1.addOnGet(() => {
     gameActions.addUpgrade(ORDER_ASSISTANT_TIER2);
     gameActions.addUpgrade(HAMSTER_FITNESS_TRACKERS);
     gameActions.addFacility(RESEARCH_FACILITY);
+    gameActions.addProducer(WATER_PUMP);
 });
 export const BRICK = new Resource("brick", "Bricks", 4);
 BRICK.addOnGet(() => {
@@ -125,6 +127,11 @@ GEM_LATTICE.addOnGet(() => {
     gameActions.addUpgrade(MINE_GEM_DRILLS);
     gameActions.addProducer(PRECIOUS_QUARRY);
 });
+export const WROUGHT_IRON_INGOT = new Resource("wrought_iron_ingot", "Wrought Iron Ingot", 24);
+WROUGHT_IRON_INGOT.addOnGet(() => {
+    gameActions.addRecipe(GEM_LATTICE_ASSEMBLER);
+});
+const WATER = new Resource("water", "Water", 1);
 
 /* TIER 4 */
 export const LEAD_ORE = new Resource("lead_ore", "Lead Ore", 10);
@@ -134,6 +141,10 @@ export const ZINC_ORE = new Resource("zinc_ore", "Zinc Ore", 8);
 export const ZINC_INGOT = new Resource("zinc_ingot", "Zinc Ingot", 24);
 export const MAGNESITE_ORE = new Resource("magnesite_ore", "Magnesite Ore", 8);
 export const MAGNESIUM_INGOT = new Resource("magnesium_ingot", "Magnesium Ingot", 24);
+export const URANIUM_ORE = new Resource("uranium_ore", "Uranium Ore", 10);
+export const URANIUM = new Resource("uranium", "Uranium Chunk", 30);
+export const THORIUM_ORE = new Resource("thorium_ore", "Thorium Ore", 9);
+export const THORIUM = new Resource("thorium", "Thorium Chunk", 27);
 export const INVAR_INGOT = new Resource("invar_ingot", "Invar Ingot", 22);
 export const BRASS_INGOT = new Resource("brass_ingot", "Brass Ingot", 30);
 export const CIRCUIT_TIER2 = new Resource("circuit_tier2", "Tier II Circuit", 75);
@@ -179,7 +190,9 @@ export const MINING_TIER4 = new LootTable([
     [LEAD_ORE, 3],
     [ZINC_ORE, 3],
     [MAGNESITE_ORE, 4],
-    [DIAMOND, 1]
+    [DIAMOND, 1],
+    [THORIUM_ORE, 3],
+    [URANIUM_ORE, 2],
 ]);
 export const EXCAVATION_TIER1 = new LootTable([
     [SAND, 9],
@@ -235,6 +248,12 @@ const PRECIOUS_QUARRY = Producer.resource("precious_quarry", "Precious Quarry",
     [[GEM_LATTICE, 3], [CIRCUIT_TIER1, 2], [STEEL_INGOT, 12], [CONSTANTAN_INGOT, 8]]);
 PRECIOUS_QUARRY.addCapability(new MiningCap(PRECIOUS_TIER1));
 PRECIOUS_QUARRY.addCapability(new EnergyConsumptionCap(new GigaNum(200)));
+const WATER_PUMP = Producer.resource("water_pump", "Water Pump",
+    "Drains nearest bodies of water.",
+    new GigaNum(2650), new GigaNum(1.5), 1, 1,
+    [[CONSTANTAN_INGOT, 6], [CIRCUIT_TIER1, 1]]);
+WATER_PUMP.addCapability(new MiningCap(new LootTable([[WATER, 1]])));
+WATER_PUMP.addCapability(new EnergyConsumptionCap(new GigaNum(150)));
 
 /* CRAFTING */
 const FURNACE = Producer.crafting("furnace", "Furnace",
@@ -315,6 +334,16 @@ const ALUMINUM_INGOT_FURNACE = new Recipe("aluminum_ingot_furnace", "Aluminum Or
     FURNACE, [[ALUMINUM_INGOT, 1]], [[ALUMINUM_ORE, 1]], 8);
 const BRICK_FURNACE = new Recipe("brick_furnace", "Clay into Bricks",
     FURNACE, [[BRICK, 1]], [[CLAY, 2]], 1);
+const ZINC_INGOT_FURNACE = new Recipe("zinc_ingot_furnace", "Zinc Ore to Ingot",
+    FURNACE, [[ZINC_INGOT, 1]], [[ZINC_ORE, 2]], 3);
+const MAGNESIUM_INGOT_FURNACE = new Recipe("magnesium_ingot_furnace", "Magnesite Ore to Magnesium Ingot",
+    FURNACE, [[MAGNESIUM_INGOT, 1]], [[MAGNESITE_ORE, 2]], 4);
+const LEAD_INGOT_FURNACE = new Recipe("lead_ingot_furnace", "Lead Ore to Ingot",
+    FURNACE, [[LEAD_INGOT, 1]], [[LEAD_ORE, 2]], 5);
+const URANIUM_FURNACE = new Recipe("uranium_furnace", "Uranium Ore to Chunk",
+    FURNACE, [[URANIUM, 1]], [[URANIUM_ORE, 4]], 12);
+const THORIUM_FURNACE = new Recipe("thorium_furnace", "Thorium Ore to Chunk",
+    FURNACE, [[THORIUM, 1]], [[THORIUM_ORE, 4]], 10);
 //Blast Furnace
 const STEEL_BLAST_FURNACE = new Recipe("steel_blast_furnace", "Iron and Coal into Steel",
     BLAST_FURNACE, [[STEEL_INGOT, 4]], [[IRON_INGOT, 4], [COAL, 1]], 8);
@@ -322,6 +351,8 @@ const CAST_IRON_BLAST_FURNACE = new Recipe("cast_iron_blast_furnace", "Iron and 
     BLAST_FURNACE, [[CAST_IRON_INGOT, 1]], [[IRON_INGOT, 1], [CHARCOAL, 1]], 4);
 const STEEL_COKE_BLAST_FURNACE = new Recipe("steel_coke_blast_furnace", "Iron and Coke into Steel",
     BLAST_FURNACE, [[STEEL_INGOT, 8]], [[IRON_INGOT, 8], [COKE, 1]], 4);
+const WROUGHT_IRON_BLAST_FURNACE = new Recipe("wrought_iron_blast_furnace", "Cast Iron into Wrought Iron",
+    BLAST_FURNACE, [[WROUGHT_IRON_INGOT, 1]], [[CAST_IRON_INGOT, 1]], 2);
 //Alloy Furnace
 const BRONZE_ALLOY_FURNACE = new Recipe("bronze_alloy_furnace", "Copper and Tin into Bronze",
     ALLOY_FURNACE, [[BRONZE_INGOT, 4]], [[COPPER_INGOT, 3], [TIN_INGOT, 1]], 8);
@@ -329,11 +360,19 @@ const CONSTANTAN_ALLOY_FURNACE = new Recipe("constantan_alloy_furnace", "Copper 
     ALLOY_FURNACE, [[CONSTANTAN_INGOT, 2]], [[NICKEL_INGOT, 1], [COPPER_INGOT, 1]], 10);
 const ELECTRUM_ALLOY_FURNACE = new Recipe("electrum_alloy_furnace", "Gold and Silver into Electrum",
     ALLOY_FURNACE, [[ELECTRUM_INGOT, 2]], [[SILVER_INGOT, 1], [GOLD_INGOT, 1]], 5);
+const INVAR_ALLOY_FURNACE = new Recipe("invar_alloy_furnace", "Iron and Nickel into Invar",
+    ALLOY_FURNACE, [[INVAR_INGOT, 2]], [[IRON_INGOT, 1], [NICKEL_INGOT, 1]], 12);
+const BRASS_ALLOY_FURNACE = new Recipe("brass_alloy_furnace", "Copper and Zinc into Brass",
+    ALLOY_FURNACE, [[BRASS_INGOT, 3]], [[ZINC_INGOT, 1], [COPPER_INGOT, 2]], 10);
 //Assembler
 const PAPER_ASSEMBLER = new Recipe("paper_assembler", "Wood into Paper",
-    ASSEMBLER, [[PAPER, 8]], [[SAWDUST, 3]], 1);
+    ASSEMBLER, [[PAPER, 8]], [[SAWDUST, 3], [WATER, 10]], 1);
 const CIRCUIT_TIER1_ASSEMBLER = new Recipe("circuit_tier1_assembler", "Circuit Tier I",
     ASSEMBLER, [[CIRCUIT_TIER1, 1]], [[ELECTRUM_INGOT, 1], [GLASS, 5], [WOOD, 10]], 10);
+const GEM_LATTICE_ASSEMBLER = new Recipe("gem_lattice_assembler", "Gem Lattice Assembly",
+    ASSEMBLER, [[GEM_LATTICE, 1]], [
+        [EMERALD, 1], [TOPAZ, 1], [RUBY, 1], [SAPPHIRE, 1], [WROUGHT_IRON_INGOT, 5]
+    ], 6);
 //One off
 const COKE_COKE_OVEN = new Recipe("coke_coke_oven", "Coal to Coke",
     COKE_OVEN, [[COKE, 1], [CREOSOTE, 5]], [[COAL, 2]], 5);
@@ -376,6 +415,7 @@ const MINE_GEM_DRILLS = new Upgrade("mine_gem_drills", "Gem Composite Drills",
         const cap = MINE.getCapabilities().get("mining") as MiningCap;
         cap.expandLootTable(MINING_TIER4);
         MINE.updateCapability(cap);
+        gameActions.addUpgrade(FURNACE_BELLOWS_TIER2);
     }, [new GigaNum(10000), [[GEM_LATTICE, 5], [CIRCUIT_TIER1, 2], [CONSTANTAN_INGOT, 20]]]);
 const MINE_AUTOCLICKER_TIER1 = new Upgrade("mine_autoclicker_tier1", "Mine Autoclicker I",
     "Gives you an ability to automatically sell items from tier I mining pool.", "resource", () => {
@@ -420,6 +460,12 @@ const FURNACE_BELLOWS_TIER1 = new Upgrade("furnace_bellows_tier1", "Furnace Bell
         gameActions.addRecipe(GOLD_INGOT_FURNACE);
         gameActions.addRecipe(BRICK_FURNACE);
     }, [new GigaNum(500), [[STEEL_INGOT, 12], [WOOD, 25]]]);
+const FURNACE_BELLOWS_TIER2 = new Upgrade("furnace_bellows_tier2", "Furnace Bellows II",
+    "Furnaces can smelt even more ores now.", "crafting", () => {
+        gameActions.addRecipe(ZINC_INGOT_FURNACE);
+        gameActions.addRecipe(MAGNESIUM_INGOT_FURNACE);
+        gameActions.addRecipe(LEAD_INGOT_FURNACE);
+    }, [new GigaNum(12000), [[WROUGHT_IRON_INGOT, 8], [DIAMOND, 1]]]);
 //Excavator
 const EXCAVATOR_AUTOCLICKER_TIER1 = new Upgrade("excavator_autoclicker_tier1", "Excavator Autoclicker Tier I",
     "Allows you to automatically sell resources from tier I excavation pool.", "resource", () => {
@@ -458,15 +504,51 @@ const ORDER_ASSISTANT_TIER2 = new Upgrade("order_assistant_tier2", "Order Assist
 
 
 
-/* Facilities */
+/* RESEARCH */
+const INITIAL_RESEARCH = new Research("init_research", "Initiale",
+    "Final lab setup before you can start cooking up new inventions.", [new GigaNum(2000), []], () => {});
+const WROUGHT_IRON_RESEARCH = new Research("wrought_iron_research", "Wrought Iron",
+    "Wrought iron ingot will become craftable via blast furnace.",
+    [new GigaNum(4000), [[CAST_IRON_INGOT, 10], [IRON_INGOT, 20], [STEEL_INGOT, 8]]], () => {
+        gameActions.addRecipe(WROUGHT_IRON_BLAST_FURNACE);
+    }, [INITIAL_RESEARCH]);
+const HAMSTER_FOOD1_RESEARCH = new Research("hamster_food1_research", "Hamster Food I",
+    "Apparently, your hamsters have been fed coal this whole time." +
+    " Maybe giving them water will help with digestion of those ancient carbs.", [new GigaNum(7500), [[WATER, 100]]],
+    () => {
+        const cap = HAMSTER_WHEEL.getCapabilities().get("energy") as EnergyGenCap;
+        cap.baseEnergyGeneration = cap.baseEnergyGeneration.add(1);
+        HAMSTER_WHEEL.updateCapability(cap);
+    }, [INITIAL_RESEARCH]);
+const BILLBOARD_RESEARCH = new Research("billboard_research", "Billboards",
+    "Our scientists concluded that our current means of marketing are not sufficient, so they built a billboard. " +
+    "Increases max order tier.", [new GigaNum(10000), [[WOOD, 200], [ALUMINUM_INGOT, 25]]], () => {
+        maxOrderTier.value += 1;
+    }, [INITIAL_RESEARCH]);
+const NUCULAR_PROCESSING_RESEARCH = new Research("nucular_processing_research",
+    "Nucular Resource Processing",
+    "Give our scientists some uranium and thorium, maybe they'll find a way to process them into something useful",
+    [new GigaNum(25000), [[URANIUM_ORE, 20], [THORIUM_ORE, 30]]], () => {
+        gameActions.addRecipe(URANIUM_FURNACE);
+        gameActions.addRecipe(THORIUM_FURNACE);
+    }, [WROUGHT_IRON_RESEARCH]);
+const MORE_ALLOYS_RESEARCH = new Research("more_alloys_research", "More Alloys",
+    "Our scientists have prototyped new alloys for you to use, but they need some resources to test their properties",
+    [new GigaNum(30000), [[ZINC_INGOT, 20], [NICKEL_INGOT, 30], [IRON_INGOT, 35], [COPPER_INGOT, 35]]],
+    () => {
+        gameActions.addRecipe(INVAR_ALLOY_FURNACE);
+        gameActions.addRecipe(BRASS_ALLOY_FURNACE);
+    }, [WROUGHT_IRON_RESEARCH]);
+
+
+
+/* FACILITIES */
 export const RESEARCH_FACILITY = new Construction("research_facility", "Research Facility",
     "Dark magic powering everything is going on in there...", [
         [[WOOD, 50], [BRICK, 16], [GLASS, 10]],
         [[IRON_INGOT, 12], [CONSTANTAN_INGOT, 8]],
-        [[CIRCUIT_TIER1, 2], [PAPER, 80]]],
-    () => {
-
-    });
+        [[CIRCUIT_TIER1, 2], [PAPER, 80]]
+    ], () => {});
 
 
 
@@ -475,4 +557,6 @@ export function gameInit() {
     gameActions.addProducer(HAMSTER_WHEEL);
     gameActions.addProducer(MINE);
     gameActions.addOrder();
+    researches.value = [INITIAL_RESEARCH, BILLBOARD_RESEARCH,
+        WROUGHT_IRON_RESEARCH, HAMSTER_FOOD1_RESEARCH, MORE_ALLOYS_RESEARCH, NUCULAR_PROCESSING_RESEARCH];
 }

@@ -19,17 +19,17 @@ import {
     COKE,
     CONSTANTAN_INGOT,
     COPPER_INGOT,
-    CREOSOTE,
+    CREOSOTE, DIAMOND,
     ELECTRUM_INGOT,
     EMERALD,
-    EXCAVATION_TIER1,
+    EXCAVATION_TIER1, GEM_LATTICE,
     GLASS,
     GOLD_INGOT,
-    IRON_INGOT,
+    IRON_INGOT, LEAD_INGOT, MAGNESIUM_INGOT,
     MINING_TIER1,
     MINING_TIER2,
-    MINING_TIER3,
-    NICKEL_INGOT,
+    MINING_TIER3, MINING_TIER4,
+    NICKEL_INGOT, PAPER,
     RUBY,
     SAPPHIRE,
     SAWMILL_TABLE,
@@ -37,7 +37,7 @@ import {
     SILVER_INGOT,
     STEEL_INGOT,
     TIN_INGOT,
-    TOPAZ
+    TOPAZ, WROUGHT_IRON_INGOT, ZINC_INGOT
 } from "./registry.ts";
 import type {Research} from "./util/upgrades/Research.ts";
 import type {Construction} from "./util/upgrades/Construction.ts";
@@ -81,7 +81,7 @@ export const orderAssistant = signal<OrderAssistant>({
     maxAutomatedOrderTier: 1,
     currentTicks: 0,
 });
-export const researches = signal(new Map<IDString, Research>());
+export const researches = signal<Research[]>([]);
 export const facilities = signal<Construction[]>([]);
 export const totalValue = computed(() => {
     let result = new GigaNum(0);
@@ -464,54 +464,90 @@ export const gameActions = {
     shrinkOrderLootTable(loot: Resource | LootTable) {
         orderLootTable.value = orderLootTable.value.remove(loot);
     },
+    canCompleteResearch(research: Research) {
+        return this.hasEnoughOf(research.requirements[1]) && (money.value.compareTo(research.requirements[0]) !== "less");
+    },
+    completeResearch(research: Research) {
+        if (this.canCompleteResearch(research)) {
+            this.removeMoney(research.requirements[0]);
+            this.withdrawResource(research.requirements[1]);
+            research.isBought = true;
+            research.effect();
+        }
+    },
     incrementOrderCount() {
         ordersCount.value += 1;
         const count = ordersCount.value;
         switch (count) {
-            case 5:
+            case 5: {
                 this.expandOrderLootTable([[COAL, 5], [COPPER_INGOT, 3], [IRON_INGOT, 2]]);
-                break;
-            case 20:
+            } break;
+            case 20: {
                 this.expandOrderLootTable(EXCAVATION_TIER1);
                 this.shrinkOrderLootTable(MINING_TIER1);
-                break;
-            case 30:
+            } break;
+            case 30: {
                 this.expandOrderLootTable(MINING_TIER2);
                 this.shrinkOrderLootTable(MINING_TIER1);
                 this.expandOrderLootTable([[GLASS, 2]]);
-                break;
-            case 40:
+            } break;
+            case 40: {
                 this.expandOrderLootTable([
                     [STEEL_INGOT, 4], [TIN_INGOT, 6], [NICKEL_INGOT, 4],
                     [SILICON, 6], [COPPER_INGOT, 4], [IRON_INGOT, 3]
                 ]);
-                break;
-            case 50:
+            } break;
+            case 50: {
                 this.expandOrderLootTable(SAWMILL_TABLE);
                 maxOrderTier.value += 1;
-                break;
-            case 70:
+            } break;
+            case 70: {
                 this.expandOrderLootTable(MINING_TIER3);
                 this.shrinkOrderLootTable(MINING_TIER2);
                 this.shrinkOrderLootTable(MINING_TIER1);
-                break;
-            case 85:
+                this.shrinkOrderLootTable(SILICON);
+                this.expandOrderLootTable([[SILICON, 2]]);
+            } break;
+            case 85: {
                 this.expandOrderLootTable([
                     [ALUMINUM_INGOT, 4], [SILVER_INGOT, 2], [GOLD_INGOT, 1], [COPPER_INGOT, 1],
                     [GLASS, 2], [IRON_INGOT, 1], [RUBY, 1], [SAPPHIRE, 1], [TOPAZ, 1], [EMERALD, 1]
                 ]);
-                break;
-            case 100:
+            } break;
+            case 100: {
                 this.shrinkOrderLootTable(MINING_TIER3);
                 this.expandOrderLootTable([
-                    [BRONZE_INGOT, 2], [CONSTANTAN_INGOT, 2], [ELECTRUM_INGOT, 1], [BRICK, 3]
+                    [BRONZE_INGOT, 2], [CONSTANTAN_INGOT, 2], [ELECTRUM_INGOT, 1], [BRICK, 3],
+                    [RUBY, 1], [SAPPHIRE, 1], [TOPAZ, 1], [EMERALD, 1]
                 ]);
-                break;
-            case 110:
+            } break;
+            case 110: {
                 this.expandOrderLootTable([
                     [COKE, 2], [CREOSOTE, 3]
                 ]);
-                break;
+            } break;
+            case 120: {
+                this.expandOrderLootTable([
+                    [PAPER, 3], [WROUGHT_IRON_INGOT, 2]
+                ]);
+            } break;
+            case 140: {
+                this.expandOrderLootTable(MINING_TIER4);
+                this.shrinkOrderLootTable(MINING_TIER3);
+                this.shrinkOrderLootTable(MINING_TIER2);
+                this.shrinkOrderLootTable(MINING_TIER1);
+                this.expandOrderLootTable([[RUBY, 1], [SAPPHIRE, 1], [TOPAZ, 1], [EMERALD, 1]]);
+            } break;
+            case 150: {
+                this.shrinkOrderLootTable(MINING_TIER4);
+                this.shrinkOrderLootTable(PAPER);
+                this.shrinkOrderLootTable(COKE);
+                this.shrinkOrderLootTable(WROUGHT_IRON_INGOT);
+                this.expandOrderLootTable([
+                    [DIAMOND, 1], [RUBY, 1], [SAPPHIRE, 1], [TOPAZ, 1], [EMERALD, 1],
+                    [GEM_LATTICE, 1], [LEAD_INGOT, 3], [MAGNESIUM_INGOT, 4], [ZINC_INGOT, 3]
+                ]);
+            }
         }
     },
 };

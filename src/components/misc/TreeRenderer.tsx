@@ -6,11 +6,13 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
     {tree, nodeElement, displayMode = "vertical"}:
     {
         tree: Tree<T>,
-        nodeElement: ({node, ref}: {node: TreeNode<T>, ref: Ref<HTMLDivElement> | undefined}) => JSX.Element,
+        nodeElement: (
+            {node, ref}:
+            {node: TreeNode<T>, ref: Ref<HTMLDivElement> | undefined}
+        ) => JSX.Element,
         displayMode: "vertical" | "reverse-vertical" | "horizontal" | "reverse-horizontal"
     }
 ) {
-
     const nodeRefs = useRef(new Map<T, HTMLElement>());
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const treeContainerRef = useRef<HTMLDivElement>(null);
@@ -34,7 +36,7 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
                             childRect.right > containerRect.left) {
                             ctx.beginPath();
                             ctx.moveTo(childRect.x + (childRect.width / 2), childRect.top);
-                            ctx.lineTo(parentRect.x + (childRect.width / 2), parentRect.bottom);
+                            ctx.lineTo(parentRect.x + (parentRect.width / 2), parentRect.bottom);
                             ctx.stroke();
                         }
                     }
@@ -51,7 +53,7 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
                             childRect.right > containerRect.left) {
                             ctx.beginPath();
                             ctx.moveTo(childRect.x + (childRect.width / 2), childRect.bottom);
-                            ctx.lineTo(parentRect.x + (childRect.width / 2), parentRect.top);
+                            ctx.lineTo(parentRect.x + (parentRect.width / 2), parentRect.top);
                             ctx.stroke();
                         }
                     }
@@ -119,6 +121,11 @@ export function TreeRenderer<T extends Treeable<T> & DisplayItem>(
             removeEventListener("resize", drawTreeNodeConnections);
         };
     }, []);
+
+    useEffect(() => {
+        console.log("shit");
+        drawTreeNodeConnections();
+    });
 
     return (
         <>
