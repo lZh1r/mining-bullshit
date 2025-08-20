@@ -397,9 +397,12 @@ export const gameActions = {
             recipeQueue.value = new Map(current);
             return false;
         }
+        let inputs = recipe.inputs;
+        if (producer.parallelizationFactor > 1) inputs = inputs.map(([res, num]) =>
+            [res, num * producer.parallelizationFactor]);
         return !(!unlocked.has(producer) ||
             current.get(producer)!.includes(recipe) ||
-            !this.hasEnoughOf(recipe.inputs) ||
+            !this.hasEnoughOf(inputs) ||
             this.getProducerAmount(producer) === 0);
     },
     startRecipe(recipe: Recipe) {
@@ -409,7 +412,7 @@ export const gameActions = {
         const newMap = new Map(recipeQueue.value);
         const producer = recipe.producer;
         for (const [resource, number] of recipe.inputs) {
-            this.withdrawResource(resource, number);
+            this.withdrawResource(resource, number * producer.parallelizationFactor);
         }
         if (!newMap.has(producer)) {
             newMap.set(producer, []);

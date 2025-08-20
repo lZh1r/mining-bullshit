@@ -32,13 +32,15 @@ export function RecipeCard({recipe}:
                         }}>
                     A
                 </button>
-                <span className="text-xl place-self-center">{displayResourceRequirement(recipe.inputs)}</span>
+                <span className="text-xl place-self-center">{displayResourceRequirement(recipe.inputs)}
+                    {recipe.producer.parallelizationFactor > 1 && ` (x${recipe.producer.parallelizationFactor})`}</span>
             </div>
             <div className="flex flex-col text-center">
                 <span className="place-self-center">{recipe.craftDuration}s by default</span>
                 <button
                     className={`w-fit h-fit place-self-center border-2 border-muted-foreground p-2 shadow-button
-                    ${automated ? "cursor-default shadow-none" : isRunning ? "shadow-none bg-hover-card-background border-foreground cursor-pointer" +
+                    ${automated ? "cursor-default shadow-none" : isRunning ? 
+                        "shadow-none bg-hover-card-background border-foreground cursor-pointer" +
                         " hover:bg-card-background hover:border-muted-foreground" 
                         : gameActions.canStartRecipe(recipe) ?
                         "cursor-pointer hover:bg-hover-card-background hover:border-foreground" :
@@ -61,7 +63,8 @@ export function RecipeCard({recipe}:
                 </button>
                 <span>Progress: {recipe.getCurrentTicks().value.toFixed(3)}/{recipe.craftDuration}</span>
             </div>
-            <span className="text-xl place-self-center">{displayResourceRequirement(recipe.result)}</span>
+            <span className="text-xl place-self-center">{displayResourceRequirement(recipe.result)}
+                {recipe.producer.parallelizationFactor > 1 && ` (x${recipe.producer.parallelizationFactor})`}</span>
         </div>
     );
 }

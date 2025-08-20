@@ -23,6 +23,7 @@ export class Producer<T extends ProducerType> extends DisplayItem{
         public ticksMultiplier: number = 1,
         public resourcesNeeded: [Resource, number][] = [],
         public costMultiplier: number = 1,
+        public parallelizationFactor: number = 1,
         private readonly capabilities: Map<string, IProdCapability> = new Map(),
         private currentTicks: number = 0,
     ) {
@@ -39,10 +40,11 @@ export class Producer<T extends ProducerType> extends DisplayItem{
         ticksMultiplier: number = 1,
         resourcesNeeded: [Resource, number][] = [],
         costMultiplier: number = 1,
+        parallelizationFactor: number = 1,
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"crafting"> {
         return new Producer("crafting", id, name, description, baseCost, costScale, ticksPerOperation,
-            ticksMultiplier, resourcesNeeded, costMultiplier, capabilities);
+            ticksMultiplier, resourcesNeeded, costMultiplier, parallelizationFactor, capabilities);
     }
 
     static resource(
@@ -58,7 +60,7 @@ export class Producer<T extends ProducerType> extends DisplayItem{
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"resource"> {
         return new Producer("resource", id, name, description, baseCost, costScale, ticksPerOperation,
-            ticksMultiplier, resourcesNeeded, costMultiplier, capabilities);
+            ticksMultiplier, resourcesNeeded, costMultiplier, 1, capabilities);
     }
 
     static energy(
@@ -71,7 +73,8 @@ export class Producer<T extends ProducerType> extends DisplayItem{
         costMultiplier: number = 1,
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"energy"> {
-        return new Producer("energy", id, name, description, baseCost, costScale, -1, 0, resourcesNeeded, costMultiplier, capabilities);
+        return new Producer("energy", id, name, description, baseCost, costScale,
+            -1, 0, resourcesNeeded, costMultiplier, 1, capabilities);
     }
 
     static money(
@@ -87,7 +90,7 @@ export class Producer<T extends ProducerType> extends DisplayItem{
         capabilities: Map<string, IProdCapability> = new Map(),
     ): Producer<"money"> {
         return new Producer("money", id, name, description, baseCost, costScale, ticksPerOperation,
-            ticksMultiplier, resourcesNeeded, costMultiplier, capabilities);
+            ticksMultiplier, resourcesNeeded, costMultiplier, 1, capabilities);
     }
 
     getCapabilities() {
@@ -105,7 +108,8 @@ export class Producer<T extends ProducerType> extends DisplayItem{
     }
 
     get ticksRequired() {
-        return this.ticksPerOperation === -1 ? 0 : Number((this.ticksPerOperation! * this.ticksMultiplier).toFixed(3));
+        return this.ticksPerOperation === -1 ? 0 :
+            Number((this.ticksPerOperation! * this.ticksMultiplier).toFixed(3));
     }
 
     tick(): boolean {
@@ -132,7 +136,8 @@ export class Producer<T extends ProducerType> extends DisplayItem{
         let newMilestones = this.milestones;
         for (const [neededQuantity, effect] of this.milestones) {
             if (neededQuantity <= producerQuantity) {
-                newMilestones = newMilestones.filter((milestone) => milestone[0] !== neededQuantity && milestone[1] !== effect);
+                newMilestones = newMilestones.filter((milestone) =>
+                    milestone[0] !== neededQuantity && milestone[1] !== effect);
                 this.achievedMilestones.push([neededQuantity, effect]);
                 effect();
             }

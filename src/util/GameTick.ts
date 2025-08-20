@@ -21,8 +21,8 @@ export function gameTick() {
                     } else {
                         gameActions.stopRecipe(recipe);
                     }
-                    for (const recipeResult of recipe.result) {
-                        resourceGain.push(recipeResult);
+                    for (const [resource, number] of recipe.result) {
+                        resourceGain.push([resource, number * producer.parallelizationFactor]);
                     }
                 }
             });
