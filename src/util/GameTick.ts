@@ -30,8 +30,8 @@ export function gameTick() {
         if (moneyGain.compareTo(new GigaNum(0)) !== "equal") {
             gameActions.addMoney(moneyGain);
         }
-        for (const resource of resourceGain) {
-            gameActions.depositResource(resource[0], resource[1]);
+        for (const [resource, number] of resourceGain) {
+            gameActions.depositResource(resource, number === 0 ? 1 : number);
         }
         const recipesToRemove = new Set<IDString>();
         for (const recipe of autoQueue) {

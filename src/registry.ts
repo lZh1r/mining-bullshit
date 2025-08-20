@@ -557,6 +557,8 @@ export function gameInit() {
     gameActions.addProducer(HAMSTER_WHEEL);
     gameActions.addProducer(MINE);
     gameActions.addOrder();
+    // gameActions.depositResource([[WOOD, 50], [BRICK, 16], [GLASS, 10], [IRON_INGOT, 12],
+    //     [CONSTANTAN_INGOT, 8], [CIRCUIT_TIER1, 2], [PAPER, 80]]);
     researches.value = [INITIAL_RESEARCH, BILLBOARD_RESEARCH,
         WROUGHT_IRON_RESEARCH, HAMSTER_FOOD1_RESEARCH, MORE_ALLOYS_RESEARCH, NUCULAR_PROCESSING_RESEARCH];
 }
