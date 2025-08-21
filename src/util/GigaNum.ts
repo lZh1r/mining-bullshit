@@ -18,13 +18,13 @@ export class GigaNum {
                 this.mainPart = 0;
             } else {
                 this.exponentialFactor = Math.floor(Math.log10(mainPart));
-                this.mainPart = GigaNum.formatMainPart(mainPart / Math.pow(10, this.exponentialFactor));
+                this.mainPart = GigaNum.formatMainPart(mainPart / 10 ** this.exponentialFactor);
             }
         }
     }
 
     private static formatMainPart(unformatted: number, precision?: number) {
-        const precisionNum = Math.pow(10, precision ?? GigaNum.precision);
+        const precisionNum = 10 ** (precision ?? GigaNum.precision);
         return Math.round(unformatted * precisionNum) / precisionNum;
     }
 
@@ -33,7 +33,7 @@ export class GigaNum {
     }
 
     toNumber() {
-        return this.mainPart * Math.pow(10, this.exponentialFactor);
+        return this.mainPart * 10 ** this.exponentialFactor;
     }
 
     subtract(anotherNum: GigaNum): GigaNum;
@@ -49,7 +49,8 @@ export class GigaNum {
         } else {
             const expDifference = thisExp - anotherNum.exponentialFactor;
             if (expDifference <= GigaNum.precision) {
-                let resultMain = (this.mainPart * Math.pow(10, expDifference) - anotherNum.mainPart) / Math.pow(10, expDifference);
+                let resultMain = (this.mainPart * 10 ** expDifference - anotherNum.mainPart) /
+                    10 ** expDifference;
                 let resultExp = thisExp;
                 if (resultMain < 1) {
                     resultMain *= 10;
@@ -74,7 +75,7 @@ export class GigaNum {
         const otherExp = anotherNum.exponentialFactor;
         const otherMain = anotherNum.mainPart;
         const expDifference = Math.abs(thisExp - otherExp);
-        const scaleFactor = Math.pow(10, expDifference);
+        const scaleFactor = 10 ** expDifference;
         let resultMain;
         let resultExp;
 
@@ -169,11 +170,11 @@ export class GigaNum {
                     }
                 }
             }
-            resultMain *= Math.pow(originalMain, anotherNum);
+            resultMain *= originalMain ** anotherNum;
             resultExp += Math.round(originalExp * anotherNum);
 
         } else {
-            resultMain = Math.pow(originalMain, anotherNum);
+            resultMain = originalMain ** anotherNum;
             resultExp = Math.round(originalExp * anotherNum);
         }
 
