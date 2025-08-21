@@ -24,4 +24,9 @@ export class MasteryCap implements ICapability {
                 this.effect();
             }
     }
+
+    reset() {
+        this.xp = 0;
+        this.level = 0;
+    }
 }

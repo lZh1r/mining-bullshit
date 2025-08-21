@@ -11,6 +11,12 @@ export class Producer<T extends ProducerType> extends DisplayItem{
     private milestones: [number, () => void][] = [];
     private achievedMilestones: [number, () => void][] = [];
     private canBeAutomated: boolean = false;
+    private readonly initialCost: GigaNum;
+    private readonly initialCostScale: number;
+    private readonly initialTicksPerOperation: number;
+    private readonly initialTicksMultiplier: number;
+    private readonly initialResourceNeeded: [Resource, number][];
+    private readonly initialCapabilities: Map<string, IProdCapability>;
 
     private constructor(
         public readonly type: T,
@@ -19,15 +25,21 @@ export class Producer<T extends ProducerType> extends DisplayItem{
         public readonly description: string,
         public baseCost: GigaNum,
         public costScale: number,
-        public ticksPerOperation?: number,
+        public ticksPerOperation: number,
         public ticksMultiplier: number = 1,
         public resourcesNeeded: [Resource, number][] = [],
         public costMultiplier: number = 1,
         public parallelizationFactor: number = 1,
-        private readonly capabilities: Map<string, IProdCapability> = new Map(),
+        private capabilities: Map<string, IProdCapability> = new Map(),
         private currentTicks: number = 0,
     ) {
         super(id, name, description);
+        this.initialCost = baseCost;
+        this.initialCostScale = costScale;
+        this.initialResourceNeeded = [...resourcesNeeded];
+        this.initialTicksPerOperation = ticksPerOperation;
+        this.initialTicksMultiplier = ticksMultiplier;
+        this.initialCapabilities = structuredClone(capabilities);
     }
 
     static crafting(
@@ -36,7 +48,7 @@ export class Producer<T extends ProducerType> extends DisplayItem{
         description: string,
         baseCost: GigaNum,
         costScale: number,
-        ticksPerOperation?: number,
+        ticksPerOperation: number,
         ticksMultiplier: number = 1,
         resourcesNeeded: [Resource, number][] = [],
         costMultiplier: number = 1,
@@ -53,7 +65,7 @@ export class Producer<T extends ProducerType> extends DisplayItem{
         description: string,
         baseCost: GigaNum,
         costScale: number,
-        ticksPerOperation?: number,
+        ticksPerOperation: number,
         ticksMultiplier: number = 1,
         resourcesNeeded: [Resource, number][] = [],
         costMultiplier: number = 1,
@@ -83,7 +95,7 @@ export class Producer<T extends ProducerType> extends DisplayItem{
         description: string,
         baseCost: GigaNum,
         costScale: number,
-        ticksPerOperation?: number,
+        ticksPerOperation: number,
         ticksMultiplier: number = 1,
         resourcesNeeded: [Resource, number][] = [],
         costMultiplier: number = 1,
@@ -100,6 +112,7 @@ export class Producer<T extends ProducerType> extends DisplayItem{
     addCapability(capability: IProdCapability) {
         if (capability.applicableToProducerOfType.includes(this.type)) {
             this.capabilities.set(capability.id, capability);
+            this.initialCapabilities.set(capability.id, capability);
         }
     }
 
@@ -156,6 +169,20 @@ export class Producer<T extends ProducerType> extends DisplayItem{
 
     setCanBeAutomated(value: boolean) {
         this.canBeAutomated = value;
+    }
+
+    reset() {
+        this.baseCost = this.initialCost;
+        this.costScale = this.initialCostScale;
+        this.resourcesNeeded = this.initialResourceNeeded;
+        this.ticksPerOperation = this.initialTicksPerOperation;
+        this.ticksMultiplier = this.initialTicksMultiplier;
+        for (const capability of this.capabilities.values()) {
+            capability.reset();
+        }
+        this.capabilities = this.initialCapabilities;
+        this.resetMilestones();
+        this.canBeAutomated = false;
     }
 }
 

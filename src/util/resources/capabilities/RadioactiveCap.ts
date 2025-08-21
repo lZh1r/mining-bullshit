@@ -6,4 +6,8 @@ export class RadioactiveCap implements ICapability{
         public readonly radiationLevel: number) {
         this.id = "radioactive";
     }
+
+    reset() {
+
+    }
 }

@@ -43,14 +43,18 @@ import type {Research} from "./util/upgrades/Research.ts";
 import type {Construction} from "./util/upgrades/Construction.ts";
 import type {NavBarTab} from "./app.tsx";
 import {emitEvent} from "./util/event.ts";
+import {gameTick} from "./util/GameTick.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal<NavBarTab>("producer");
-export const money = signal(new GigaNum(103));
-export const totalMoneyEarned = signal(money.value);
+export let initialMoney = 103;
+export const money = signal(new GigaNum(initialMoney));
+export const totalMoneyEarned = signal(new GigaNum(0));
 export const totalMoneySpent = signal(new GigaNum(0));
-export const resources = signal(new Map<string, [Resource, number]>());
-export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
+export const initialResources = new Map<string, [Resource, number]>();
+export const resources = signal(initialResources);
+export const initialProducers = new Map<string, [Producer<ProducerType>, number]>();
+export const producers = signal(initialProducers);
 export const producerMap = computed(() => {
     const energyProducers = gameActions.getAllProducersOfType("energy");
     const moneyProducers = gameActions.getAllProducersOfType("money");
@@ -64,28 +68,32 @@ export const producerMap = computed(() => {
         ["all", [...energyProducers, ...moneyProducers, ...craftingProducers, ...resourceProducers]]
     ]);
 });
-export const upgrades = signal(new Map<ProducerType, Upgrade[]>([
+export const initialUpgrades = new Map<ProducerType, Upgrade[]>([
     ["energy", []],
     ["resource", []],
     ["money", []],
     ["crafting", []]
-]));
-export const recipes = signal(new Map<Producer<"crafting">, Recipe[]>());
+]);
+export const upgrades = signal(initialUpgrades);
+export const initialRecipes = new Map<Producer<"crafting">, Recipe[]>();
+export const recipes = signal(initialRecipes);
 export const recipeQueue = signal(new Map<Producer<"crafting">, Recipe[]>());
 export const automationQueue = signal(new Array<Recipe>());
 export const orderLootTable = signal<LootTable>(MINING_TIER1);
 export const orders = signal<Order[]>([]);
 export const ordersCount = signal(0);
 export const maxOrderTier = signal<number>(1);
-export const orderAssistant = signal<OrderAssistant>({
+export const initialOrderAssistant: OrderAssistant = {
     enabled: false,
     ticksPerAutomation: 10,
     numberOfOrdersAutomated: 1,
     maxAutomatedOrderTier: 1,
     currentTicks: 0,
-});
+};
+export const orderAssistant = signal<OrderAssistant>(structuredClone(initialOrderAssistant));
 export const researches = signal<Research[]>([]);
-export const facilities = signal<Construction[]>([]);
+export const initialFacilities: Construction[] = [];
+export const facilities = signal<Construction[]>(initialFacilities);
 export const totalValue = computed(() => {
     let result = new GigaNum(0);
     resources.value.forEach((resourceNumberPair) => {
@@ -559,5 +567,40 @@ export const gameActions = {
                 ]);
             }
         }
+    },
+    resetGame() {
+        currentTab.value = "producer";
+        money.value = new GigaNum(initialMoney);
+        for (const [producer, _] of producers.value.values()) {
+            producer.reset();
+        }
+        producers.value = initialProducers;
+        totalMoneyEarned.value = new GigaNum(0);
+        totalMoneySpent.value = new GigaNum(0);
+        for (const [resource, _] of resources.value.values()) {
+            resource.reset();
+        }
+        resources.value = initialResources;
+        upgrades.value = initialUpgrades;
+        orders.value = [];
+        this.addOrder();
+        ordersCount.value = 0;
+        orderAssistant.value = structuredClone(initialOrderAssistant);
+        for (const [_, recipeArray] of recipes.value) {
+            for (const recipe of recipeArray) {
+                recipe.reset();
+            }
+        }
+        recipes.value = initialRecipes;
+        recipeQueue.value = new Map();
+        for (const research of researches.value) {
+            research.isBought = false;
+        }
+        for (const facility of facilities.value) {
+            facility.currentStage = 0;
+            facility.isComplete = false;
+        }
+        facilities.value = initialFacilities;
+        gameTick();
     },
 };

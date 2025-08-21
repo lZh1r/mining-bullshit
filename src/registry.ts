@@ -6,13 +6,20 @@ import {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
 import {LootTable} from "./util/LootTable.ts";
 import {Upgrade} from "./util/upgrades/Upgrade.ts";
 import {GigaNum} from "./util/GigaNum.ts";
-import {gameActions, maxOrderTier, orderAssistant, researches, totalMoneyEarned} from "./game-state.ts";
+import {
+    gameActions,
+    initialFacilities,
+    initialProducers,
+    maxOrderTier,
+    orderAssistant,
+    researches
+} from "./game-state.ts";
 import {Recipe} from "./util/crafts/Recipe.ts";
 import {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
 import {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
 import {Construction} from "./util/upgrades/Construction.ts";
 import {Research} from "./util/upgrades/Research.ts";
-import {addGameEventListener} from "./util/event.ts";
+import {gameTick} from "./util/GameTick.ts";
 
 /* RESOURCES */
 /* TIER 1 */
@@ -558,23 +565,18 @@ export const RESEARCH_FACILITY = new Construction("research_facility", "Research
         [[WOOD, 50], [BRICK, 16], [GLASS, 10]],
         [[IRON_INGOT, 12], [CONSTANTAN_INGOT, 8]],
         [[CIRCUIT_TIER1, 2], [PAPER, 80]]
-    ], () => {});
+    ], () => {
+        initialFacilities.push(RESEARCH_FACILITY);
+    });
 
 
 
 /* INITIALIZATION */
 export function gameInit() {
-    gameActions.addProducer(HAMSTER_WHEEL);
-    gameActions.addProducer(MINE);
+    initialProducers.set(HAMSTER_WHEEL.id, [HAMSTER_WHEEL, 0]);
+    initialProducers.set(MINE.id, [MINE, 0]);
     gameActions.addOrder();
-    addGameEventListener("moneyAdded", () => {
-        if (totalMoneyEarned.value.compareTo(new GigaNum(5000)) !== "less") {
-            //TODO: reset game or smth
-            return true;
-        } return false;
-    });
-    // gameActions.depositResource([[WOOD, 50], [BRICK, 16], [GLASS, 10], [IRON_INGOT, 12],
-    //     [CONSTANTAN_INGOT, 8], [CIRCUIT_TIER1, 2], [PAPER, 80]]);
     researches.value = [INITIAL_RESEARCH, BILLBOARD_RESEARCH,
         WROUGHT_IRON_RESEARCH, HAMSTER_FOOD1_RESEARCH, MORE_ALLOYS_RESEARCH, NUCULAR_PROCESSING_RESEARCH];
+    gameTick();
 }

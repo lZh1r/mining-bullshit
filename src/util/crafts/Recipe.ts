@@ -6,6 +6,11 @@ import {DisplayItem} from "../utils.ts";
 export class Recipe extends DisplayItem{
     public automate: boolean = false;
     private currentTicks: Signal<number> = signal(0);
+    private readonly initialResult: [Resource, number][];
+    private readonly initialInputs: [Resource, number][];
+    private readonly initialProducerTicksRequired: number;
+    private readonly initialTickMultiplier: number;
+
     constructor(
         public readonly id: IDString,
         public readonly name: NameString,
@@ -17,6 +22,10 @@ export class Recipe extends DisplayItem{
         public isActive: boolean = false,
     ) {
         super(id, name);
+        this.initialResult = [...result];
+        this.initialInputs = [...inputs];
+        this.initialProducerTicksRequired = producerTicksRequired;
+        this.initialTickMultiplier = tickMultiplier;
     }
 
     get craftDuration() {
@@ -43,5 +52,14 @@ export class Recipe extends DisplayItem{
 
     resetCurrentTicks() {
         this.currentTicks.value = 0;
+    }
+
+    reset() {
+        this.automate = false;
+        this.resetCurrentTicks();
+        this.result = this.initialResult;
+        this.inputs = this.initialInputs;
+        this.producerTicksRequired = this.initialProducerTicksRequired;
+        this.tickMultiplier = this.initialTickMultiplier;
     }
 }
