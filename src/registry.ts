@@ -6,12 +6,13 @@ import {MiningCap} from "./util/producers/capabilities/MiningCap.ts";
 import {LootTable} from "./util/LootTable.ts";
 import {Upgrade} from "./util/upgrades/Upgrade.ts";
 import {GigaNum} from "./util/GigaNum.ts";
-import {gameActions, maxOrderTier, orderAssistant, researches} from "./game-state.ts";
+import {gameActions, maxOrderTier, orderAssistant, researches, totalMoneyEarned} from "./game-state.ts";
 import {Recipe} from "./util/crafts/Recipe.ts";
 import {MasteryCap} from "./util/resources/capabilities/MasteryCap.ts";
 import {MoneyProdCap} from "./util/producers/capabilities/MoneyProdCap.ts";
 import {Construction} from "./util/upgrades/Construction.ts";
 import {Research} from "./util/upgrades/Research.ts";
+import {addGameEventListener} from "./util/event.ts";
 
 /* RESOURCES */
 /* TIER 1 */
@@ -82,6 +83,9 @@ CHARCOAL.addOnGet(() => {
     gameActions.addRecipe(CAST_IRON_BLAST_FURNACE);
 });
 export const CAST_IRON_INGOT = new Resource("cast_iron_ingot", "Cast Iron Ingot", 20);
+CAST_IRON_INGOT.addOnGet(() => {
+    gameActions.addUpgrade(FURNACE_PARALLELIZATION);
+});
 /* TIER 3 */
 const SILVER_ORE = new Resource("silver_ore", "Silver Ore", 10);
 export const SILVER_INGOT = new Resource("silver_ingot", "Silver Ingot", 30);
@@ -217,48 +221,50 @@ export const PRECIOUS_TIER1 = new LootTable([
 /* ENERGY */
 const HAMSTER_WHEEL = Producer.energy("hamster_wheel", "Hamster Wheel",
     "Who knew that hamsters are so good at power generation?",
-    new GigaNum(5), new GigaNum(1.2));
+    new GigaNum(5), 1.2);
 HAMSTER_WHEEL.addCapability(new EnergyGenCap(new GigaNum(5)));
 const COMBUSTION_GENERATOR = Producer.energy("combustion_generator", "Combustion Generator",
-    "Watch the world burn.", new GigaNum(25), new GigaNum(2), [[COAL, 5]]);
+    "Watch the world burn.", new GigaNum(25), 2, [[COAL, 5]]);
 COMBUSTION_GENERATOR.addCapability(new EnergyGenCap(new GigaNum(25)));
 const SOLAR_PANEL = Producer.energy("solar_panel", "Solar Panel",
-    "Eco-friendly energy production.", new GigaNum(50), new GigaNum(1.1), [[SILICON, 2], [GLASS, 4]]);
+    "Eco-friendly energy production.", new GigaNum(50),
+    1.1, [[SILICON, 2], [GLASS, 4]]);
 SOLAR_PANEL.addCapability(new EnergyGenCap(new GigaNum(20)));
 
 /* RESOURCE */
 const MINE = Producer.resource("mine", "Mine",
 "Send your enemies to work for you in this beautiful resort!",
-    new GigaNum(20), new GigaNum(1.45), 5);
+    new GigaNum(20), 1.45, 5);
 MINE.addCapability(new EnergyConsumptionCap(new GigaNum(10)));
 MINE.addCapability(new MiningCap(MINING_TIER1));
 const EXCAVATOR = Producer.resource("excavator", "Excavator",
-    "That big yellow car.", new GigaNum(25), new GigaNum(1.8),
+    "That big yellow car.", new GigaNum(25), 1.8,
     3, 1, [[COPPER_INGOT, 2]]);
 EXCAVATOR.addCapability(new EnergyConsumptionCap(new GigaNum(10)));
 EXCAVATOR.addCapability(new MiningCap(EXCAVATION_TIER1));
 const SAWMILL = Producer.resource("sawmill", "Sawmill",
-    "TREES! THEY ARE EVERYWHERE!", new GigaNum(250), new GigaNum(2), 2, 1,
+    "TREES! THEY ARE EVERYWHERE!", new GigaNum(250),
+    2, 2, 1,
     [[STEEL_INGOT, 5], [COPPER_INGOT, 10]]);
 SAWMILL.addCapability(new MiningCap(SAWMILL_TABLE));
 SAWMILL.addCapability(new EnergyConsumptionCap(new GigaNum(30)));
 const PRECIOUS_QUARRY = Producer.resource("precious_quarry", "Precious Quarry",
     "A quarry capable of mining only the most expensive resources.",
-    new GigaNum(10000), new GigaNum(10), 10, 6,
+    new GigaNum(10000), 10, 10, 6,
     [[GEM_LATTICE, 3], [CIRCUIT_TIER1, 2], [STEEL_INGOT, 12], [CONSTANTAN_INGOT, 8]]);
 PRECIOUS_QUARRY.addCapability(new MiningCap(PRECIOUS_TIER1));
 PRECIOUS_QUARRY.addCapability(new EnergyConsumptionCap(new GigaNum(200)));
 const WATER_PUMP = Producer.resource("water_pump", "Water Pump",
     "Drains nearest bodies of water.",
-    new GigaNum(2650), new GigaNum(1.5), 1, 1,
+    new GigaNum(2650), 1.5, 1, 1,
     [[CONSTANTAN_INGOT, 6], [CIRCUIT_TIER1, 1]]);
 WATER_PUMP.addCapability(new MiningCap(new LootTable([[WATER, 1]])));
-WATER_PUMP.addCapability(new EnergyConsumptionCap(new GigaNum(150)));
+WATER_PUMP.addCapability(new EnergyConsumptionCap(new GigaNum(100)));
 
 /* CRAFTING */
 const FURNACE = Producer.crafting("furnace", "Furnace",
     "Smelts things on the most primitive level.",
-    new GigaNum(30), new GigaNum(1.5), 2, 1, [[ROCK, 10]]);
+    new GigaNum(30), 1.5, 2, 1, [[ROCK, 10]]);
 FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(10)));
 FURNACE.addMilestone(1, () => {
     gameActions.addRecipe(IRON_INGOT_FURNACE);
@@ -266,23 +272,23 @@ FURNACE.addMilestone(1, () => {
     gameActions.addRecipe(COAL_FURNACE);
 });
 const BLAST_FURNACE = Producer.crafting("blast_furnace", "Blast Furnace",
-    "Makes steel and some other alloys.", new GigaNum(50), new GigaNum(1.7),
+    "Makes steel and some other alloys.", new GigaNum(50), 1.7,
     5, 1, [[ROCK, 20], [NICKEL_INGOT, 2]]);
 BLAST_FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(40)));
 BLAST_FURNACE.addMilestone(1, () => {
     gameActions.addRecipe(STEEL_BLAST_FURNACE);
 });
 const ALLOY_FURNACE = Producer.crafting("alloy_furnace", "Alloy Furnace",
-    "Mother of all alloys.", new GigaNum(1000), new GigaNum(1.65),
+    "Mother of all alloys.", new GigaNum(1000), 1.65,
     4, 1, [[ROCK, 25], [NICKEL_INGOT, 4], [ALUMINUM_INGOT, 4]]);
-ALLOY_FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(100)));
+ALLOY_FURNACE.addCapability(new EnergyConsumptionCap(new GigaNum(50)));
 ALLOY_FURNACE.addMilestone(1, () => {
     gameActions.addRecipe(BRONZE_ALLOY_FURNACE);
     gameActions.addRecipe(CONSTANTAN_ALLOY_FURNACE);
     gameActions.addRecipe(ELECTRUM_ALLOY_FURNACE);
 });
 const ASSEMBLER = Producer.crafting("assembler", "Assembler",
-    "Creates a whole lotta things.", new GigaNum(5000), new GigaNum(1.7),
+    "Creates a whole lotta things.", new GigaNum(5000), 1.7,
     5, 2, [[ELECTRUM_INGOT, 4], [STEEL_INGOT, 8], [BRONZE_INGOT, 8], [EMERALD, 1]]);
 ASSEMBLER.addCapability(new EnergyConsumptionCap(new GigaNum(100)));
 ASSEMBLER.addMilestone(1, () => {
@@ -290,7 +296,7 @@ ASSEMBLER.addMilestone(1, () => {
     gameActions.addRecipe(CIRCUIT_TIER1_ASSEMBLER);
 });
 const COKE_OVEN = Producer.crafting("coke_oven", "Coke Oven",
-    "Im in love with the koko-cola! Produces coke coal.", new GigaNum(1250), new GigaNum(2),
+    "Im in love with the koko-cola! Produces coke coal.", new GigaNum(1250), 2,
     3, 1, [[BRICK, 10], [BRONZE_INGOT, 8]]);
 COKE_OVEN.addCapability(new EnergyConsumptionCap(new GigaNum(30)));
 COKE_OVEN.addMilestone(1, () => {
@@ -301,7 +307,7 @@ COKE_OVEN.addMilestone(1, () => {
 
 /* MONEY */
 const MONEY_PRINTER = Producer.money("money_printer", "Money Printer",
-    "That's how economy works!", new GigaNum(10000), new GigaNum(10),
+    "That's how economy works!", new GigaNum(10000), 10,
     10, 1, [[PAPER, 80]]);
 MONEY_PRINTER.addCapability(new MoneyProdCap(new GigaNum(100)));
 MONEY_PRINTER.addCapability(new EnergyConsumptionCap(new GigaNum(25)));
@@ -466,6 +472,10 @@ const FURNACE_BELLOWS_TIER2 = new Upgrade("furnace_bellows_tier2", "Furnace Bell
         gameActions.addRecipe(MAGNESIUM_INGOT_FURNACE);
         gameActions.addRecipe(LEAD_INGOT_FURNACE);
     }, [new GigaNum(12000), [[WROUGHT_IRON_INGOT, 8], [DIAMOND, 1]]]);
+const FURNACE_PARALLELIZATION = new Upgrade("furnace_parallelization", "Extra Furnace Chambers",
+    "Allows furnaces to smelt two times more items at once!", "crafting", () => {
+        FURNACE.parallelizationFactor += 1;
+    }, [new GigaNum(2000), [[CAST_IRON_INGOT, 10], [STEEL_INGOT, 16], [TIN_INGOT, 20], [ROCK, 200]]]);
 //Excavator
 const EXCAVATOR_AUTOCLICKER_TIER1 = new Upgrade("excavator_autoclicker_tier1", "Excavator Autoclicker Tier I",
     "Allows you to automatically sell resources from tier I excavation pool.", "resource", () => {
@@ -557,6 +567,12 @@ export function gameInit() {
     gameActions.addProducer(HAMSTER_WHEEL);
     gameActions.addProducer(MINE);
     gameActions.addOrder();
+    addGameEventListener("moneyAdded", () => {
+        if (totalMoneyEarned.value.compareTo(new GigaNum(5000)) !== "less") {
+            //TODO: reset game or smth
+            return true;
+        } return false;
+    });
     // gameActions.depositResource([[WOOD, 50], [BRICK, 16], [GLASS, 10], [IRON_INGOT, 12],
     //     [CONSTANTAN_INGOT, 8], [CIRCUIT_TIER1, 2], [PAPER, 80]]);
     researches.value = [INITIAL_RESEARCH, BILLBOARD_RESEARCH,

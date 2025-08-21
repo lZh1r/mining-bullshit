@@ -42,10 +42,13 @@ import {
 import type {Research} from "./util/upgrades/Research.ts";
 import type {Construction} from "./util/upgrades/Construction.ts";
 import type {NavBarTab} from "./app.tsx";
+import {emitEvent} from "./util/event.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal<NavBarTab>("producer");
 export const money = signal(new GigaNum(103));
+export const totalMoneyEarned = signal(money.value);
+export const totalMoneySpent = signal(new GigaNum(0));
 export const resources = signal(new Map<string, [Resource, number]>());
 export const producers = signal(new Map<string, [Producer<ProducerType>, number]>());
 export const producerMap = computed(() => {
@@ -127,9 +130,13 @@ export const gameActions = {
     },
     addMoney(amount: GigaNum | number) {
         money.value = money.peek().add(amount);
+        totalMoneyEarned.value = totalMoneyEarned.value.add(amount);
+        emitEvent("moneyAdded");
     },
     removeMoney(amount: GigaNum | number) {
         money.value = money.peek().subtract(amount);
+        totalMoneySpent.value = totalMoneySpent.value.add(amount);
+        emitEvent("moneyRemoved");
     },
     addResource(resource: Resource) {
         resources.value = resources.peek().set(resource.id, [resource, 0]);
@@ -252,7 +259,7 @@ export const gameActions = {
         const prod = producers.peek().get(producer.id);
         const currentProducerQuantity = typeof prod === "undefined" ? 0 : prod[1];
         for (let i = 0; i < amount; i++) {
-            resultNum = resultNum.add(producer.baseCost.multiply(producer.costScale.pow(currentProducerQuantity + i)).
+            resultNum = resultNum.add(producer.baseCost.multiply(producer.costScale ** (currentProducerQuantity + i)).
             multiply(producer.costMultiplier));
         }
         const resultRes: [Resource, number][] = [];
