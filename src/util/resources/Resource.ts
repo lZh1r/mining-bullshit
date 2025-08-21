@@ -11,8 +11,8 @@ export class Resource extends DisplayItem{
     private readonly initialCapabilities: Map<ResourceCapabilityType, ICapability>;
 
     constructor(
-        public readonly id: IDString,
-        public readonly name: NameString,
+        id: IDString,
+        name: NameString,
         public baseValue: number,
         public valueMultiplier: number = 1,
         private capabilities: Map<ResourceCapabilityType, ICapability> = new Map()

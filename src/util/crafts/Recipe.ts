@@ -12,8 +12,8 @@ export class Recipe extends DisplayItem{
     private readonly initialTickMultiplier: number;
 
     constructor(
-        public readonly id: IDString,
-        public readonly name: NameString,
+        id: IDString,
+        name: NameString,
         public readonly producer: Producer<"crafting">,
         public result: [Resource, number][],
         public inputs: [Resource, number][],

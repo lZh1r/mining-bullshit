@@ -20,9 +20,9 @@ export class Producer<T extends ProducerType> extends DisplayItem{
 
     private constructor(
         public readonly type: T,
-        public readonly id: IDString,
-        public readonly name: NameString,
-        public readonly description: string,
+        id: IDString,
+        name: NameString,
+        description: string,
         public baseCost: GigaNum,
         public costScale: number,
         public ticksPerOperation: number,

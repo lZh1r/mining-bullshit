@@ -6,9 +6,9 @@ import {DisplayItem} from "../utils.ts";
 export class Research extends DisplayItem implements Treeable<Research>{
     public isBought: boolean = false;
     constructor(
-        public readonly id: IDString,
-        public readonly name: NameString,
-        public readonly description: string,
+        id: IDString,
+        name: NameString,
+        description: string,
         public requirements: [GigaNum, [Resource, number][]],
         public effect: () => void,
         public ancestors: Research[] | null = null,

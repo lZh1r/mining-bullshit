@@ -7,9 +7,9 @@ export class Construction extends DisplayItem{
     public totalStages: number;
     public isComplete: boolean = false;
     constructor(
-        public readonly id: IDString,
-        public readonly name: NameString,
-        public readonly description: string,
+        id: IDString,
+        name: NameString,
+        description: string,
         public requirements: [Resource, number][][],
         public effect: () => void,
     ) {
