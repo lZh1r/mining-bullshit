@@ -139,12 +139,12 @@ export const gameActions = {
     addMoney(amount: GigaNum | number) {
         money.value = money.peek().add(amount);
         totalMoneyEarned.value = totalMoneyEarned.value.add(amount);
-        emitEvent("moneyAdded");
+        emitEvent("moneyAdded", {amount: (amount instanceof GigaNum ? amount.toNumber() : amount)});
     },
     removeMoney(amount: GigaNum | number) {
         money.value = money.peek().subtract(amount);
         totalMoneySpent.value = totalMoneySpent.value.add(amount);
-        emitEvent("moneyRemoved");
+        emitEvent("moneyRemoved", {amount: (amount instanceof GigaNum ? amount.toNumber() : amount)});
     },
     addResource(resource: Resource) {
         resources.value = resources.peek().set(resource.id, [resource, 0]);
@@ -189,6 +189,7 @@ export const gameActions = {
                 gameActions.depositResource(res, num);
             }
         }
+        emitEvent("resourceAdded", {resource, amount});
     },
     withdrawResource(resource: Resource | [Resource, number][], amount?: number) {
         const current = resources.value;
@@ -208,6 +209,7 @@ export const gameActions = {
             });
         }
         resources.value = newMap;
+        emitEvent("resourceRemoved", {resource, amount});
     },
     updateResource<K extends keyof Resource>(resource: Resource | string, valueToUpdate: K, value: Resource[K]): boolean {
         if (resource instanceof Resource) {
@@ -247,6 +249,7 @@ export const gameActions = {
         const prevCount = newMap.has(producer.id) ? newMap.get(producer.id)![1] : 0;
         newMap.set(producer.id, [producer, amount + prevCount]);
         producers.value = newMap;
+        emitEvent("producerAdded", {producer, amount});
     },
     removeProducer(producer: Producer<ProducerType>, amount: number = 1) {
         if (!producers.value.get(producer.id)) {
@@ -256,6 +259,7 @@ export const gameActions = {
         const prevCount = newMap.get(producer.id)![1];
         newMap.set(producer.id, [producer, prevCount - amount]);
         producers.value = newMap;
+        emitEvent("producerRemoved", {producer, amount});
     },
     deleteProducer(producer: Producer<ProducerType>) {
         const newMap = new Map(producers.value);
@@ -467,6 +471,7 @@ export const gameActions = {
             this.addMoney(order.reward);
             this.incrementOrderCount();
         }
+        emitEvent("orderCompleted");
     },
     expandOrderLootTable(resources: [Resource, number][] | LootTable) {
         let newTable = orderLootTable.value;
@@ -601,6 +606,8 @@ export const gameActions = {
             facility.isComplete = false;
         }
         facilities.value = initialFacilities;
+        emitEvent("gameReset");
+        //TODO: figure out how not to rely on calling the tick function extra time, as it is kinda sloppy
         gameTick();
     },
 };
