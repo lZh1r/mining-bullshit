@@ -44,9 +44,11 @@ import type {Construction} from "./util/upgrades/Construction.ts";
 import type {NavBarTab} from "./app.tsx";
 import {emitEvent} from "./util/event.ts";
 import {gameTick} from "./util/GameTick.ts";
+import type {Achievement} from "./util/Achievement.ts";
 
 export const gameTickInterval = signal(1000);
 export const currentTab = signal<NavBarTab>("producer");
+export const achievements = signal(new Map<IDString, [Achievement, boolean]>());
 export let initialMoney = 103;
 export const money = signal(new GigaNum(initialMoney));
 export const totalMoneyEarned = signal(new GigaNum(0));
@@ -130,6 +132,16 @@ export const powerConsumption = computed(() => {
 });
 
 export const gameActions = {
+    unlockAchievement(achievement: Achievement) {
+        const newMap = achievements.value;
+        newMap.set(achievement.id, [achievement, true]);
+        achievements.value = newMap;
+    },
+    addAchievement(achievement: Achievement) {
+        const newMap = achievements.value;
+        newMap.set(achievement.id, [achievement, false]);
+        achievements.value = newMap;
+    },
     addFacility(facility: Construction) {
         facilities.value = [...facilities.value.slice(), facility];
     },
