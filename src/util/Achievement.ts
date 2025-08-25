@@ -7,5 +7,8 @@ export class Achievement extends DisplayItem{
         description: string,
     ) {
         super(id, name, description);
+        Achievement.allAchievements.set(id, [this, false]);
     }
+
+    public static allAchievements = new Map<IDString, [Achievement, boolean]>();
 }

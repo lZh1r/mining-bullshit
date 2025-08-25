@@ -130,6 +130,13 @@ export const powerConsumption = computed(() => {
     });
     return result;
 });
+export const completedAchievementsNum = computed(() => {
+    let result = 0;
+    achievements.value.forEach(([_, isCompleted]) => {
+        if (isCompleted) result += 1;
+    });
+    return result;
+});
 
 export const gameActions = {
     unlockAchievement(achievement: Achievement) {

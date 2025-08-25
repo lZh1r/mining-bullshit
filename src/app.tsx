@@ -6,8 +6,9 @@ import {gameInit} from "./registry.ts";
 import {ProducersTab} from "./components/tabs/producer/ProducersTab.tsx";
 import {ResourceTab} from "./components/tabs/resource/ResourceTab.tsx";
 import {HqTab} from "./components/tabs/hq/HQTab.tsx";
+import {OfficeTab} from "./components/tabs/office/OfficeTab.tsx";
 
-export type NavBarTab = "producer" | "resource" | "hq"
+export type NavBarTab = "producer" | "resource" | "hq" | "office"
 
 export function App() {
 
@@ -29,6 +30,9 @@ export function App() {
                 </div>
                 <div className={"hq" === currentTab.value ? "" : "hidden"}>
                     <HqTab/>
+                </div>
+                <div className={"office" === currentTab.value ? "" : "hidden"}>
+                    <OfficeTab/>
                 </div>
             </>
         </div>

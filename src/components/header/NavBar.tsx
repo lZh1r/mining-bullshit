@@ -15,6 +15,7 @@ export function NavBar() {
             border-b-2 border-card-background max-sm:flex-col max-sm:space-y-2 max-sm:${isOpen ? "visible" : "hidden"}`}>
                 <NavBarButton title={"Producers"} correspondingTab={"producer"}/>
                 <NavBarButton title={"Resources"} correspondingTab={"resource"}/>
+                <NavBarButton title={"Office"} correspondingTab={"office"}/>
                 {facilities.value.length > 0 && <NavBarButton title={"HQ"} correspondingTab={"hq"}/>}
             </nav>
         </header>

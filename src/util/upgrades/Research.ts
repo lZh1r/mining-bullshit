@@ -15,7 +15,10 @@ export class Research extends DisplayItem implements Treeable<Research>{
         public repeatable: boolean = false,
     ) {
         super(id, name, description);
+        Research.allResearches.push(this);
     }
+
+    public static allResearches: Research[] = [];
 
     get isAvailable(): boolean {
         if (this.isBought && !this.repeatable) {
