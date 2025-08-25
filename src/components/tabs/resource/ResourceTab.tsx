@@ -5,7 +5,7 @@ import {displayResourceRequirement} from "../../../util/utils.ts";
 export function ResourceTab() {
 
     return (
-        <main className="grid grid-cols-5 max-sm:grid-cols-2 space-x-2 px-2 max-h-[84vh]">
+        <main className="grid grid-cols-5 max-sm:grid-cols-2 my-2 space-x-2 px-2 max-h-[84vh]">
             <div className="bg-card-background border-2 border-muted-foreground max-h-[84vh]">
                 <h1 className="border-b-2 p-2 border-muted-foreground text-3xl text-center">Orders</h1>
                 {

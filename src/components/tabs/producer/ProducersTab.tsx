@@ -69,7 +69,7 @@ export function ProducersTab() {
     }, [upgradesToDisplay]);
 
     return (
-        <div class="grid grid-cols-4 space-x-2">
+        <div class="grid grid-cols-4 space-x-2 my-2">
             <aside class="col-span-1 bg-card-background flex-col flex ml-2 border-2 border-muted-foreground max-h-[75vh]">
                 <div class="flex justify-evenly">
                     <ProducersTabSidebarHeaderButton src={"/sprites/all16.png"} type={"all"} currentType={activeProducerList}
